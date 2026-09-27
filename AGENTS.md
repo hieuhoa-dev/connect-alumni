@@ -11,5 +11,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 When working on TanStack React Table code, read and follow:
 node_modules/@tanstack/react-table/skills/getting-started/SKILL.md
 
+Đọc skills minimalist-ui để biết cách thiết kế
 Luôn dùng around function để wrap các component, tránh lỗi khi render server-side.
 Đây là ứng đồ án tốt nghiệp nên cần chỉnh chu, đổi mới
+
+Đây là base ui nên Button dùng render, không asCHild
