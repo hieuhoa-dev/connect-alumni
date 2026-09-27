@@ -77,7 +77,12 @@ export const SurveyFormRenderer = ({ form, isExpired }: FormRendererProps) => {
             setIsLoading(false);
             return;
           }
-        } else if (ans === undefined || ans === null || ans === "" || (Array.isArray(ans) && ans.length === 0)) {
+        } else if (
+          ans === undefined ||
+          ans === null ||
+          ans === "" ||
+          (Array.isArray(ans) && ans.length === 0)
+        ) {
           setError(`Vui lòng hoàn thành câu hỏi bắt buộc: "${q.label}"`);
           setIsLoading(false);
           return;
@@ -86,7 +91,10 @@ export const SurveyFormRenderer = ({ form, isExpired }: FormRendererProps) => {
     }
 
     try {
-      const payloadAnswers: Record<string, { answerValue?: any; fileUrl?: string }> = {};
+      const payloadAnswers: Record<
+        string,
+        { answerValue?: any; fileUrl?: string }
+      > = {};
 
       for (const q of form.questions) {
         payloadAnswers[q.id] = {
@@ -118,7 +126,8 @@ export const SurveyFormRenderer = ({ form, isExpired }: FormRendererProps) => {
           Cảm ơn bạn đã hoàn thành biểu mẫu khảo sát!
         </AlertDescription>
         <p className="text-xs text-muted-foreground">
-          Ý kiến quý báu của bạn đã được ghi nhận vào hệ thống. Đang quay lại danh sách...
+          Ý kiến quý báu của bạn đã được ghi nhận vào hệ thống. Đang quay lại
+          danh sách...
         </p>
       </Alert>
     );
@@ -152,7 +161,9 @@ export const SurveyFormRenderer = ({ form, isExpired }: FormRendererProps) => {
             <div className="space-y-0.5">
               <Label className="text-xs font-semibold text-foreground leading-normal">
                 {q.label}
-                {q.isRequired && <span className="text-destructive ml-1">*</span>}
+                {q.isRequired && (
+                  <span className="text-destructive ml-1">*</span>
+                )}
               </Label>
             </div>
           </div>
@@ -192,7 +203,10 @@ export const SurveyFormRenderer = ({ form, isExpired }: FormRendererProps) => {
                 {q.options.map((opt) => (
                   <div key={opt} className="flex items-center space-x-2">
                     <RadioGroupItem value={opt} id={`${q.id}-${opt}`} />
-                    <Label htmlFor={`${q.id}-${opt}`} className="text-xs font-normal cursor-pointer">
+                    <Label
+                      htmlFor={`${q.id}-${opt}`}
+                      className="text-xs font-normal cursor-pointer"
+                    >
                       {opt}
                     </Label>
                   </div>
@@ -204,7 +218,8 @@ export const SurveyFormRenderer = ({ form, isExpired }: FormRendererProps) => {
             {q.questionType === "multi_choice" && q.options && (
               <div className="space-y-2">
                 {q.options.map((opt) => {
-                  const isChecked = Array.isArray(answers[q.id]) && answers[q.id].includes(opt);
+                  const isChecked =
+                    Array.isArray(answers[q.id]) && answers[q.id].includes(opt);
                   return (
                     <div key={opt} className="flex items-center space-x-2">
                       <Checkbox
@@ -215,7 +230,10 @@ export const SurveyFormRenderer = ({ form, isExpired }: FormRendererProps) => {
                         }
                         disabled={isLoading}
                       />
-                      <Label htmlFor={`${q.id}-${opt}`} className="text-xs font-normal cursor-pointer">
+                      <Label
+                        htmlFor={`${q.id}-${opt}`}
+                        className="text-xs font-normal cursor-pointer"
+                      >
                         {opt}
                       </Label>
                     </div>
@@ -225,40 +243,47 @@ export const SurveyFormRenderer = ({ form, isExpired }: FormRendererProps) => {
             )}
 
             {/* 5. Scale Rating (dynamic range từ config) */}
-            {q.questionType === "scale" && (() => {
-              const min = q.config?.min ?? 1;
-              const max = q.config?.max ?? 5;
-              const range = Array.from({ length: max - min + 1 }, (_, i) => min + i);
-              return (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {range.map((num) => {
-                      const isSelected = answers[q.id] === num;
-                      return (
-                        <button
-                          key={num}
-                          type="button"
-                          onClick={() => handleScale(q.id, num)}
-                          className={`h-9 w-9 rounded-md border text-xs font-bold transition-all ${
-                            isSelected
-                              ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                              : "bg-background text-foreground hover:bg-muted"
-                          }`}
-                        >
-                          {num}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {q.config && (
-                    <div className="flex justify-between text-[11px] text-muted-foreground" style={{ maxWidth: `${range.length * 44}px` }}>
-                      <span>{q.config.minLabel || `${min} — Kém nhất`}</span>
-                      <span>{q.config.maxLabel || `${max} — Tốt nhất`}</span>
+            {q.questionType === "scale" &&
+              (() => {
+                const min = q.config?.min ?? 1;
+                const max = q.config?.max ?? 5;
+                const range = Array.from(
+                  { length: max - min + 1 },
+                  (_, i) => min + i,
+                );
+                return (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {range.map((num) => {
+                        const isSelected = answers[q.id] === num;
+                        return (
+                          <button
+                            key={num}
+                            type="button"
+                            onClick={() => handleScale(q.id, num)}
+                            className={`h-9 w-9 rounded-md border text-xs font-bold transition-all ${
+                              isSelected
+                                ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                                : "bg-background text-foreground hover:bg-muted"
+                            }`}
+                          >
+                            {num}
+                          </button>
+                        );
+                      })}
                     </div>
-                  )}
-                </div>
-              );
-            })()}
+                    {q.config && (
+                      <div
+                        className="flex justify-between text-[11px] text-muted-foreground"
+                        style={{ maxWidth: `${range.length * 44}px` }}
+                      >
+                        <span>{q.config.minLabel || `${min} — Kém nhất`}</span>
+                        <span>{q.config.maxLabel || `${max} — Tốt nhất`}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
             {/* 6. File Upload */}
             {q.questionType === "file_upload" && (

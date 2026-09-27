@@ -60,7 +60,8 @@ export const ScholarshipApplyForm = ({
           Hồ sơ của bạn đã được nộp thành công!
         </AlertDescription>
         <p className="text-xs text-muted-foreground">
-          Ban Chủ nhiệm Khoa sẽ xem xét hồ sơ và thông báo kết quả qua email và cổng thông tin. Đang chuyển hướng...
+          Ban Chủ nhiệm Khoa sẽ xem xét hồ sơ và thông báo kết quả qua email và
+          cổng thông tin. Đang chuyển hướng...
         </p>
       </Alert>
     );
@@ -70,7 +71,9 @@ export const ScholarshipApplyForm = ({
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
         <Alert variant="destructive" className="py-2 text-xs">
-          <AlertDescription>{error.message || "Có lỗi xảy ra khi nộp hồ sơ"}</AlertDescription>
+          <AlertDescription>
+            {error.message || "Có lỗi xảy ra khi nộp hồ sơ"}
+          </AlertDescription>
         </Alert>
       )}
 
@@ -81,12 +84,18 @@ export const ScholarshipApplyForm = ({
         </div>
         <div className="space-y-1.5">
           <Label className="text-xs">Mã số sinh viên</Label>
-          <Input value={studentCode || "Chưa cập nhật"} disabled className="text-xs bg-muted" />
+          <Input
+            value={studentCode || "Chưa cập nhật"}
+            disabled
+            className="text-xs bg-muted"
+          />
         </div>
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="gpa" className="text-xs font-medium">Điểm trung bình tích lũy (GPA)</Label>
+        <Label htmlFor="gpa" className="text-xs font-medium">
+          Điểm trung bình tích lũy (GPA)
+        </Label>
         <Input
           id="gpa"
           placeholder="Ví dụ: 3.65 (Thang điểm 4)"
@@ -99,7 +108,9 @@ export const ScholarshipApplyForm = ({
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="circumstance" className="text-xs font-medium">Mô tả hoàn cảnh và nguyện vọng hỗ trợ</Label>
+        <Label htmlFor="circumstance" className="text-xs font-medium">
+          Mô tả hoàn cảnh và nguyện vọng hỗ trợ
+        </Label>
         <Textarea
           id="circumstance"
           placeholder="Trình bày hoàn cảnh kinh tế gia đình, khó khăn gặp phải và mục tiêu sử dụng học bổng..."
@@ -113,7 +124,9 @@ export const ScholarshipApplyForm = ({
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="proofUrl" className="text-xs font-medium">Link tài liệu minh chứng (Bảng điểm / Giấy xác nhận hoàn cảnh)</Label>
+        <Label htmlFor="proofUrl" className="text-xs font-medium">
+          Link tài liệu minh chứng (Bảng điểm / Giấy xác nhận hoàn cảnh)
+        </Label>
         <Input
           id="proofUrl"
           placeholder="Dán link Google Drive hoặc OneDrive chứa file PDF/ảnh scan minh chứng..."
@@ -129,7 +142,11 @@ export const ScholarshipApplyForm = ({
       </div>
 
       <div className="pt-2 flex justify-end">
-        <Button type="submit" disabled={isPending} className="gap-2 font-medium">
+        <Button
+          type="submit"
+          disabled={isPending}
+          className="gap-2 font-medium"
+        >
           {isPending ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />

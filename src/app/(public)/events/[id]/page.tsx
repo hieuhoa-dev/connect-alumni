@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { EventRegisterButton } from "./register-button";
+import { RichTextContent } from "@/components/ui/rich-text-content";
 
 interface EventDetailPageProps {
   params: Promise<{ id: string }>;
@@ -90,10 +91,12 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
           {/* Description */}
           <Card className="border border-border/80">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold">Nội dung chương trình</CardTitle>
+              <CardTitle className="text-base font-semibold">
+                Nội dung chương trình
+              </CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-foreground/90 whitespace-pre-line leading-relaxed">
-              {event.description}
+            <CardContent className="text-sm text-foreground/90 leading-relaxed">
+              <RichTextContent content={event.description} />
             </CardContent>
           </Card>
 
@@ -108,11 +111,15 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
               {event.speakers.map((sp) => {
                 const alumni = sp.alumni;
                 const profile = alumni?.profile;
-                const speakerName = profile?.fullName || alumni?.name || "Diễn giả khách mời";
+                const speakerName =
+                  profile?.fullName || alumni?.name || "Diễn giả khách mời";
                 const initials = speakerName.slice(0, 2).toUpperCase();
 
                 return (
-                  <Card key={sp.id} className="p-4 flex items-start gap-3 border border-border/80 shadow-sm">
+                  <Card
+                    key={sp.id}
+                    className="p-4 flex items-start gap-3 border border-border/80 shadow-sm"
+                  >
                     <Avatar className="size-11 border border-border/60">
                       <AvatarImage src={profile?.avatarUrl || undefined} />
                       <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
@@ -124,7 +131,9 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
                         {speakerName}
                       </div>
                       <div className="text-muted-foreground text-[11px] font-mono">
-                        {profile?.batchYear ? `Cựu sinh viên Khóa ${profile.batchYear}` : "Cựu sinh viên"}
+                        {profile?.batchYear
+                          ? `Cựu sinh viên Khóa ${profile.batchYear}`
+                          : "Cựu sinh viên"}
                       </div>
                       {profile?.bio && (
                         <p className="text-muted-foreground text-[11px] line-clamp-2 leading-relaxed">
@@ -148,7 +157,9 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
         <div className="space-y-6">
           <Card className="border border-border/80 bg-card shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold">Thông tin tham dự</CardTitle>
+              <CardTitle className="text-base font-semibold">
+                Thông tin tham dự
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-xs">
               <div className="space-y-1">
@@ -172,7 +183,9 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
               </div>
 
               <div className="space-y-1 pt-2 border-t border-border/60">
-                <span className="text-muted-foreground">Địa điểm / Đường dẫn:</span>
+                <span className="text-muted-foreground">
+                  Địa điểm / Đường dẫn:
+                </span>
                 <p className="font-medium text-foreground text-xs flex items-center gap-1.5 mt-0.5">
                   {event.format === "online" ? (
                     <Video className="size-3.5 text-primary shrink-0" />

@@ -32,7 +32,8 @@ export const CompanySwitcher = ({ companies }: CompanySwitcherProps) => {
   const router = useRouter();
   const [isPending, startTransition] = React.useTransition();
 
-  const activeCompany = companies.find((c) => c.isActiveContext) || companies[0];
+  const activeCompany =
+    companies.find((c) => c.isActiveContext) || companies[0];
 
   const handleSelect = (companyId: string) => {
     startTransition(async () => {
@@ -45,7 +46,11 @@ export const CompanySwitcher = ({ companies }: CompanySwitcherProps) => {
     return (
       <Link
         href="/employer/onboarding"
-        className={buttonVariants({ variant: "outline", size: "sm", className: "gap-2 text-xs" })}
+        className={buttonVariants({
+          variant: "outline",
+          size: "sm",
+          className: "gap-2 text-xs",
+        })}
       >
         <PlusCircle className="h-4 w-4" />
         Đăng ký doanh nghiệp
@@ -86,14 +91,18 @@ export const CompanySwitcher = ({ companies }: CompanySwitcherProps) => {
               className="flex items-center justify-between text-xs cursor-pointer"
             >
               <div className="flex flex-col truncate pr-2">
-                <span className={`truncate font-medium ${isSelected ? "text-primary" : ""}`}>
+                <span
+                  className={`truncate font-medium ${isSelected ? "text-primary" : ""}`}
+                >
                   {company.name}
                 </span>
                 <span className="text-[10px] text-muted-foreground">
                   {company.membershipRole}
                 </span>
               </div>
-              {isSelected && <Check className="h-4 w-4 text-primary shrink-0" />}
+              {isSelected && (
+                <Check className="h-4 w-4 text-primary shrink-0" />
+              )}
             </DropdownMenuItem>
           );
         })}

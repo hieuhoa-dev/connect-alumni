@@ -16,7 +16,8 @@ const NewCampaignPage = async () => {
           Khởi Tạo Chiến Dịch Học Bổng Mới
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Kêu gọi đóng góp gây quỹ từ cựu sinh viên & doanh nghiệp đối tác, phân bổ học bổng tới sinh viên khoa.
+          Kêu gọi đóng góp gây quỹ từ cựu sinh viên & doanh nghiệp đối tác, phân
+          bổ học bổng tới sinh viên khoa.
         </p>
       </div>
 

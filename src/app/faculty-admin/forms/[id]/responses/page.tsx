@@ -28,7 +28,11 @@ const FormResponsesPage = async ({ params }: PageProps) => {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Link href="/faculty-admin/forms">
-              <Button variant="ghost" size="sm" className="h-8 px-2 gap-1 text-muted-foreground">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 gap-1 text-muted-foreground"
+              >
                 <ArrowLeft className="h-4 w-4" />
                 Quay lại
               </Button>
@@ -38,12 +42,17 @@ const FormResponsesPage = async ({ params }: PageProps) => {
             </h1>
           </div>
           <p className="text-xs text-muted-foreground pl-2">
-            {data.form.description || "Báo cáo phân tích dữ liệu và danh sách câu trả lời chi tiết"}
+            {data.form.description ||
+              "Báo cáo phân tích dữ liệu và danh sách câu trả lời chi tiết"}
           </p>
         </div>
 
         <Link href={`/student/surveys/${data.form.id}`} target="_blank">
-          <Button variant="outline" size="sm" className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
             <ExternalLink className="h-3.5 w-3.5" />
             Xem trang khảo sát công khai
           </Button>

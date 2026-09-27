@@ -15,9 +15,14 @@ interface InviteSpeakerFormProps {
   alumniList: AlumniSpeakerCandidate[];
 }
 
-export const InviteSpeakerForm = ({ eventId, alumniList }: InviteSpeakerFormProps) => {
+export const InviteSpeakerForm = ({
+  eventId,
+  alumniList,
+}: InviteSpeakerFormProps) => {
   const router = useRouter();
-  const [alumniUserId, setAlumniUserId] = React.useState(alumniList[0]?.userId || "");
+  const [alumniUserId, setAlumniUserId] = React.useState(
+    alumniList[0]?.userId || "",
+  );
   const [note, setNote] = React.useState(
     "Trân trọng kính mời Anh/Chị tham gia chia sẻ kinh nghiệm cùng các bạn sinh viên Khoa CNTT.",
   );
@@ -43,7 +48,8 @@ export const InviteSpeakerForm = ({ eventId, alumniList }: InviteSpeakerFormProp
         router.refresh();
       }, 1500);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Có lỗi xảy ra khi gửi lời mời";
+      const message =
+        err instanceof Error ? err.message : "Có lỗi xảy ra khi gửi lời mời";
       setError(message);
     } finally {
       setIsLoading(false);
@@ -74,7 +80,9 @@ export const InviteSpeakerForm = ({ eventId, alumniList }: InviteSpeakerFormProp
       )}
 
       <div className="space-y-1.5">
-        <Label htmlFor="alumniSelect" className="text-xs font-medium">Chọn Cựu sinh viên</Label>
+        <Label htmlFor="alumniSelect" className="text-xs font-medium">
+          Chọn Cựu sinh viên
+        </Label>
         <select
           id="alumniSelect"
           value={alumniUserId}
@@ -85,14 +93,17 @@ export const InviteSpeakerForm = ({ eventId, alumniList }: InviteSpeakerFormProp
         >
           {alumniList.map((al) => (
             <option key={al.userId} value={al.userId}>
-              {al.fullName} {al.batchYear ? `(K${al.batchYear})` : ""} - {al.user?.email}
+              {al.fullName} {al.batchYear ? `(K${al.batchYear})` : ""} -{" "}
+              {al.user?.email}
             </option>
           ))}
         </select>
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="inviteNote" className="text-xs font-medium">Lời nhắn / Chủ đề dự kiến</Label>
+        <Label htmlFor="inviteNote" className="text-xs font-medium">
+          Lời nhắn / Chủ đề dự kiến
+        </Label>
         <Textarea
           id="inviteNote"
           rows={3}
@@ -103,7 +114,11 @@ export const InviteSpeakerForm = ({ eventId, alumniList }: InviteSpeakerFormProp
         />
       </div>
 
-      <Button type="submit" disabled={isLoading} className="w-full text-xs font-medium">
+      <Button
+        type="submit"
+        disabled={isLoading}
+        className="w-full text-xs font-medium"
+      >
         {isLoading ? (
           <>
             <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />

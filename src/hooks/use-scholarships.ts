@@ -62,7 +62,9 @@ export const useApplyScholarship = () => {
         type: "success",
         description: "Nộp hồ sơ xét duyệt học bổng thành công!",
       });
-      queryClient.invalidateQueries({ queryKey: scholarshipKeys.myApplications() });
+      queryClient.invalidateQueries({
+        queryKey: scholarshipKeys.myApplications(),
+      });
     },
     onError: (err: any) => {
       toast.add({

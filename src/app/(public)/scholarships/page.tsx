@@ -3,9 +3,23 @@ import Link from "next/link";
 import { getScholarshipCampaigns } from "@/actions/scholarship-actions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { HeartHandshake, GraduationCap, Calendar, Users, ArrowRight, ShieldCheck } from "lucide-react";
+import {
+  HeartHandshake,
+  GraduationCap,
+  Calendar,
+  Users,
+  ArrowRight,
+  ShieldCheck,
+} from "lucide-react";
 
 const ScholarshipsPage = async () => {
   const campaigns = await getScholarshipCampaigns();
@@ -19,7 +33,8 @@ const ScholarshipsPage = async () => {
             Quỹ Khuyến học & Tiếp sức Tài năng Trẻ
           </h1>
           <p className="text-sm text-muted-foreground">
-            Cầu nối tài trợ từ các Doanh nghiệp đối tác và Cựu sinh viên nhằm trao học bổng, hỗ trợ tài chính cho sinh viên vượt khó
+            Cầu nối tài trợ từ các Doanh nghiệp đối tác và Cựu sinh viên nhằm
+            trao học bổng, hỗ trợ tài chính cho sinh viên vượt khó
           </p>
         </div>
         <Link
@@ -36,7 +51,9 @@ const ScholarshipsPage = async () => {
         {campaigns.length === 0 ? (
           <div className="col-span-full text-center py-16 bg-card border border-dashed rounded-xl">
             <HeartHandshake className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-40" />
-            <h3 className="text-sm font-semibold text-foreground">Hiện chưa có chiến dịch học bổng mới</h3>
+            <h3 className="text-sm font-semibold text-foreground">
+              Hiện chưa có chiến dịch học bổng mới
+            </h3>
             <p className="text-xs text-muted-foreground mt-1">
               Khoa sẽ sớm thông báo các đợt xét học bổng tiếp theo.
             </p>
@@ -45,17 +62,26 @@ const ScholarshipsPage = async () => {
           campaigns.map((camp) => {
             const target = Number(camp.targetAmount);
             const current = Number(camp.currentAmount);
-            const percent = Math.min(100, Math.round((current / (target || 1)) * 100));
+            const percent = Math.min(
+              100,
+              Math.round((current / (target || 1)) * 100),
+            );
 
             return (
-              <Card key={camp.id} className="flex flex-col justify-between hover:border-primary/50 transition shadow-sm">
+              <Card
+                key={camp.id}
+                className="flex flex-col justify-between hover:border-primary/50 transition shadow-sm"
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <Badge className="bg-primary text-primary-foreground text-[10px]">
                       Quỹ Khoa CNTT
                     </Badge>
                     <span className="text-[11px] text-muted-foreground">
-                      Hạn nộp: {new Date(camp.applicationDeadline).toLocaleDateString("vi-VN")}
+                      Hạn nộp:{" "}
+                      {new Date(camp.applicationDeadline).toLocaleDateString(
+                        "vi-VN",
+                      )}
                     </span>
                   </div>
                   <CardTitle className="text-lg font-bold leading-snug">
@@ -70,13 +96,27 @@ const ScholarshipsPage = async () => {
                   {/* Progress Bar */}
                   <div className="space-y-1.5">
                     <div className="flex justify-between text-xs">
-                      <span className="text-muted-foreground">Tiến độ tiếp nhận quỹ:</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">{percent}%</span>
+                      <span className="text-muted-foreground">
+                        Tiến độ tiếp nhận quỹ:
+                      </span>
+                      <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                        {percent}%
+                      </span>
                     </div>
                     <Progress value={percent} className="h-2" />
                     <div className="flex justify-between text-[11px] text-muted-foreground pt-1">
-                      <span>Đã nhận: <strong className="text-foreground">{current.toLocaleString("vi-VN")} đ</strong></span>
-                      <span>Mục tiêu: <strong className="text-foreground">{target.toLocaleString("vi-VN")} đ</strong></span>
+                      <span>
+                        Đã nhận:{" "}
+                        <strong className="text-foreground">
+                          {current.toLocaleString("vi-VN")} đ
+                        </strong>
+                      </span>
+                      <span>
+                        Mục tiêu:{" "}
+                        <strong className="text-foreground">
+                          {target.toLocaleString("vi-VN")} đ
+                        </strong>
+                      </span>
                     </div>
                   </div>
 
@@ -95,7 +135,10 @@ const ScholarshipsPage = async () => {
                 <CardFooter className="pt-3 border-t border-border/40 flex items-center justify-between gap-2">
                   <Link
                     href="/employer/scholarships/pledge"
-                    className={buttonVariants({ variant: "outline", size: "sm" })}
+                    className={buttonVariants({
+                      variant: "outline",
+                      size: "sm",
+                    })}
                   >
                     Tài trợ
                   </Link>

@@ -36,9 +36,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
       className={`${geistSans.variable} ${newsreader.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <QueryProvider>
-          {children}
-        </QueryProvider>
+        <QueryProvider>{children}</QueryProvider>
         <Toaster />
       </body>
     </html>

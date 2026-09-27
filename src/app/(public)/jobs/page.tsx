@@ -110,7 +110,8 @@ const JobsPage = async ({ searchParams }: JobsPageProps) => {
               </EmptyMedia>
               <EmptyTitle>Không tìm thấy tin tuyển dụng</EmptyTitle>
               <EmptyDescription>
-                Thử tìm kiếm với từ khóa khác hoặc xóa bộ lọc để xem tất cả vị trí.
+                Thử tìm kiếm với từ khóa khác hoặc xóa bộ lọc để xem tất cả vị
+                trí.
               </EmptyDescription>
             </EmptyHeader>
           </Empty>

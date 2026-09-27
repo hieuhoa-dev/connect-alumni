@@ -6,7 +6,13 @@ import { getMyScholarshipApplications } from "@/actions/scholarship-actions";
 import { getAvailableFormsForUser } from "@/actions/form-actions";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   GraduationCap,
   Briefcase,
@@ -40,7 +46,10 @@ const StudentDashboardPage = async () => {
               <h1 className="text-2xl font-bold tracking-tight text-foreground">
                 Xin chào, {profile?.fullName || current?.user.name} 👋
               </h1>
-              <Badge variant={isAlumni ? "default" : "secondary"} className="text-xs">
+              <Badge
+                variant={isAlumni ? "default" : "secondary"}
+                className="text-xs"
+              >
                 {isAlumni ? "Cựu sinh viên" : "Sinh viên"}
               </Badge>
             </div>
@@ -76,14 +85,19 @@ const StudentDashboardPage = async () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs">Sự kiện đã đăng ký</CardDescription>
+            <CardDescription className="text-xs">
+              Sự kiện đã đăng ký
+            </CardDescription>
             <CardTitle className="text-2xl font-bold text-foreground">
               {eventsData.registrations.length}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-[11px] text-muted-foreground flex justify-between items-center">
             <span>Talkshow & Workshop</span>
-            <Link href="/student/events/my-registrations" className="text-primary font-medium hover:underline">
+            <Link
+              href="/student/events/my-registrations"
+              className="text-primary font-medium hover:underline"
+            >
               Xem lịch →
             </Link>
           </CardContent>
@@ -91,14 +105,19 @@ const StudentDashboardPage = async () => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs">Hồ sơ học bổng đã nộp</CardDescription>
+            <CardDescription className="text-xs">
+              Hồ sơ học bổng đã nộp
+            </CardDescription>
             <CardTitle className="text-2xl font-bold text-primary">
               {scholarshipApps.length}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-[11px] text-muted-foreground flex justify-between items-center">
             <span>Tiến độ xét duyệt</span>
-            <Link href="/student/scholarships" className="text-primary font-medium hover:underline">
+            <Link
+              href="/student/scholarships"
+              className="text-primary font-medium hover:underline"
+            >
               Theo dõi →
             </Link>
           </CardContent>
@@ -106,14 +125,19 @@ const StudentDashboardPage = async () => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs">Biểu mẫu khảo sát mở</CardDescription>
+            <CardDescription className="text-xs">
+              Biểu mẫu khảo sát mở
+            </CardDescription>
             <CardTitle className="text-2xl font-bold text-indigo-600">
               {availableSurveys.length}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-[11px] text-muted-foreground flex justify-between items-center">
             <span>Dành riêng cho bạn</span>
-            <Link href="/student/surveys" className="text-primary font-medium hover:underline">
+            <Link
+              href="/student/surveys"
+              className="text-primary font-medium hover:underline"
+            >
               Làm khảo sát →
             </Link>
           </CardContent>
@@ -126,14 +150,20 @@ const StudentDashboardPage = async () => {
         <Card>
           <CardHeader className="pb-3 flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-base font-bold">Sự kiện tham gia sắp tới</CardTitle>
+              <CardTitle className="text-base font-bold">
+                Sự kiện tham gia sắp tới
+              </CardTitle>
               <CardDescription className="text-xs">
                 Danh sách talkshow bạn đã đăng ký tham dự
               </CardDescription>
             </div>
             <Link
               href="/events"
-              className={buttonVariants({ variant: "ghost", size: "sm", className: "text-xs" })}
+              className={buttonVariants({
+                variant: "ghost",
+                size: "sm",
+                className: "text-xs",
+              })}
             >
               Khám phá thêm
             </Link>
@@ -165,13 +195,21 @@ const StudentDashboardPage = async () => {
                         </Link>
                         <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
                           <Clock className="h-3 w-3" />
-                          {new Date(event.startTime).toLocaleDateString("vi-VN", {
-                            dateStyle: "medium",
-                          })}
+                          {new Date(event.startTime).toLocaleDateString(
+                            "vi-VN",
+                            {
+                              dateStyle: "medium",
+                            },
+                          )}
                         </div>
                       </div>
-                      <Badge variant="outline" className="text-[10px] capitalize">
-                        {reg.attendanceStatus === "attended" ? "Đã điểm danh" : "Đã đăng ký"}
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] capitalize"
+                      >
+                        {reg.attendanceStatus === "attended"
+                          ? "Đã điểm danh"
+                          : "Đã đăng ký"}
                       </Badge>
                     </div>
                   );
@@ -184,14 +222,20 @@ const StudentDashboardPage = async () => {
         <Card>
           <CardHeader className="pb-3 flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-base font-bold">Khảo sát & Biểu mẫu</CardTitle>
+              <CardTitle className="text-base font-bold">
+                Khảo sát & Biểu mẫu
+              </CardTitle>
               <CardDescription className="text-xs">
                 Đóng góp ý kiến để cải tiến chương trình đào tạo của Khoa
               </CardDescription>
             </div>
             <Link
               href="/student/surveys"
-              className={buttonVariants({ variant: "ghost", size: "sm", className: "text-xs" })}
+              className={buttonVariants({
+                variant: "ghost",
+                size: "sm",
+                className: "text-xs",
+              })}
             >
               Tất cả biểu mẫu
             </Link>
@@ -219,7 +263,10 @@ const StudentDashboardPage = async () => {
                   </div>
                   <Link
                     href={`/student/surveys/${form.id}`}
-                    className={buttonVariants({ size: "sm", className: "h-7 text-xs shrink-0" })}
+                    className={buttonVariants({
+                      size: "sm",
+                      className: "h-7 text-xs shrink-0",
+                    })}
                   >
                     Trả lời
                   </Link>

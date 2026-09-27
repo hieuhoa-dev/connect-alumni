@@ -13,8 +13,10 @@ import { toast } from "@/components/ui/toast";
 
 export const jobKeys = {
   all: ["jobs"] as const,
-  active: (params?: Record<string, any>) => [...jobKeys.all, "active", params] as const,
-  employer: (companyId?: string) => [...jobKeys.all, "employer", companyId] as const,
+  active: (params?: Record<string, any>) =>
+    [...jobKeys.all, "active", params] as const,
+  employer: (companyId?: string) =>
+    [...jobKeys.all, "employer", companyId] as const,
   faculty: (status?: string) => [...jobKeys.all, "faculty", status] as const,
 };
 
@@ -39,7 +41,9 @@ export const useEmployerJobs = (companyId?: string) => {
   });
 };
 
-export const useFacultyJobs = (status?: "pending" | "approved" | "rejected" | "expired") => {
+export const useFacultyJobs = (
+  status?: "pending" | "approved" | "rejected" | "expired",
+) => {
   return useQuery({
     queryKey: jobKeys.faculty(status),
     queryFn: () => getJobsForFacultyReview(status),

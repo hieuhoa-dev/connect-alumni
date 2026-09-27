@@ -42,7 +42,8 @@ export const useRegisterCompany = () => {
     onSuccess: () => {
       toast.add({
         type: "success",
-        description: "Đăng ký hồ sơ doanh nghiệp thành công! Vui lòng chờ Khoa duyệt.",
+        description:
+          "Đăng ký hồ sơ doanh nghiệp thành công! Vui lòng chờ Khoa duyệt.",
       });
       queryClient.invalidateQueries({ queryKey: companyKeys.all });
     },

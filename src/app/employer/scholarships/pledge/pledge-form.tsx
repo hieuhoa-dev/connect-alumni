@@ -12,7 +12,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, HeartHandshake, CheckCircle2 } from "lucide-react";
 
 interface PledgeFormProps {
-  campaigns: { id: string; title: string; currentAmount: string; targetAmount: string }[];
+  campaigns: {
+    id: string;
+    title: string;
+    currentAmount: string;
+    targetAmount: string;
+  }[];
   defaultName: string;
 }
 
@@ -22,7 +27,9 @@ export const PledgeForm = ({ campaigns, defaultName }: PledgeFormProps) => {
   const [donorDisplayName, setDonorDisplayName] = React.useState(defaultName);
   const [isAnonymous, setIsAnonymous] = React.useState(false);
   const [amount, setAmount] = React.useState("10000000");
-  const [note, setNote] = React.useState("Tài trợ trao học bổng cho các sinh viên vượt khó");
+  const [note, setNote] = React.useState(
+    "Tài trợ trao học bổng cho các sinh viên vượt khó",
+  );
 
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState(false);
@@ -60,7 +67,8 @@ export const PledgeForm = ({ campaigns, defaultName }: PledgeFormProps) => {
           Cam kết tài trợ của bạn đã được ghi nhận!
         </AlertDescription>
         <p className="text-xs text-muted-foreground">
-          Ban Chủ nhiệm Khoa trân trọng cảm ơn sự đồng hành quý báu của Quý đơn vị/Nhà hảo tâm. Đang chuyển hướng...
+          Ban Chủ nhiệm Khoa trân trọng cảm ơn sự đồng hành quý báu của Quý đơn
+          vị/Nhà hảo tâm. Đang chuyển hướng...
         </p>
       </Alert>
     );
@@ -75,7 +83,9 @@ export const PledgeForm = ({ campaigns, defaultName }: PledgeFormProps) => {
       )}
 
       <div className="space-y-1.5">
-        <Label htmlFor="camp" className="text-xs font-medium">Chiến dịch học bổng nhận tài trợ</Label>
+        <Label htmlFor="camp" className="text-xs font-medium">
+          Chiến dịch học bổng nhận tài trợ
+        </Label>
         <select
           id="camp"
           value={campaignId}
@@ -92,7 +102,9 @@ export const PledgeForm = ({ campaigns, defaultName }: PledgeFormProps) => {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="donorName" className="text-xs font-medium">Tên hiển thị vinh danh (Cá nhân / Doanh nghiệp)</Label>
+        <Label htmlFor="donorName" className="text-xs font-medium">
+          Tên hiển thị vinh danh (Cá nhân / Doanh nghiệp)
+        </Label>
         <Input
           id="donorName"
           value={donorDisplayName}
@@ -109,13 +121,18 @@ export const PledgeForm = ({ campaigns, defaultName }: PledgeFormProps) => {
           checked={isAnonymous}
           onCheckedChange={(checked) => setIsAnonymous(!!checked)}
         />
-        <Label htmlFor="anon" className="text-xs font-normal cursor-pointer text-muted-foreground">
+        <Label
+          htmlFor="anon"
+          className="text-xs font-normal cursor-pointer text-muted-foreground"
+        >
           Tài trợ ẩn danh (Không hiển thị tên công khai trên bảng vinh danh)
         </Label>
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="amt" className="text-xs font-medium">Số tiền cam kết tài trợ (VNĐ)</Label>
+        <Label htmlFor="amt" className="text-xs font-medium">
+          Số tiền cam kết tài trợ (VNĐ)
+        </Label>
         <Input
           id="amt"
           type="number"
@@ -130,7 +147,9 @@ export const PledgeForm = ({ campaigns, defaultName }: PledgeFormProps) => {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="pNote" className="text-xs font-medium">Lời nhắn / Lời chúc gửi tới sinh viên</Label>
+        <Label htmlFor="pNote" className="text-xs font-medium">
+          Lời nhắn / Lời chúc gửi tới sinh viên
+        </Label>
         <Textarea
           id="pNote"
           rows={3}
@@ -142,7 +161,11 @@ export const PledgeForm = ({ campaigns, defaultName }: PledgeFormProps) => {
       </div>
 
       <div className="pt-2 flex justify-end">
-        <Button type="submit" disabled={isLoading} className="gap-2 font-medium">
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="gap-2 font-medium"
+        >
           {isLoading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />

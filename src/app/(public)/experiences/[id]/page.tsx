@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, Calendar, Eye } from "lucide-react";
+import { RichTextContent } from "@/components/ui/rich-text-content";
 
 interface ExperienceDetailPageProps {
   params: Promise<{ id: string }>;
@@ -57,7 +58,11 @@ const ExperienceDetailPage = async ({ params }: ExperienceDetailPageProps) => {
           <div className="flex items-center gap-4 text-xs text-muted-foreground pt-1 border-b border-border/70 pb-4 font-mono">
             <span className="flex items-center gap-1.5">
               <Calendar className="size-3.5" />
-              Xuất bản: {new Date(post.publishedAt || post.createdAt).toLocaleDateString("vi-VN", { dateStyle: "long" })}
+              Xuất bản:{" "}
+              {new Date(post.publishedAt || post.createdAt).toLocaleDateString(
+                "vi-VN",
+                { dateStyle: "long" },
+              )}
             </span>
             <span className="flex items-center gap-1.5">
               <Eye className="size-3.5" />
@@ -91,7 +96,9 @@ const ExperienceDetailPage = async ({ params }: ExperienceDetailPageProps) => {
                 {author?.fullName || post.author?.name || "Tác giả"}
               </div>
               <div className="text-muted-foreground font-mono text-[11px]">
-                {author?.batchYear ? `Cựu sinh viên Khóa ${author.batchYear}` : "Cựu sinh viên"}
+                {author?.batchYear
+                  ? `Cựu sinh viên Khóa ${author.batchYear}`
+                  : "Cựu sinh viên"}
                 {author?.bio && ` · ${author.bio}`}
               </div>
             </div>
@@ -99,8 +106,8 @@ const ExperienceDetailPage = async ({ params }: ExperienceDetailPageProps) => {
         </Card>
 
         {/* Body content */}
-        <div className="text-base text-foreground/90 whitespace-pre-line leading-relaxed pt-2">
-          {post.content}
+        <div className="pt-2 border-t border-border/60">
+          <RichTextContent content={post.content} />
         </div>
       </article>
     </div>

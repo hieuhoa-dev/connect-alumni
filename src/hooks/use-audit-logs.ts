@@ -8,7 +8,10 @@ export const auditLogKeys = {
   list: (limit: number) => [...auditLogKeys.all, "list", limit] as const,
 };
 
-export const useAuditLogs = (limit = 150, initialData?: AuditLogWithActor[]) => {
+export const useAuditLogs = (
+  limit = 150,
+  initialData?: AuditLogWithActor[],
+) => {
   return useQuery({
     queryKey: auditLogKeys.list(limit),
     queryFn: () => getAuditLogs(limit),

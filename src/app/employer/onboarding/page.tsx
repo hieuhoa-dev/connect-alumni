@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Building2, Loader2, Send, CheckCircle2 } from "lucide-react";
 
@@ -15,10 +21,14 @@ const CompanyOnboardingPage = () => {
   const router = useRouter();
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [industry, setIndustry] = React.useState("Công nghệ Thông tin / Phần mềm");
+  const [industry, setIndustry] = React.useState(
+    "Công nghệ Thông tin / Phần mềm",
+  );
   const [website, setWebsite] = React.useState("");
   const [logoUrl, setLogoUrl] = React.useState("");
-  const [roleInCompany, setRoleInCompany] = React.useState("Lead HR / Talent Acquisition");
+  const [roleInCompany, setRoleInCompany] = React.useState(
+    "Lead HR / Talent Acquisition",
+  );
 
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState(false);
@@ -57,9 +67,12 @@ const CompanyOnboardingPage = () => {
             <Building2 className="h-4 w-4" />
             <span>Hồ sơ Đối tác Doanh nghiệp</span>
           </div>
-          <CardTitle className="text-xl font-bold">Đăng ký thông tin Doanh nghiệp</CardTitle>
+          <CardTitle className="text-xl font-bold">
+            Đăng ký thông tin Doanh nghiệp
+          </CardTitle>
           <CardDescription className="text-xs">
-            Hồ sơ doanh nghiệp sẽ được Khoa xác minh để đảm bảo uy tín và bảo vệ quyền lợi của sinh viên trước khi đăng tin tuyển dụng.
+            Hồ sơ doanh nghiệp sẽ được Khoa xác minh để đảm bảo uy tín và bảo vệ
+            quyền lợi của sinh viên trước khi đăng tin tuyển dụng.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -70,7 +83,8 @@ const CompanyOnboardingPage = () => {
                 Đăng ký hồ sơ doanh nghiệp thành công!
               </AlertDescription>
               <p className="text-xs text-muted-foreground">
-                Khoa CNTT sẽ kiểm duyệt và xác minh hồ sơ của bạn sớm nhất. Đang chuyển hướng về Dashboard...
+                Khoa CNTT sẽ kiểm duyệt và xác minh hồ sơ của bạn sớm nhất. Đang
+                chuyển hướng về Dashboard...
               </p>
             </Alert>
           ) : (
@@ -82,7 +96,9 @@ const CompanyOnboardingPage = () => {
               )}
 
               <div className="space-y-1.5">
-                <Label htmlFor="cName" className="text-xs font-medium">Tên công ty / Doanh nghiệp</Label>
+                <Label htmlFor="cName" className="text-xs font-medium">
+                  Tên công ty / Doanh nghiệp
+                </Label>
                 <Input
                   id="cName"
                   placeholder="Ví dụ: Công ty Cổ phần Công nghệ ABC"
@@ -96,7 +112,9 @@ const CompanyOnboardingPage = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="industry" className="text-xs font-medium">Lĩnh vực hoạt động</Label>
+                  <Label htmlFor="industry" className="text-xs font-medium">
+                    Lĩnh vực hoạt động
+                  </Label>
                   <Input
                     id="industry"
                     placeholder="Phần mềm, Fintech, Game..."
@@ -108,7 +126,9 @@ const CompanyOnboardingPage = () => {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="role" className="text-xs font-medium">Chức vụ của bạn tại công ty</Label>
+                  <Label htmlFor="role" className="text-xs font-medium">
+                    Chức vụ của bạn tại công ty
+                  </Label>
                   <Input
                     id="role"
                     placeholder="HR Manager, Talent Lead..."
@@ -123,7 +143,9 @@ const CompanyOnboardingPage = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="website" className="text-xs font-medium">Website chính thức</Label>
+                  <Label htmlFor="website" className="text-xs font-medium">
+                    Website chính thức
+                  </Label>
                   <Input
                     id="website"
                     type="url"
@@ -135,7 +157,9 @@ const CompanyOnboardingPage = () => {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="logo" className="text-xs font-medium">Link Logo công ty</Label>
+                  <Label htmlFor="logo" className="text-xs font-medium">
+                    Link Logo công ty
+                  </Label>
                   <Input
                     id="logo"
                     placeholder="https://images.unsplash.com/..."
@@ -148,7 +172,9 @@ const CompanyOnboardingPage = () => {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="desc" className="text-xs font-medium">Giới thiệu về doanh nghiệp</Label>
+                <Label htmlFor="desc" className="text-xs font-medium">
+                  Giới thiệu về doanh nghiệp
+                </Label>
                 <Textarea
                   id="desc"
                   rows={5}
@@ -162,7 +188,11 @@ const CompanyOnboardingPage = () => {
               </div>
 
               <div className="pt-2 flex justify-end">
-                <Button type="submit" disabled={isLoading} className="gap-2 font-medium">
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="gap-2 font-medium"
+                >
                   {isLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />

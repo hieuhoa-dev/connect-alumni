@@ -1,10 +1,23 @@
 import Link from "next/link";
 import { getAllCampaignsForFaculty } from "@/actions/scholarship-actions";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { PlusCircle, Award, Users, DollarSign, Calendar, ChevronRight } from "lucide-react";
+import {
+  PlusCircle,
+  Award,
+  Users,
+  DollarSign,
+  Calendar,
+  ChevronRight,
+} from "lucide-react";
 import { PledgeActions } from "./pledge-actions";
 
 export const metadata = {
@@ -22,7 +35,8 @@ const CampaignsManagementPage = async () => {
             Quản lý Chiến dịch Học bổng & Quỹ Tài trợ
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Theo dõi tiến độ gây quỹ, xác nhận cam kết đóng góp từ doanh nghiệp/cựu sinh viên và điều phối xét học bổng.
+            Theo dõi tiến độ gây quỹ, xác nhận cam kết đóng góp từ doanh
+            nghiệp/cựu sinh viên và điều phối xét học bổng.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -48,9 +62,12 @@ const CampaignsManagementPage = async () => {
               <Award className="h-8 w-8" />
             </div>
             <div>
-              <h3 className="text-lg font-medium text-foreground">Chưa có chiến dịch nào</h3>
+              <h3 className="text-lg font-medium text-foreground">
+                Chưa có chiến dịch nào
+              </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Tạo chiến dịch học bổng đầu tiên để bắt đầu kết nối các nguồn tài trợ tới sinh viên.
+                Tạo chiến dịch học bổng đầu tiên để bắt đầu kết nối các nguồn
+                tài trợ tới sinh viên.
               </p>
             </div>
             <Link href="/faculty-admin/scholarships/campaigns/new">
@@ -63,8 +80,13 @@ const CampaignsManagementPage = async () => {
           {campaigns.map((camp) => {
             const current = Number(camp.currentAmount);
             const target = Number(camp.targetAmount);
-            const percent = target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0;
-            const pendingPledges = camp.pledges.filter((p) => p.status === "pledged");
+            const percent =
+              target > 0
+                ? Math.min(100, Math.round((current / target) * 100))
+                : 0;
+            const pendingPledges = camp.pledges.filter(
+              (p) => p.status === "pledged",
+            );
 
             return (
               <Card key={camp.id} className="overflow-hidden">
@@ -72,8 +94,15 @@ const CampaignsManagementPage = async () => {
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                     <div>
                       <div className="flex items-center gap-2">
-                        <CardTitle className="text-xl font-bold font-serif">{camp.title}</CardTitle>
-                        <Badge variant={camp.status === "open" ? "default" : "outline"} className="capitalize">
+                        <CardTitle className="text-xl font-bold font-serif">
+                          {camp.title}
+                        </CardTitle>
+                        <Badge
+                          variant={
+                            camp.status === "open" ? "default" : "outline"
+                          }
+                          className="capitalize"
+                        >
                           {camp.status === "open" ? "Đang mở" : camp.status}
                         </Badge>
                       </div>
@@ -84,7 +113,11 @@ const CampaignsManagementPage = async () => {
 
                     <div className="flex items-center gap-2">
                       <Link href={`/scholarships/${camp.id}`} target="_blank">
-                        <Button variant="ghost" size="sm" className="text-xs text-muted-foreground">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs text-muted-foreground"
+                        >
                           Xem công khai
                         </Button>
                       </Link>
@@ -96,25 +129,34 @@ const CampaignsManagementPage = async () => {
                   {/* Progress & Target numbers */}
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="space-y-1">
-                      <span className="text-xs text-muted-foreground">Đã thực nhận (Tiền về quỹ)</span>
+                      <span className="text-xs text-muted-foreground">
+                        Đã thực nhận (Tiền về quỹ)
+                      </span>
                       <div className="text-xl font-bold font-serif text-emerald-600 dark:text-emerald-400">
                         {current.toLocaleString("vi-VN")} đ
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <span className="text-xs text-muted-foreground">Mục tiêu chiến dịch</span>
+                      <span className="text-xs text-muted-foreground">
+                        Mục tiêu chiến dịch
+                      </span>
                       <div className="text-xl font-bold font-serif">
                         {target.toLocaleString("vi-VN")} đ
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <span className="text-xs text-muted-foreground">Tổng số lượt đóng góp</span>
+                      <span className="text-xs text-muted-foreground">
+                        Tổng số lượt đóng góp
+                      </span>
                       <div className="text-xl font-bold font-serif">
-                        {camp.pledges.length} lượt ({pendingPledges.length} chờ duyệt)
+                        {camp.pledges.length} lượt ({pendingPledges.length} chờ
+                        duyệt)
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <span className="text-xs text-muted-foreground">Số hồ sơ sinh viên nộp</span>
+                      <span className="text-xs text-muted-foreground">
+                        Số hồ sơ sinh viên nộp
+                      </span>
                       <div className="text-xl font-bold font-serif text-primary">
                         {camp.applications.length} hồ sơ
                       </div>
@@ -133,7 +175,9 @@ const CampaignsManagementPage = async () => {
                   {camp.pledges.length > 0 && (
                     <div className="border border-border rounded-lg overflow-hidden">
                       <div className="bg-muted/40 px-4 py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center justify-between">
-                        <span>Danh sách đóng góp & tài trợ ({camp.pledges.length})</span>
+                        <span>
+                          Danh sách đóng góp & tài trợ ({camp.pledges.length})
+                        </span>
                         {pendingPledges.length > 0 && (
                           <span className="text-amber-600 dark:text-amber-400 font-bold">
                             Cần xác nhận {pendingPledges.length} khoản
@@ -142,10 +186,17 @@ const CampaignsManagementPage = async () => {
                       </div>
                       <div className="divide-y divide-border">
                         {camp.pledges.map((p) => (
-                          <div key={p.id} className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
+                          <div
+                            key={p.id}
+                            className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm"
+                          >
                             <div className="space-y-0.5">
                               <div className="font-semibold flex items-center gap-2">
-                                <span>{p.isAnonymous ? "Ẩn danh (Nhà hảo tâm)" : p.donorDisplayName}</span>
+                                <span>
+                                  {p.isAnonymous
+                                    ? "Ẩn danh (Nhà hảo tâm)"
+                                    : p.donorDisplayName}
+                                </span>
                                 {p.status === "fulfilled" && (
                                   <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px] py-0">
                                     Đã nhận
@@ -157,13 +208,19 @@ const CampaignsManagementPage = async () => {
                                   </Badge>
                                 )}
                                 {p.status === "cancelled" && (
-                                  <Badge variant="outline" className="text-[10px] py-0 text-muted-foreground">
+                                  <Badge
+                                    variant="outline"
+                                    className="text-[10px] py-0 text-muted-foreground"
+                                  >
                                     Đã hủy
                                   </Badge>
                                 )}
                               </div>
                               <div className="text-xs text-muted-foreground">
-                                {new Date(p.createdAt).toLocaleDateString("vi-VN")} • {p.note || "Không có lời nhắn"}
+                                {new Date(p.createdAt).toLocaleDateString(
+                                  "vi-VN",
+                                )}{" "}
+                                • {p.note || "Không có lời nhắn"}
                               </div>
                             </div>
 
@@ -171,7 +228,10 @@ const CampaignsManagementPage = async () => {
                               <span className="font-serif font-bold text-base text-foreground">
                                 {Number(p.amount).toLocaleString("vi-VN")} đ
                               </span>
-                              <PledgeActions pledgeId={p.id} status={p.status} />
+                              <PledgeActions
+                                pledgeId={p.id}
+                                status={p.status}
+                              />
                             </div>
                           </div>
                         ))}

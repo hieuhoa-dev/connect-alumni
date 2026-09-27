@@ -5,7 +5,11 @@ import { notifications } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { Sidebar } from "@/components/shared/sidebar";
 
-const FacultyAdminLayout = async ({ children }: { children: React.ReactNode }) => {
+const FacultyAdminLayout = async ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   // Hard guard layer: only faculty staff and admin
   const current = await requireRole(["faculty_staff", "admin"]);
 

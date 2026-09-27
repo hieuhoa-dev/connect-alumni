@@ -13,6 +13,7 @@ import { BookOpen, Clock, CheckCircle2, User } from "lucide-react";
 import { ExperienceReviewActions } from "./experience-review-actions";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { RichTextContent } from "@/components/ui/rich-text-content";
 
 const ExperiencesReviewPage = async () => {
   const posts = await getExperiencePostsForFaculty();
@@ -92,8 +93,11 @@ const ExperiencesReviewPage = async () => {
                       </Badge>
                     ))}
                   </div>
-                  <div className="p-3 rounded bg-muted/40 border leading-relaxed whitespace-pre-line text-foreground/90">
-                    {post.content}
+                  <div className="p-3 rounded bg-muted/40 border leading-relaxed text-foreground/90">
+                    <RichTextContent
+                      content={post.content}
+                      className="text-xs space-y-2 [&_h2]:text-base [&_h2]:mt-3 [&_h3]:text-sm [&_h3]:mt-2"
+                    />
                   </div>
                 </CardContent>
               </Card>

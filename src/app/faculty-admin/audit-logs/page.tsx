@@ -22,7 +22,8 @@ const AuditLogsPage = async () => {
           </h1>
         </div>
         <p className="text-sm text-muted-foreground mt-1">
-          Hệ thống ghi nhận bất biến mọi thao tác nhạy cảm: duyệt bài tuyển dụng, phê duyệt hồ sơ, xác nhận tiền tài trợ và cập nhật quyền hạn.
+          Hệ thống ghi nhận bất biến mọi thao tác nhạy cảm: duyệt bài tuyển
+          dụng, phê duyệt hồ sơ, xác nhận tiền tài trợ và cập nhật quyền hạn.
         </p>
       </div>
 

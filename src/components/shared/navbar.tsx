@@ -57,7 +57,10 @@ export const Navbar = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand */}
-        <Link href="/" className="flex items-center gap-2.5 transition hover:opacity-90">
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 transition hover:opacity-90"
+        >
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold shadow-sm">
             <GraduationCap className="h-5 w-5" />
           </div>
@@ -75,7 +78,9 @@ export const Navbar = () => {
         <nav className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => {
             const isActive =
-              link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+              link.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(link.href);
             return (
               <Link
                 key={link.href}
@@ -143,7 +148,10 @@ export const Navbar = () => {
             </DropdownMenu>
           ) : (
             <div className="flex items-center gap-2">
-              <Link href="/login" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+              <Link
+                href="/login"
+                className={buttonVariants({ variant: "ghost", size: "sm" })}
+              >
                 Đăng nhập
               </Link>
               <Link href="/register" className={buttonVariants({ size: "sm" })}>
@@ -161,7 +169,11 @@ export const Navbar = () => {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle Menu"
           >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </Button>
         </div>
       </div>
@@ -176,7 +188,9 @@ export const Navbar = () => {
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md text-foreground hover:bg-muted"
             >
-              {link.icon && <link.icon className="h-4 w-4 text-muted-foreground" />}
+              {link.icon && (
+                <link.icon className="h-4 w-4 text-muted-foreground" />
+              )}
               {link.label}
             </Link>
           ))}
@@ -191,7 +205,12 @@ export const Navbar = () => {
                   <LayoutDashboard className="h-4 w-4" />
                   Trang điều khiển ({session.user.name})
                 </Link>
-                <Button variant="outline" size="sm" onClick={handleSignOut} className="w-full text-destructive">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="w-full text-destructive"
+                >
                   <LogOut className="h-4 w-4 mr-2" /> Đăng xuất
                 </Button>
               </>
@@ -200,14 +219,21 @@ export const Navbar = () => {
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={buttonVariants({ variant: "outline", size: "sm", className: "w-full justify-center" })}
+                  className={buttonVariants({
+                    variant: "outline",
+                    size: "sm",
+                    className: "w-full justify-center",
+                  })}
                 >
                   Đăng nhập
                 </Link>
                 <Link
                   href="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={buttonVariants({ size: "sm", className: "w-full justify-center" })}
+                  className={buttonVariants({
+                    size: "sm",
+                    className: "w-full justify-center",
+                  })}
                 >
                   Đăng ký
                 </Link>

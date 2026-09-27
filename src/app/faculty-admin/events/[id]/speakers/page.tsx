@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getEventById, getAlumniForSpeakerInvitation } from "@/actions/event-actions";
+import {
+  getEventById,
+  getAlumniForSpeakerInvitation,
+} from "@/actions/event-actions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {

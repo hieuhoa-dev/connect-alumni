@@ -6,7 +6,12 @@ import { eq, desc } from "drizzle-orm";
 import { Sidebar } from "@/components/shared/sidebar";
 
 const StudentLayout = async ({ children }: { children: React.ReactNode }) => {
-  const current = await requireRole(["student", "alumni", "admin"]);
+  const current = await requireRole([
+    "student",
+    "alumni",
+    "faculty_staff",
+    "admin",
+  ]);
 
   // Fetch recent in-app notifications
   const userNotifications = await db

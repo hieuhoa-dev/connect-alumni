@@ -21,10 +21,7 @@ export const roleEnum = pgEnum("user_role", [
   "admin",
 ]);
 
-export const accountStatusEnum = pgEnum("account_status", [
-  "active",
-  "locked",
-]);
+export const accountStatusEnum = pgEnum("account_status", ["active", "locked"]);
 
 export const verificationStatusEnum = pgEnum("verification_status", [
   "pending",
@@ -52,10 +49,7 @@ export const eventTypeEnum = pgEnum("event_type", [
   "other",
 ]);
 
-export const eventFormatEnum = pgEnum("event_format", [
-  "online",
-  "offline",
-]);
+export const eventFormatEnum = pgEnum("event_format", ["online", "offline"]);
 
 export const eventStatusEnum = pgEnum("event_status", [
   "draft",
@@ -259,7 +253,9 @@ export const companies = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("companies_verificationStatus_idx").on(table.verificationStatus)],
+  (table) => [
+    index("companies_verificationStatus_idx").on(table.verificationStatus),
+  ],
 );
 
 export const companyMembers = pgTable(
@@ -514,7 +510,10 @@ export const scholarshipCampaigns = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     title: text("title").notNull(),
     description: text("description").notNull(),
-    targetAmount: numeric("target_amount", { precision: 14, scale: 2 }).notNull(),
+    targetAmount: numeric("target_amount", {
+      precision: 14,
+      scale: 2,
+    }).notNull(),
     currentAmount: numeric("current_amount", { precision: 14, scale: 2 })
       .default("0")
       .notNull(),

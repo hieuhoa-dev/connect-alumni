@@ -22,20 +22,10 @@ import {
   motion,
   useReducedMotion,
 } from "motion/react";
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Tooltip } from "@/components/motion/tooltip";
-import {
-  EASE_OUT,
-  SPRING_LAYOUT,
-  SPRING_PRESS,
-} from "@/lib/ease";
+import { EASE_OUT, SPRING_LAYOUT, SPRING_PRESS } from "@/lib/ease";
 import { PresenceGate } from "@/lib/presence-gate";
 import { cn } from "@/lib/utils";
 
@@ -96,8 +86,8 @@ const UPLOAD_COMPLETE_HOLD_MS = 1000;
 const REMOVE_PENDING_MS = 420;
 
 const WAVEFORM_BARS = [
-  18, 31, 24, 39, 30, 43, 27, 18, 9, 29, 38, 24, 34, 18, 26, 37, 21, 14,
-  7, 11, 22, 35, 18, 26, 41, 29, 17, 33,
+  18, 31, 24, 39, 30, 43, 27, 18, 9, 29, 38, 24, 34, 18, 26, 37, 21, 14, 7, 11,
+  22, 35, 18, 26, 41, 29, 17, 33,
 ].map((height, index) => ({ id: `wave-${index}-${height}`, height }));
 
 function useControllableList<T>({
@@ -168,12 +158,7 @@ function imageSource(item: AttachmentUploadItem) {
   return item.previewUrl ?? item.href;
 }
 
-type RowActionState =
-  | "idle"
-  | "uploading"
-  | "complete"
-  | "failed"
-  | "removing";
+type RowActionState = "idle" | "uploading" | "complete" | "failed" | "removing";
 
 function RowAction({
   label,
@@ -444,9 +429,7 @@ function ImagePreviewDialog({
                   onClick={onClose}
                   initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={
-                    reduce ? undefined : { opacity: 0, scale: 0.8 }
-                  }
+                  exit={reduce ? undefined : { opacity: 0, scale: 0.8 }}
                   whileTap={reduce ? undefined : { scale: 0.92 }}
                   transition={SPRING_PRESS}
                   className="absolute -right-3 -top-3 grid size-9 place-items-center rounded-full bg-background text-foreground shadow-xl outline-none ring-1 ring-border/70 transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
@@ -602,9 +585,7 @@ function AttachmentRow({
                   )}
                   style={{ height: bar.height }}
                   animate={
-                    reduce || !playing
-                      ? undefined
-                      : { scaleY: [0.72, 1, 0.78] }
+                    reduce || !playing ? undefined : { scaleY: [0.72, 1, 0.78] }
                   }
                   transition={{
                     duration: 0.55,
@@ -725,22 +706,19 @@ export function AttachmentUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   const dragDepthRef = useRef(0);
   const ownedUrlsRef = useRef(new Set<string>());
-  const lifecycleTimersRef = useRef(
-    new Set<ReturnType<typeof setTimeout>>(),
-  );
+  const lifecycleTimersRef = useRef(new Set<ReturnType<typeof setTimeout>>());
   const reduce = useReducedMotion() ?? false;
   const [dragging, setDragging] = useState(false);
-  const [previewItem, setPreviewItem] =
-    useState<AttachmentUploadItem | null>(null);
+  const [previewItem, setPreviewItem] = useState<AttachmentUploadItem | null>(
+    null,
+  );
   const [uploadingIds, setUploadingIds] = useState<Set<string>>(
     () => new Set(),
   );
   const [uploadCompleteIds, setUploadCompleteIds] = useState<Set<string>>(
     () => new Set(),
   );
-  const [removingIds, setRemovingIds] = useState<Set<string>>(
-    () => new Set(),
-  );
+  const [removingIds, setRemovingIds] = useState<Set<string>>(() => new Set());
   const [items, setItems] = useControllableList({
     value,
     defaultValue,
@@ -787,16 +765,15 @@ export function AttachmentUpload({
         0,
         multiple ? availableSlots : Math.min(1, availableSlots),
       );
-      const oversized = selectedFiles.filter(
-        (file) => file.size > maxFileSize,
-      );
-      const accepted = selectedFiles.filter(
-        (file) => file.size <= maxFileSize,
-      );
+      const oversized = selectedFiles.filter((file) => file.size > maxFileSize);
+      const accepted = selectedFiles.filter((file) => file.size <= maxFileSize);
 
       if (oversized.length > 0) onFilesRejected?.(oversized, "too-large");
       if (incomingFiles.length > selectedFiles.length) {
-        onFilesRejected?.(incomingFiles.slice(selectedFiles.length), "max-files");
+        onFilesRejected?.(
+          incomingFiles.slice(selectedFiles.length),
+          "max-files",
+        );
       }
 
       const added = accepted.map((file, index) => {
@@ -828,9 +805,7 @@ export function AttachmentUpload({
             for (const id of addedIds) next.delete(id);
             return next;
           });
-          setUploadCompleteIds(
-            (current) => new Set([...current, ...addedIds]),
-          );
+          setUploadCompleteIds((current) => new Set([...current, ...addedIds]));
           scheduleLifecycle(() => {
             setUploadCompleteIds((current) => {
               const next = new Set(current);
@@ -867,9 +842,7 @@ export function AttachmentUpload({
         URL.revokeObjectURL(ownedUrl);
         ownedUrlsRef.current.delete(ownedUrl);
       }
-      setPreviewItem((current) =>
-        current?.id === item.id ? null : current,
-      );
+      setPreviewItem((current) => (current?.id === item.id ? null : current));
       setUploadingIds((current) => {
         const next = new Set(current);
         next.delete(item.id);
@@ -903,12 +876,7 @@ export function AttachmentUpload({
         reduce ? 140 : REMOVE_PENDING_MS,
       );
     },
-    [
-      finalizeRemove,
-      reduce,
-      removingIds,
-      scheduleLifecycle,
-    ],
+    [finalizeRemove, reduce, removingIds, scheduleLifecycle],
   );
 
   const resetDrag = useCallback(() => {
@@ -918,10 +886,7 @@ export function AttachmentUpload({
   const closePreview = useCallback(() => setPreviewItem(null), []);
 
   useEffect(() => {
-    if (
-      previewItem &&
-      !items.some((item) => item.id === previewItem.id)
-    ) {
+    if (previewItem && !items.some((item) => item.id === previewItem.id)) {
       setPreviewItem(null);
     }
   }, [items, previewItem]);
@@ -934,147 +899,143 @@ export function AttachmentUpload({
   return (
     <LayoutGroup id={inputId}>
       <div className={cn("w-full", className)}>
-      <input
-        ref={inputRef}
-        id={inputId}
-        type="file"
-        aria-label="Upload attachments"
-        accept={accept}
-        multiple={multiple}
-        disabled={disabled || maxReached}
-        tabIndex={-1}
-        className="sr-only"
-        onChange={(event) => {
-          addFiles(Array.from(event.currentTarget.files ?? []));
-          event.currentTarget.value = "";
-        }}
-      />
-
-      <motion.button
-        type="button"
-        disabled={disabled || maxReached}
-        data-dragging={dragging}
-        animate={
-          reduce
-            ? undefined
-            : { scale: dragging ? 1.006 : 1 }
-        }
-        whileTap={reduce ? undefined : { scale: 0.995 }}
-        transition={SPRING_PRESS}
-        onClick={() => inputRef.current?.click()}
-        onDragEnter={(event) => {
-          if (disabled || maxReached) return;
-          event.preventDefault();
-          dragDepthRef.current += 1;
-          setDragging(true);
-        }}
-        onDragOver={(event) => {
-          if (disabled || maxReached) return;
-          event.preventDefault();
-          event.dataTransfer.dropEffect = "copy";
-          setDragging(true);
-        }}
-        onDragLeave={(event) => {
-          if (disabled || maxReached) return;
-          event.preventDefault();
-          dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
-          if (dragDepthRef.current === 0) setDragging(false);
-        }}
-        onDrop={(event) => {
-          if (disabled || maxReached) return;
-          event.preventDefault();
-          resetDrag();
-          addFiles(Array.from(event.dataTransfer.files));
-        }}
-        className={cn(
-          "group relative isolate flex min-h-52 w-full flex-col items-center justify-center overflow-hidden rounded-[2rem] bg-muted/65 p-2 text-center outline-none",
-          "transition-colors duration-200 hover:bg-muted/85",
-          "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-          "data-[dragging=true]:bg-muted",
-          "disabled:pointer-events-none disabled:opacity-55",
-          classNames?.dropzone,
-        )}
-      >
-        <span
-          aria-hidden="true"
-          className="absolute inset-2 -z-10 rounded-[1.5rem] border border-dashed border-muted-foreground/25 bg-background transition-[border-color,background-color] duration-200 group-hover:border-muted-foreground/45 group-data-[dragging=true]:border-foreground/65 group-data-[dragging=true]:bg-muted/20"
+        <input
+          ref={inputRef}
+          id={inputId}
+          type="file"
+          aria-label="Upload attachments"
+          accept={accept}
+          multiple={multiple}
+          disabled={disabled || maxReached}
+          tabIndex={-1}
+          className="sr-only"
+          onChange={(event) => {
+            addFiles(Array.from(event.currentTarget.files ?? []));
+            event.currentTarget.value = "";
+          }}
         />
-        <motion.span
-          aria-hidden="true"
-          animate={
-            reduce
-              ? undefined
-              : {
-                  y: dragging ? -4 : 0,
-                  scale: dragging ? 1.08 : 1,
-                }
-          }
-          transition={ITEM_TRANSITION}
-          className="mb-3 grid size-11 place-items-center rounded-2xl bg-muted text-foreground transition-colors duration-200 group-hover:bg-muted/80 group-data-[dragging=true]:bg-foreground group-data-[dragging=true]:text-background"
+
+        <motion.button
+          type="button"
+          disabled={disabled || maxReached}
+          data-dragging={dragging}
+          animate={reduce ? undefined : { scale: dragging ? 1.006 : 1 }}
+          whileTap={reduce ? undefined : { scale: 0.995 }}
+          transition={SPRING_PRESS}
+          onClick={() => inputRef.current?.click()}
+          onDragEnter={(event) => {
+            if (disabled || maxReached) return;
+            event.preventDefault();
+            dragDepthRef.current += 1;
+            setDragging(true);
+          }}
+          onDragOver={(event) => {
+            if (disabled || maxReached) return;
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "copy";
+            setDragging(true);
+          }}
+          onDragLeave={(event) => {
+            if (disabled || maxReached) return;
+            event.preventDefault();
+            dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
+            if (dragDepthRef.current === 0) setDragging(false);
+          }}
+          onDrop={(event) => {
+            if (disabled || maxReached) return;
+            event.preventDefault();
+            resetDrag();
+            addFiles(Array.from(event.dataTransfer.files));
+          }}
+          className={cn(
+            "group relative isolate flex min-h-52 w-full flex-col items-center justify-center overflow-hidden rounded-[2rem] bg-muted/65 p-2 text-center outline-none",
+            "transition-colors duration-200 hover:bg-muted/85",
+            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            "data-[dragging=true]:bg-muted",
+            "disabled:pointer-events-none disabled:opacity-55",
+            classNames?.dropzone,
+          )}
         >
-          <Upload className="size-[18px]" />
-        </motion.span>
-        <span className="text-sm font-semibold tracking-[-0.01em] text-foreground">
-          {maxReached ? "Attachment limit reached" : title}
-        </span>
-        <span className="mt-1 text-xs leading-5 text-muted-foreground">
-          {maxReached
-            ? `${items.length} of ${maxFiles} attachments added`
-            : description ?? `Maximum ${formatMaxSize(maxFileSize)} file size`}
-        </span>
-      </motion.button>
-
-      {items.length > 0 ? (
-        <section className="mt-8" aria-labelledby={`${inputId}-attachments`}>
-          <h3
-            id={`${inputId}-attachments`}
-            className="text-sm font-semibold text-foreground"
+          <span
+            aria-hidden="true"
+            className="absolute inset-2 -z-10 rounded-[1.5rem] border border-dashed border-muted-foreground/25 bg-background transition-[border-color,background-color] duration-200 group-hover:border-muted-foreground/45 group-data-[dragging=true]:border-foreground/65 group-data-[dragging=true]:bg-muted/20"
+          />
+          <motion.span
+            aria-hidden="true"
+            animate={
+              reduce
+                ? undefined
+                : {
+                    y: dragging ? -4 : 0,
+                    scale: dragging ? 1.08 : 1,
+                  }
+            }
+            transition={ITEM_TRANSITION}
+            className="mb-3 grid size-11 place-items-center rounded-2xl bg-muted text-foreground transition-colors duration-200 group-hover:bg-muted/80 group-data-[dragging=true]:bg-foreground group-data-[dragging=true]:text-background"
           >
-            {attachmentsLabel}
-          </h3>
+            <Upload className="size-[18px]" />
+          </motion.span>
+          <span className="text-sm font-semibold tracking-[-0.01em] text-foreground">
+            {maxReached ? "Attachment limit reached" : title}
+          </span>
+          <span className="mt-1 text-xs leading-5 text-muted-foreground">
+            {maxReached
+              ? `${items.length} of ${maxFiles} attachments added`
+              : (description ??
+                `Maximum ${formatMaxSize(maxFileSize)} file size`)}
+          </span>
+        </motion.button>
 
-          {items.length > 0 ? (
-            <ul className={cn("mt-3 space-y-2", classNames?.list)}>
-              <AnimatePresence initial={uploadOrder.length > 0}>
-                {items.map((item) => (
-                  <AttachmentRow
-                    key={item.id}
-                    item={item}
-                    playing={playingId === item.id}
-                    uploading={
-                      uploadingIds.has(item.id) ||
-                      item.status === "uploading"
-                    }
-                    uploadComplete={
-                      uploadCompleteIds.has(item.id) ||
-                      item.status === "complete"
-                    }
-                    failed={item.status === "failed"}
-                    removing={removingIds.has(item.id)}
-                    arrivalIndex={uploadOrder.indexOf(item.id)}
-                    imageLayoutId={
-                      reduce ? undefined : `attachment-image-${item.id}`
-                    }
-                    onAudioToggle={onAudioToggle}
-                    onImagePreview={setPreviewItem}
-                    onRemove={requestRemove}
-                    onRetry={onRetry}
-                    reduce={reduce}
-                    className={classNames?.row}
-                  />
-                ))}
-              </AnimatePresence>
-            </ul>
-          ) : null}
-        </section>
-      ) : null}
+        {items.length > 0 ? (
+          <section className="mt-8" aria-labelledby={`${inputId}-attachments`}>
+            <h3
+              id={`${inputId}-attachments`}
+              className="text-sm font-semibold text-foreground"
+            >
+              {attachmentsLabel}
+            </h3>
 
-      <ImagePreviewDialog
-        item={previewItem}
-        layoutId={reduce ? undefined : previewLayoutId}
-        onClose={closePreview}
-        reduce={reduce}
-      />
+            {items.length > 0 ? (
+              <ul className={cn("mt-3 space-y-2", classNames?.list)}>
+                <AnimatePresence initial={uploadOrder.length > 0}>
+                  {items.map((item) => (
+                    <AttachmentRow
+                      key={item.id}
+                      item={item}
+                      playing={playingId === item.id}
+                      uploading={
+                        uploadingIds.has(item.id) || item.status === "uploading"
+                      }
+                      uploadComplete={
+                        uploadCompleteIds.has(item.id) ||
+                        item.status === "complete"
+                      }
+                      failed={item.status === "failed"}
+                      removing={removingIds.has(item.id)}
+                      arrivalIndex={uploadOrder.indexOf(item.id)}
+                      imageLayoutId={
+                        reduce ? undefined : `attachment-image-${item.id}`
+                      }
+                      onAudioToggle={onAudioToggle}
+                      onImagePreview={setPreviewItem}
+                      onRemove={requestRemove}
+                      onRetry={onRetry}
+                      reduce={reduce}
+                      className={classNames?.row}
+                    />
+                  ))}
+                </AnimatePresence>
+              </ul>
+            ) : null}
+          </section>
+        ) : null}
+
+        <ImagePreviewDialog
+          item={previewItem}
+          layoutId={reduce ? undefined : previewLayoutId}
+          onClose={closePreview}
+          reduce={reduce}
+        />
       </div>
     </LayoutGroup>
   );

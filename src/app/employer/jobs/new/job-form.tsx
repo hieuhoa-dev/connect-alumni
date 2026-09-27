@@ -16,7 +16,9 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
   const [description, setDescription] = React.useState("");
   const [requirements, setRequirements] = React.useState("");
   const [location, setLocation] = React.useState("TP. Hồ Chí Minh");
-  const [jobType, setJobType] = React.useState<"full_time" | "part_time" | "internship">("internship");
+  const [jobType, setJobType] = React.useState<
+    "full_time" | "part_time" | "internship"
+  >("internship");
   const [salaryRange, setSalaryRange] = React.useState("Thỏa thuận");
   const [applyUrlOrEmail, setApplyUrlOrEmail] = React.useState("");
   const [expiresAt, setExpiresAt] = React.useState(() => {
@@ -65,7 +67,8 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
           Tin tuyển dụng đã được gửi phê duyệt thành công!
         </AlertDescription>
         <p className="text-xs text-muted-foreground">
-          Ban Chủ nhiệm Khoa sẽ xem xét và phản hồi trong thời gian sớm nhất. Đang chuyển hướng...
+          Ban Chủ nhiệm Khoa sẽ xem xét và phản hồi trong thời gian sớm nhất.
+          Đang chuyển hướng...
         </p>
       </Alert>
     );
@@ -80,7 +83,9 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
       )}
 
       <div className="space-y-1.5">
-        <Label htmlFor="title" className="text-xs font-medium">Tiêu đề vị trí tuyển dụng</Label>
+        <Label htmlFor="title" className="text-xs font-medium">
+          Tiêu đề vị trí tuyển dụng
+        </Label>
         <Input
           id="title"
           placeholder="Ví dụ: Thực tập sinh Lập trình Web Fullstack (Next.js / Node.js)"
@@ -95,7 +100,9 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="space-y-1.5">
-          <Label htmlFor="jobType" className="text-xs font-medium">Hình thức làm việc</Label>
+          <Label htmlFor="jobType" className="text-xs font-medium">
+            Hình thức làm việc
+          </Label>
           <select
             id="jobType"
             value={jobType}
@@ -110,7 +117,9 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="salary" className="text-xs font-medium">Mức lương / Trợ cấp</Label>
+          <Label htmlFor="salary" className="text-xs font-medium">
+            Mức lương / Trợ cấp
+          </Label>
           <Input
             id="salary"
             placeholder="8 - 12 triệu / Thỏa thuận"
@@ -122,7 +131,9 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="expires" className="text-xs font-medium">Ngày hết hạn nộp</Label>
+          <Label htmlFor="expires" className="text-xs font-medium">
+            Ngày hết hạn nộp
+          </Label>
           <Input
             id="expires"
             type="date"
@@ -137,7 +148,9 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <Label htmlFor="location" className="text-xs font-medium">Địa điểm làm việc</Label>
+          <Label htmlFor="location" className="text-xs font-medium">
+            Địa điểm làm việc
+          </Label>
           <Input
             id="location"
             placeholder="Khu Công nghệ Cao, TP. Thủ Đức (Hybrid)"
@@ -150,7 +163,9 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="apply" className="text-xs font-medium">Email hoặc Link nhận hồ sơ</Label>
+          <Label htmlFor="apply" className="text-xs font-medium">
+            Email hoặc Link nhận hồ sơ
+          </Label>
           <Input
             id="apply"
             placeholder="recruitment@company.com"
@@ -164,7 +179,9 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="desc" className="text-xs font-medium">Mô tả công việc</Label>
+        <Label htmlFor="desc" className="text-xs font-medium">
+          Mô tả công việc
+        </Label>
         <Textarea
           id="desc"
           rows={5}
@@ -179,7 +196,9 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="req" className="text-xs font-medium">Yêu cầu ứng viên</Label>
+        <Label htmlFor="req" className="text-xs font-medium">
+          Yêu cầu ứng viên
+        </Label>
         <Textarea
           id="req"
           rows={5}

@@ -2,7 +2,13 @@
 
 import { useAuditLogs } from "@/hooks/use-audit-logs";
 import type { AuditLogWithActor } from "@/actions/audit-actions";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Activity, Radio } from "lucide-react";
 
@@ -11,17 +17,28 @@ interface AuditLogsTableProps {
 }
 
 export const AuditLogsTable = ({ initialData }: AuditLogsTableProps) => {
-  const { data: logs = initialData, isFetching } = useAuditLogs(150, initialData);
+  const { data: logs = initialData, isFetching } = useAuditLogs(
+    150,
+    initialData,
+  );
 
   const formatAction = (action: string) => {
-    if (action.includes("publish") || action.includes("approve") || action.includes("fulfill")) {
+    if (
+      action.includes("publish") ||
+      action.includes("approve") ||
+      action.includes("fulfill")
+    ) {
       return (
         <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
           {action}
         </Badge>
       );
     }
-    if (action.includes("reject") || action.includes("lock") || action.includes("cancel")) {
+    if (
+      action.includes("reject") ||
+      action.includes("lock") ||
+      action.includes("cancel")
+    ) {
       return (
         <Badge className="bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20">
           {action}
@@ -35,9 +52,12 @@ export const AuditLogsTable = ({ initialData }: AuditLogsTableProps) => {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-4">
         <div>
-          <CardTitle className="text-lg font-serif">150 bản ghi thao tác gần nhất</CardTitle>
+          <CardTitle className="text-lg font-serif">
+            150 bản ghi thao tác gần nhất
+          </CardTitle>
           <CardDescription>
-            Toàn bộ hành động của Quản trị viên, Giáo vụ và Người dùng được lưu trữ an toàn.
+            Toàn bộ hành động của Quản trị viên, Giáo vụ và Người dùng được lưu
+            trữ an toàn.
           </CardDescription>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -68,9 +88,13 @@ export const AuditLogsTable = ({ initialData }: AuditLogsTableProps) => {
               <tbody className="divide-y divide-border">
                 {logs.map((log) => {
                   const actorName =
-                    log.actor?.profile?.fullName || log.actor?.name || log.actorId;
+                    log.actor?.profile?.fullName ||
+                    log.actor?.name ||
+                    log.actorId;
                   const actorEmail = log.actor?.email;
-                  const metaStr = log.metadata ? JSON.stringify(log.metadata) : null;
+                  const metaStr = log.metadata
+                    ? JSON.stringify(log.metadata)
+                    : null;
 
                   return (
                     <tr
@@ -81,9 +105,13 @@ export const AuditLogsTable = ({ initialData }: AuditLogsTableProps) => {
                         {new Date(log.createdAt).toLocaleString("vi-VN")}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap font-sans">
-                        <div className="font-medium text-foreground">{actorName}</div>
+                        <div className="font-medium text-foreground">
+                          {actorName}
+                        </div>
                         {actorEmail && (
-                          <div className="text-[11px] text-muted-foreground">{actorEmail}</div>
+                          <div className="text-[11px] text-muted-foreground">
+                            {actorEmail}
+                          </div>
                         )}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap font-sans">

@@ -63,7 +63,9 @@ export const NotificationsPopover = ({
             triggerClassName,
           )}
           aria-label="Thông báo hệ thống"
-          title={unreadCount > 0 ? `Thông báo (${unreadCount} mới)` : "Thông báo"}
+          title={
+            unreadCount > 0 ? `Thông báo (${unreadCount} mới)` : "Thông báo"
+          }
         >
           <span
             aria-hidden="true"
@@ -113,7 +115,10 @@ export const NotificationsPopover = ({
               Thông báo hệ thống
             </span>
             {unreadCount > 0 && (
-              <Badge variant="secondary" className="text-[10px] font-mono h-5 px-1.5">
+              <Badge
+                variant="secondary"
+                className="text-[10px] font-mono h-5 px-1.5"
+              >
                 {unreadCount} mới
               </Badge>
             )}
@@ -145,12 +150,16 @@ export const NotificationsPopover = ({
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div className="font-medium text-foreground text-xs leading-snug">{n.title}</div>
+                  <div className="font-medium text-foreground text-xs leading-snug">
+                    {n.title}
+                  </div>
                   {!n.isRead && (
                     <span className="h-2 w-2 rounded-full bg-primary shrink-0 mt-1" />
                   )}
                 </div>
-                <p className="text-muted-foreground mt-1 line-clamp-2 leading-relaxed text-[11px]">{n.body}</p>
+                <p className="text-muted-foreground mt-1 line-clamp-2 leading-relaxed text-[11px]">
+                  {n.body}
+                </p>
                 {n.linkUrl && (
                   <Link
                     href={n.linkUrl}

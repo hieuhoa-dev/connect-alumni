@@ -216,9 +216,7 @@ const StudentEventsPage = async () => {
                         <Users className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span>
                           {event.registrations?.length || 0} người tham gia
-                          {event.capacity
-                            ? ` / ${event.capacity}`
-                            : ""}
+                          {event.capacity ? ` / ${event.capacity}` : ""}
                         </span>
                       </div>
 
@@ -233,7 +231,10 @@ const StudentEventsPage = async () => {
                                 key={spk.id}
                                 className="text-[11px] truncate text-muted-foreground"
                               >
-                                • {spk.alumni?.profile?.fullName || spk.alumni?.name || "Khách mời"}
+                                •{" "}
+                                {spk.alumni?.profile?.fullName ||
+                                  spk.alumni?.name ||
+                                  "Khách mời"}
                                 {spk.alumni?.profile?.batchYear &&
                                   ` (Khóa ${spk.alumni.profile.batchYear})`}
                               </p>

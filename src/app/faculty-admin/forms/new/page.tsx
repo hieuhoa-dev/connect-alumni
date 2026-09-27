@@ -12,7 +12,8 @@ const NewFormPage = () => {
           Tạo Biểu Mẫu / Khảo Sát Mới
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Thiết kế biểu mẫu khảo sát động, hồ sơ đăng ký học bổng hoặc thu thập ý kiến đóng góp từ sinh viên & cựu sinh viên.
+          Thiết kế biểu mẫu khảo sát động, hồ sơ đăng ký học bổng hoặc thu thập
+          ý kiến đóng góp từ sinh viên & cựu sinh viên.
         </p>
       </div>
 

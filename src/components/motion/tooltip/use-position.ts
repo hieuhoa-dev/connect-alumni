@@ -76,16 +76,31 @@ export function useTooltipPosition({
               contextElement: anchor,
               getBoundingClientRect: () => {
                 const rect = anchor.getBoundingClientRect();
-                const x = currentCursor?.x ?? rect.left + rect.width * (pointX ?? 0.5);
-                const y = currentCursor?.y ?? rect.top + rect.height * (pointY ?? 0.5);
-                return { x, y, left: x, right: x, top: y, bottom: y, width: 0, height: 0 };
+                const x =
+                  currentCursor?.x ?? rect.left + rect.width * (pointX ?? 0.5);
+                const y =
+                  currentCursor?.y ?? rect.top + rect.height * (pointY ?? 0.5);
+                return {
+                  x,
+                  y,
+                  left: x,
+                  right: x,
+                  top: y,
+                  bottom: y,
+                  width: 0,
+                  height: 0,
+                };
               },
             }
           : anchor;
       void computePosition(reference, floating, {
         strategy: "fixed",
         placement: currentCursor ? (cursorSide.current ?? side) : side,
-        middleware: [offset(currentCursor ? 12 : 8), flip({ padding: 8 }), shift({ padding: 8 })],
+        middleware: [
+          offset(currentCursor ? 12 : 8),
+          flip({ padding: 8 }),
+          shift({ padding: 8 }),
+        ],
       }).then(({ x, y, placement }) => {
         if (version.current !== revision || !floating.isConnected) return;
         // Hold the chosen side for this hover session. Crossing a flip threshold
@@ -163,7 +178,12 @@ export function useTooltipPointer(
     const anchor = anchorRef.current;
     if (!anchor || !followCursor) return;
     const point = (event: PointerEvent) => {
-      if (event.type === "pointermove" && event.pointerType === "touch" && !event.buttons) return;
+      if (
+        event.type === "pointermove" &&
+        event.pointerType === "touch" &&
+        !event.buttons
+      )
+        return;
       cursor.current = { x: event.clientX, y: event.clientY };
       if (event.type === "pointerdown") pointerFocus.current = true;
       onMove.current?.();
@@ -181,9 +201,15 @@ export function useTooltipPointer(
     const leave = () => {
       cursor.current = null;
     };
-    anchor.addEventListener("pointerenter", point as EventListener, { passive: true });
-    anchor.addEventListener("pointermove", point as EventListener, { passive: true });
-    anchor.addEventListener("pointerdown", point as EventListener, { passive: true });
+    anchor.addEventListener("pointerenter", point as EventListener, {
+      passive: true,
+    });
+    anchor.addEventListener("pointermove", point as EventListener, {
+      passive: true,
+    });
+    anchor.addEventListener("pointerdown", point as EventListener, {
+      passive: true,
+    });
     anchor.addEventListener("pointerleave", leave);
     anchor.addEventListener("pointercancel", leave);
     anchor.addEventListener("keydown", keyboard);

@@ -20,6 +20,16 @@ const nextConfig: NextConfig = {
         destination: "/faculty-admin/forms",
         permanent: false,
       },
+      {
+        source: "/surveys/:id",
+        destination: "/student/surveys/:id",
+        permanent: false,
+      },
+      {
+        source: "/surveys",
+        destination: "/student/surveys",
+        permanent: false,
+      },
     ];
   },
 };

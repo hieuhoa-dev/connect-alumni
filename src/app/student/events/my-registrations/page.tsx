@@ -1,11 +1,29 @@
 import * as React from "react";
 import Link from "next/link";
-import { getMyEventsAndInvites, respondSpeakerInvitation } from "@/actions/event-actions";
+import {
+  getMyEventsAndInvites,
+  respondSpeakerInvitation,
+} from "@/actions/event-actions";
 import { getCurrentUser } from "@/lib/permissions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Clock, MapPin, Video, Check, X, Sparkles, ArrowLeft } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Video,
+  Check,
+  X,
+  Sparkles,
+  ArrowLeft,
+} from "lucide-react";
 import { SpeakerInviteResponseActions } from "./invite-actions";
 
 const MyRegistrationsPage = async () => {
@@ -22,7 +40,11 @@ const MyRegistrationsPage = async () => {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Link href="/student/events">
-              <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-muted-foreground gap-1"
+              >
                 <ArrowLeft className="h-4 w-4" />
                 Khám phá sự kiện
               </Button>
@@ -32,7 +54,8 @@ const MyRegistrationsPage = async () => {
             Sự kiện của tôi
           </h1>
           <p className="text-xs text-muted-foreground mt-1">
-            Theo dõi lịch trình các buổi talkshow đã đăng ký và phản hồi lời mời diễn giả từ Khoa
+            Theo dõi lịch trình các buổi talkshow đã đăng ký và phản hồi lời mời
+            diễn giả từ Khoa
           </p>
         </div>
       </div>
@@ -51,17 +74,25 @@ const MyRegistrationsPage = async () => {
             {data.speakerInvites.map((inv) => {
               if (!inv.event) return null;
               return (
-                <Card key={inv.id} className="border-amber-500/30 bg-amber-500/5 shadow-sm">
+                <Card
+                  key={inv.id}
+                  className="border-amber-500/30 bg-amber-500/5 shadow-sm"
+                >
                   <CardHeader className="pb-2">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div>
-                        <CardTitle className="text-base font-bold">{inv.event.title}</CardTitle>
+                        <CardTitle className="text-base font-bold">
+                          {inv.event.title}
+                        </CardTitle>
                         <CardDescription className="text-xs mt-1">
                           Thời gian:{" "}
-                          {new Date(inv.event.startTime).toLocaleString("vi-VN", {
-                            dateStyle: "full",
-                            timeStyle: "short",
-                          })}
+                          {new Date(inv.event.startTime).toLocaleString(
+                            "vi-VN",
+                            {
+                              dateStyle: "full",
+                              timeStyle: "short",
+                            },
+                          )}
                         </CardDescription>
                       </div>
                       <Badge
@@ -69,15 +100,15 @@ const MyRegistrationsPage = async () => {
                           inv.invitationStatus === "accepted"
                             ? "bg-emerald-600 text-white"
                             : inv.invitationStatus === "declined"
-                            ? "bg-destructive text-destructive-foreground"
-                            : "bg-amber-600 text-white"
+                              ? "bg-destructive text-destructive-foreground"
+                              : "bg-amber-600 text-white"
                         }
                       >
                         {inv.invitationStatus === "accepted"
                           ? "Đã nhận lời"
                           : inv.invitationStatus === "declined"
-                          ? "Đã từ chối"
-                          : "Chờ bạn phản hồi"}
+                            ? "Đã từ chối"
+                            : "Chờ bạn phản hồi"}
                       </Badge>
                     </div>
                   </CardHeader>
@@ -110,7 +141,10 @@ const MyRegistrationsPage = async () => {
             <CardContent className="p-8 text-center text-xs text-muted-foreground space-y-2">
               <Calendar className="h-8 w-8 mx-auto text-muted-foreground opacity-50" />
               <p>Bạn chưa đăng ký tham dự sự kiện nào.</p>
-              <Link href="/student/events" className={buttonVariants({ size: "sm" })}>
+              <Link
+                href="/student/events"
+                className={buttonVariants({ size: "sm" })}
+              >
                 Khám phá các sự kiện đang mở
               </Link>
             </CardContent>
@@ -120,21 +154,35 @@ const MyRegistrationsPage = async () => {
             {data.registrations.map((reg) => {
               if (!reg.event) return null;
               return (
-                <Card key={reg.id} className="flex flex-col justify-between shadow-sm">
+                <Card
+                  key={reg.id}
+                  className="flex flex-col justify-between shadow-sm"
+                >
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <Badge variant="outline" className="text-[10px] uppercase font-semibold">
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] uppercase font-semibold"
+                      >
                         {reg.event.type}
                       </Badge>
                       <Badge
-                        variant={reg.attendanceStatus === "attended" ? "default" : "secondary"}
+                        variant={
+                          reg.attendanceStatus === "attended"
+                            ? "default"
+                            : "secondary"
+                        }
                         className="text-[10px]"
                       >
-                        {reg.attendanceStatus === "attended" ? "Đã điểm danh" : "Đã đăng ký"}
+                        {reg.attendanceStatus === "attended"
+                          ? "Đã điểm danh"
+                          : "Đã đăng ký"}
                       </Badge>
                     </div>
                     <CardTitle className="text-base font-bold leading-snug">
-                      <Link href={`/events/${reg.event.id}`}>{reg.event.title}</Link>
+                      <Link href={`/events/${reg.event.id}`}>
+                        {reg.event.title}
+                      </Link>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2 text-xs text-muted-foreground pb-3">
@@ -153,7 +201,9 @@ const MyRegistrationsPage = async () => {
                       ) : (
                         <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
                       )}
-                      <span className="truncate">{reg.event.locationOrLink}</span>
+                      <span className="truncate">
+                        {reg.event.locationOrLink}
+                      </span>
                     </div>
                   </CardContent>
                 </Card>

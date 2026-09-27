@@ -159,7 +159,10 @@ export function Tooltip({
   const trigger = isValidElement(children)
     ? cloneElement(children as ReactElement<Record<string, unknown>>, {
         "aria-describedby":
-          [(children.props as Record<string, unknown>)["aria-describedby"], open ? id : undefined]
+          [
+            (children.props as Record<string, unknown>)["aria-describedby"],
+            open ? id : undefined,
+          ]
             .filter(Boolean)
             .join(" ") || undefined,
       })
@@ -230,7 +233,8 @@ export function Tooltip({
                       style={{
                         maxWidth: "calc(100vw - 16px)",
                         whiteSpace: "normal",
-                        pointerEvents: isPresent && !followCursor ? "auto" : "none",
+                        pointerEvents:
+                          isPresent && !followCursor ? "auto" : "none",
                       }}
                       className={cn("overflow-hidden", className)}
                     >

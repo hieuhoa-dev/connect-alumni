@@ -9,8 +9,13 @@ export const jobPostSchema = z.object({
     message: "Hình thức làm việc không hợp lệ",
   }),
   salaryRange: z.string().optional().nullable(),
-  applyUrlOrEmail: z.string().min(3, "Vui lòng nhập link nộp CV hoặc email nhận hồ sơ"),
-  expiresAt: z.string().or(z.date()).transform((val) => new Date(val)),
+  applyUrlOrEmail: z
+    .string()
+    .min(3, "Vui lòng nhập link nộp CV hoặc email nhận hồ sơ"),
+  expiresAt: z
+    .string()
+    .or(z.date())
+    .transform((val) => new Date(val)),
   companyId: z.string().uuid("ID công ty không hợp lệ"),
 });
 

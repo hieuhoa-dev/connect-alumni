@@ -71,15 +71,11 @@ export const sendNotification = async (payload: NotificationPayload) => {
  */
 export const scheduleJobExpiryCheck = async () => {
   try {
-    await jobExpiryQueue.add(
-      "check-expired-jobs",
-      {},
-      {
-        repeat: {
-          pattern: "0 * * * *", // Every hour at minute 0
-        },
-      } as any,
-    );
+    await jobExpiryQueue.add("check-expired-jobs", {}, {
+      repeat: {
+        pattern: "0 * * * *", // Every hour at minute 0
+      },
+    } as any);
   } catch (err) {
     console.warn("Could not schedule job expiry queue repeat pattern", err);
   }

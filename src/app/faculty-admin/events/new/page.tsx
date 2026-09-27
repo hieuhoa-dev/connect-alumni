@@ -7,7 +7,7 @@ import { createEvent } from "@/actions/event-actions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import {
   Card,
   CardContent,
@@ -242,19 +242,15 @@ const NewEventPage = () => {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="desc" className="text-xs font-medium">
+              <Label className="text-xs font-medium">
                 Nội dung chi tiết chương trình
               </Label>
-              <Textarea
-                id="desc"
-                rows={5}
-                placeholder="Mục đích buổi sự kiện, các chủ đề chia sẻ, thời lượng từng phần..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-                minLength={10}
+              <RichTextEditor
+                content={description}
+                onChange={setDescription}
+                placeholder="Mục đích buổi sự kiện, các chủ đề chia sẻ, thời lượng từng phần, diễn giả dự kiến..."
                 disabled={isLoading}
-                className="text-xs leading-relaxed"
+                minHeight="220px"
               />
             </div>
 

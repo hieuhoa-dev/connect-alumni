@@ -4,7 +4,13 @@ import { notFound } from "next/navigation";
 import { getCampaignById } from "@/actions/scholarship-actions";
 import { getCurrentUser } from "@/lib/permissions";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { ArrowLeft, Lock, ShieldCheck } from "lucide-react";
 import { ScholarshipApplyForm } from "./apply-form";
 
@@ -43,7 +49,9 @@ const ScholarshipApplyPage = async ({ params }: ApplyPageProps) => {
 
       <Card className="shadow-sm">
         <CardHeader>
-          <CardTitle className="text-xl font-bold">Nộp hồ sơ xét duyệt học bổng</CardTitle>
+          <CardTitle className="text-xl font-bold">
+            Nộp hồ sơ xét duyệt học bổng
+          </CardTitle>
           <CardDescription className="text-xs">
             Chiến dịch: <strong>{campaign.title}</strong>
           </CardDescription>
@@ -52,7 +60,9 @@ const ScholarshipApplyPage = async ({ params }: ApplyPageProps) => {
           <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 text-xs text-muted-foreground flex items-start gap-2.5">
             <Lock className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <span>
-              Cam kết bảo mật: Thông tin tài chính, hoàn cảnh gia đình và bảng điểm chỉ dùng cho mục đích xét duyệt nội bộ bởi Hội đồng Khoa và được kiểm toán bảo mật (Audit Log).
+              Cam kết bảo mật: Thông tin tài chính, hoàn cảnh gia đình và bảng
+              điểm chỉ dùng cho mục đích xét duyệt nội bộ bởi Hội đồng Khoa và
+              được kiểm toán bảo mật (Audit Log).
             </span>
           </div>
 

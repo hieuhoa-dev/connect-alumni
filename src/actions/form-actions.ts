@@ -119,6 +119,11 @@ export const getAvailableFormsForUser = async () => {
 
   // Filter based on target_batches and target_role
   return allForms.filter((f) => {
+    // Admin and Faculty Staff can view and test all open forms
+    if (userRole === "admin" || userRole === "faculty_staff") {
+      return true;
+    }
+
     // Check role eligibility
     if (f.targetRole !== "all" && f.targetRole !== userRole) {
       return false;
@@ -238,7 +243,10 @@ export const getFormResponsesAndAnalytics = async (formId: string) => {
 
     let summaryData: any = null;
 
-    if (q.questionType === "single_choice" || q.questionType === "multi_choice") {
+    if (
+      q.questionType === "single_choice" ||
+      q.questionType === "multi_choice"
+    ) {
       const counts: Record<string, number> = {};
       answersForQ.forEach((a) => {
         const val = a?.answerValue;
@@ -250,7 +258,10 @@ export const getFormResponsesAndAnalytics = async (formId: string) => {
           counts[val] = (counts[val] || 0) + 1;
         }
       });
-      summaryData = Object.entries(counts).map(([name, count]) => ({ name, count }));
+      summaryData = Object.entries(counts).map(([name, count]) => ({
+        name,
+        count,
+      }));
     } else if (q.questionType === "scale") {
       const numericValues = answersForQ
         .map((a) => Number(a?.answerValue))
@@ -259,7 +270,10 @@ export const getFormResponsesAndAnalytics = async (formId: string) => {
         numericValues.length > 0
           ? numericValues.reduce((a, b) => a + b, 0) / numericValues.length
           : 0;
-      summaryData = { average: Number(avg.toFixed(2)), total: numericValues.length };
+      summaryData = {
+        average: Number(avg.toFixed(2)),
+        total: numericValues.length,
+      };
     }
 
     return {

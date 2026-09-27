@@ -277,7 +277,9 @@ export const applyForScholarship = async (
     },
   });
   if (existing) {
-    throw new Error("Bạn đã nộp hồ sơ cho chiến dịch học bổng này rồi. Vui lòng chờ kết quả xét duyệt.");
+    throw new Error(
+      "Bạn đã nộp hồ sơ cho chiến dịch học bổng này rồi. Vui lòng chờ kết quả xét duyệt.",
+    );
   }
 
   const [application] = await db

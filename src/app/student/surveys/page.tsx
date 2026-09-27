@@ -4,8 +4,21 @@ import { getAvailableFormsForUser } from "@/actions/form-actions";
 import { getCurrentUser } from "@/lib/permissions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ClipboardList, Calendar, CheckCircle2, Clock, ArrowRight } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ClipboardList,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  ArrowRight,
+} from "lucide-react";
 
 const SurveysPage = async () => {
   const [forms, current] = await Promise.all([
@@ -20,7 +33,8 @@ const SurveysPage = async () => {
           Biểu mẫu khảo sát & Đóng góp ý kiến
         </h1>
         <p className="text-xs text-muted-foreground mt-1">
-          Các khảo sát tình hình việc làm, chất lượng đào tạo và đóng góp ý kiến được thiết kế riêng cho khóa của bạn
+          Các khảo sát tình hình việc làm, chất lượng đào tạo và đóng góp ý kiến
+          được thiết kế riêng cho khóa của bạn
         </p>
       </div>
 
@@ -29,17 +43,27 @@ const SurveysPage = async () => {
           <Card className="col-span-full">
             <CardContent className="p-12 text-center text-xs text-muted-foreground space-y-2">
               <ClipboardList className="h-10 w-10 mx-auto text-muted-foreground opacity-40 mb-2" />
-              <p className="font-semibold text-foreground text-sm">Hiện không có biểu mẫu khảo sát nào</p>
-              <p>Mọi khảo sát mới từ Khoa sẽ tự động hiển thị tại đây khi được mở.</p>
+              <p className="font-semibold text-foreground text-sm">
+                Hiện không có biểu mẫu khảo sát nào
+              </p>
+              <p>
+                Mọi khảo sát mới từ Khoa sẽ tự động hiển thị tại đây khi được
+                mở.
+              </p>
             </CardContent>
           </Card>
         ) : (
           forms.map((f) => {
             const hasSubmitted = f.responses.length > 0;
-            const isDeadlinePassed = f.deadline ? new Date(f.deadline) < new Date() : false;
+            const isDeadlinePassed = f.deadline
+              ? new Date(f.deadline) < new Date()
+              : false;
 
             return (
-              <Card key={f.id} className="flex flex-col justify-between shadow-sm hover:border-primary/40 transition">
+              <Card
+                key={f.id}
+                className="flex flex-col justify-between shadow-sm hover:border-primary/40 transition"
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <Badge variant="outline" className="text-[10px] uppercase">
@@ -77,7 +101,11 @@ const SurveysPage = async () => {
                     </span>
                   </div>
                   <div className="text-[11px] text-muted-foreground">
-                    Số câu hỏi: <strong className="text-foreground">{f.questions.length}</strong> câu
+                    Số câu hỏi:{" "}
+                    <strong className="text-foreground">
+                      {f.questions.length}
+                    </strong>{" "}
+                    câu
                   </div>
                 </CardContent>
                 <CardFooter className="pt-3 border-t border-border/40 flex justify-end">
@@ -86,7 +114,10 @@ const SurveysPage = async () => {
                     className={buttonVariants({
                       size: "sm",
                       variant: hasSubmitted ? "outline" : "default",
-                      className: isDeadlinePassed && !hasSubmitted ? "pointer-events-none opacity-50" : "",
+                      className:
+                        isDeadlinePassed && !hasSubmitted
+                          ? "pointer-events-none opacity-50"
+                          : "",
                     })}
                   >
                     {hasSubmitted ? "Xem lại câu trả lời" : "Làm khảo sát ngay"}

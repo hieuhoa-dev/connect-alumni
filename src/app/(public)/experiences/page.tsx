@@ -2,7 +2,14 @@ import Link from "next/link";
 import { getPublishedExperiencePosts } from "@/actions/experience-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { BookOpen, Search, Eye, Calendar, User } from "lucide-react";
 
 interface ExperiencesPageProps {
@@ -27,7 +34,8 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
             Góc chia sẻ kinh nghiệm Cựu sinh viên
           </h1>
           <p className="text-sm text-muted-foreground">
-            Học hỏi bí quyết từ các thế hệ cựu sinh viên: kinh nghiệm phỏng vấn, thực tập, kỹ năng mềm và định hướng nghề nghiệp
+            Học hỏi bí quyết từ các thế hệ cựu sinh viên: kinh nghiệm phỏng vấn,
+            thực tập, kỹ năng mềm và định hướng nghề nghiệp
           </p>
         </div>
         <Button
@@ -55,7 +63,9 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
         {posts.length === 0 ? (
           <div className="col-span-full text-center py-16 bg-card border border-dashed border-border/80 rounded-xl">
             <BookOpen className="size-10 text-muted-foreground mx-auto mb-3 opacity-40" />
-            <h3 className="text-sm font-semibold text-foreground">Không có bài viết phù hợp</h3>
+            <h3 className="text-sm font-semibold text-foreground">
+              Không có bài viết phù hợp
+            </h3>
             <p className="text-xs text-muted-foreground mt-1">
               Thử tìm kiếm với từ khóa khác hoặc quay lại sau.
             </p>
@@ -64,7 +74,10 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
           posts.map((post) => {
             const author = post.author?.profile;
             return (
-              <Card key={post.id} className="flex flex-col justify-between border border-border/80 hover:border-foreground/20 transition-colors shadow-sm">
+              <Card
+                key={post.id}
+                className="flex flex-col justify-between border border-border/80 hover:border-foreground/20 transition-colors shadow-sm"
+              >
                 <CardHeader className="pb-3">
                   <div className="flex flex-wrap gap-1 mb-2">
                     {post.tags.map((t) => (
@@ -81,9 +94,13 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
                   </CardTitle>
                   <CardDescription className="text-[11px] pt-1 flex items-center gap-1.5 font-mono">
                     <User className="size-3" />
-                    <span>{author?.fullName || post.author?.name || "Tác giả"}</span>
+                    <span>
+                      {author?.fullName || post.author?.name || "Tác giả"}
+                    </span>
                     {author?.batchYear && (
-                      <span className="text-muted-foreground">· K{author.batchYear % 100}</span>
+                      <span className="text-muted-foreground">
+                        · K{author.batchYear % 100}
+                      </span>
                     )}
                   </CardDescription>
                 </CardHeader>
@@ -94,7 +111,9 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
                   <span className="flex items-center gap-3">
                     <span className="flex items-center gap-1">
                       <Calendar className="size-3" />
-                      {new Date(post.publishedAt || post.createdAt).toLocaleDateString("vi-VN")}
+                      {new Date(
+                        post.publishedAt || post.createdAt,
+                      ).toLocaleDateString("vi-VN")}
                     </span>
                     <span className="flex items-center gap-1">
                       <Eye className="size-3" />

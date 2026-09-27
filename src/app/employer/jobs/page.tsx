@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getMyCompanies } from "@/actions/company-actions";
 import { getEmployerJobs } from "@/actions/job-actions";
-import {  buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,

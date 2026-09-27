@@ -3,8 +3,17 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { jobPosts, companies, companyMembers } from "@/db/schema";
-import { requireRole, requireCompanyContext, getCurrentUser } from "@/lib/permissions";
-import { jobPostSchema, jobReviewSchema, JobPostInput, JobReviewInput } from "@/validators/job-schema";
+import {
+  requireRole,
+  requireCompanyContext,
+  getCurrentUser,
+} from "@/lib/permissions";
+import {
+  jobPostSchema,
+  jobReviewSchema,
+  JobPostInput,
+  JobReviewInput,
+} from "@/validators/job-schema";
 import { logAuditEvent } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications";
 
@@ -59,8 +68,8 @@ export const getActiveJobPosts = async (params?: {
   // Post-filter theo industry (industry nằm trên companies, không thể filter trực tiếp trong where của jobPosts)
   if (params?.industry) {
     const industryLower = params.industry.toLowerCase();
-    return posts.filter(
-      (p) => p.company?.industry?.toLowerCase().includes(industryLower),
+    return posts.filter((p) =>
+      p.company?.industry?.toLowerCase().includes(industryLower),
     );
   }
 
@@ -222,7 +231,9 @@ export const reviewJobPost = async (data: {
 /**
  * Faculty/Admin: Get all jobs for review with filters
  */
-export const getJobsForFacultyReview = async (status?: "pending" | "approved" | "rejected" | "expired") => {
+export const getJobsForFacultyReview = async (
+  status?: "pending" | "approved" | "rejected" | "expired",
+) => {
   await requireRole(["faculty_staff", "admin"]);
 
   return await db.query.jobPosts.findMany({

@@ -1,7 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useConfirmFulfillPledge, useCancelPledge } from "@/hooks/use-scholarships";
+import {
+  useConfirmFulfillPledge,
+  useCancelPledge,
+} from "@/hooks/use-scholarships";
 import { Button } from "@/components/ui/button";
 import { Check, X, Loader2 } from "lucide-react";
 
@@ -12,7 +15,8 @@ interface PledgeActionsProps {
 
 export const PledgeActions = ({ pledgeId, status }: PledgeActionsProps) => {
   const router = useRouter();
-  const { mutate: confirmPledge, isPending: isConfirming } = useConfirmFulfillPledge();
+  const { mutate: confirmPledge, isPending: isConfirming } =
+    useConfirmFulfillPledge();
   const { mutate: cancel, isPending: isCancelling } = useCancelPledge();
 
   if (status !== "pledged") {

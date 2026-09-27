@@ -18,7 +18,8 @@ export const Footer = () => {
               </span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Nền tảng chính thức kết nối Sinh viên – Khoa Công nghệ Thông tin – Cựu sinh viên – Đối tác Doanh nghiệp.
+              Nền tảng chính thức kết nối Sinh viên – Khoa Công nghệ Thông tin –
+              Cựu sinh viên – Đối tác Doanh nghiệp.
             </p>
             <div className="text-xs text-muted-foreground">
               Đồ án tốt nghiệp Khoa Công nghệ Thông tin
@@ -32,22 +33,34 @@ export const Footer = () => {
             </h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="/jobs" className="hover:text-foreground transition-colors">
+                <Link
+                  href="/jobs"
+                  className="hover:text-foreground transition-colors"
+                >
                   Cơ hội việc làm
                 </Link>
               </li>
               <li>
-                <Link href="/events" className="hover:text-foreground transition-colors">
+                <Link
+                  href="/events"
+                  className="hover:text-foreground transition-colors"
+                >
                   Talkshow & Sự kiện
                 </Link>
               </li>
               <li>
-                <Link href="/experiences" className="hover:text-foreground transition-colors">
+                <Link
+                  href="/experiences"
+                  className="hover:text-foreground transition-colors"
+                >
                   Chia sẻ kinh nghiệm
                 </Link>
               </li>
               <li>
-                <Link href="/scholarships" className="hover:text-foreground transition-colors">
+                <Link
+                  href="/scholarships"
+                  className="hover:text-foreground transition-colors"
+                >
                   Quỹ Khuyến học & Tài trợ
                 </Link>
               </li>
@@ -61,22 +74,34 @@ export const Footer = () => {
             </h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="/employer/onboarding" className="hover:text-foreground transition-colors">
+                <Link
+                  href="/employer/onboarding"
+                  className="hover:text-foreground transition-colors"
+                >
                   Đăng ký hồ sơ công ty
                 </Link>
               </li>
               <li>
-                <Link href="/employer/jobs/new" className="hover:text-foreground transition-colors">
+                <Link
+                  href="/employer/jobs/new"
+                  className="hover:text-foreground transition-colors"
+                >
                   Đăng tin tuyển dụng
                 </Link>
               </li>
               <li>
-                <Link href="/employer/scholarships/pledge" className="hover:text-foreground transition-colors">
+                <Link
+                  href="/employer/scholarships/pledge"
+                  className="hover:text-foreground transition-colors"
+                >
                   Cam kết tài trợ học bổng
                 </Link>
               </li>
               <li>
-                <Link href="/login" className="hover:text-foreground transition-colors">
+                <Link
+                  href="/login"
+                  className="hover:text-foreground transition-colors"
+                >
                   Cổng kết nối Doanh nghiệp
                 </Link>
               </li>
@@ -91,7 +116,9 @@ export const Footer = () => {
             <div className="space-y-2 text-xs text-muted-foreground">
               <div className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 shrink-0 text-muted-foreground mt-0.5" />
-                <span>Khu Phố 6, Phường Linh Trung, TP. Thủ Đức, TP. Hồ Chí Minh</span>
+                <span>
+                  Khu Phố 6, Phường Linh Trung, TP. Thủ Đức, TP. Hồ Chí Minh
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -106,7 +133,9 @@ export const Footer = () => {
         </div>
 
         <div className="mt-8 border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-muted-foreground gap-4">
-          <p>© 2026 Khoa Công nghệ Thông tin. Bản quyền thuộc về Trường Đại học.</p>
+          <p>
+            © 2026 Khoa Công nghệ Thông tin. Bản quyền thuộc về Trường Đại học.
+          </p>
           <div className="flex items-center gap-4">
             <span>Bảo mật dữ liệu cá nhân</span>
             <span>Điều khoản sử dụng</span>

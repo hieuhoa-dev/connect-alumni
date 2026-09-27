@@ -6,8 +6,14 @@ export const eventCreateSchema = z.object({
   description: z.string().min(10, "Mô tả sự kiện ít nhất 10 ký tự"),
   format: z.enum(["online", "offline"]),
   locationOrLink: z.string().min(2, "Địa điểm hoặc đường link tham dự"),
-  startTime: z.string().or(z.date()).transform((val) => new Date(val)),
-  endTime: z.string().or(z.date()).transform((val) => new Date(val)),
+  startTime: z
+    .string()
+    .or(z.date())
+    .transform((val) => new Date(val)),
+  endTime: z
+    .string()
+    .or(z.date())
+    .transform((val) => new Date(val)),
   capacity: z.coerce.number().int().positive().optional().nullable(),
   coverImageUrl: z.string().optional().nullable(),
   status: z.enum(["draft", "published"]).default("published"),

@@ -126,24 +126,56 @@ const SidebarInner = ({
         {
           title: "Vận hành chung",
           items: [
-            { label: "Bảng thống kê", href: "/faculty-admin/dashboard", icon: LayoutDashboard },
-            { label: "Duyệt doanh nghiệp", href: "/faculty-admin/companies/review", icon: Building2 },
-            { label: "Duyệt tin tuyển dụng", href: "/faculty-admin/jobs/review", icon: Briefcase },
-            { label: "Duyệt bài chia sẻ", href: "/faculty-admin/experiences/review", icon: BookOpen },
+            {
+              label: "Bảng thống kê",
+              href: "/faculty-admin/dashboard",
+              icon: LayoutDashboard,
+            },
+            {
+              label: "Duyệt doanh nghiệp",
+              href: "/faculty-admin/companies/review",
+              icon: Building2,
+            },
+            {
+              label: "Duyệt tin tuyển dụng",
+              href: "/faculty-admin/jobs/review",
+              icon: Briefcase,
+            },
+            {
+              label: "Duyệt bài chia sẻ",
+              href: "/faculty-admin/experiences/review",
+              icon: BookOpen,
+            },
           ],
         },
         {
           title: "Sự kiện & Khảo sát",
           items: [
-            { label: "Quản lý sự kiện", href: "/faculty-admin/events", icon: Calendar },
-            { label: "Form & Khảo sát", href: "/faculty-admin/forms", icon: ClipboardList },
+            {
+              label: "Quản lý sự kiện",
+              href: "/faculty-admin/events",
+              icon: Calendar,
+            },
+            {
+              label: "Form & Khảo sát",
+              href: "/faculty-admin/forms",
+              icon: ClipboardList,
+            },
           ],
         },
         {
           title: "Quỹ Khuyến học",
           items: [
-            { label: "Chiến dịch học bổng", href: "/faculty-admin/scholarships/campaigns", icon: GraduationCap },
-            { label: "Xét duyệt hồ sơ", href: "/faculty-admin/scholarships/applications/review", icon: FileCheck2 },
+            {
+              label: "Chiến dịch học bổng",
+              href: "/faculty-admin/scholarships/campaigns",
+              icon: GraduationCap,
+            },
+            {
+              label: "Xét duyệt hồ sơ",
+              href: "/faculty-admin/scholarships/applications/review",
+              icon: FileCheck2,
+            },
           ],
         },
         ...(role === "admin"
@@ -151,8 +183,18 @@ const SidebarInner = ({
               {
                 title: "Hệ thống (Admin)",
                 items: [
-                  { label: "Quản lý người dùng", href: "/faculty-admin/users", icon: Users, adminOnly: true },
-                  { label: "Nhật ký Audit Log", href: "/faculty-admin/audit-logs", icon: ScrollText, adminOnly: true },
+                  {
+                    label: "Quản lý người dùng",
+                    href: "/faculty-admin/users",
+                    icon: Users,
+                    adminOnly: true,
+                  },
+                  {
+                    label: "Nhật ký Audit Log",
+                    href: "/faculty-admin/audit-logs",
+                    icon: ScrollText,
+                    adminOnly: true,
+                  },
                 ],
               },
             ]
@@ -165,11 +207,31 @@ const SidebarInner = ({
         {
           title: "Không gian Doanh nghiệp",
           items: [
-            { label: "Tổng quan", href: "/employer/dashboard", icon: LayoutDashboard },
-            { label: "Hồ sơ công ty", href: "/employer/onboarding", icon: Building2 },
-            { label: "Tin tuyển dụng", href: "/employer/jobs", icon: Briefcase },
-            { label: "Đăng tin mới", href: "/employer/jobs/new", icon: PlusCircle },
-            { label: "Tài trợ học bổng", href: "/employer/scholarships/pledge", icon: GraduationCap },
+            {
+              label: "Tổng quan",
+              href: "/employer/dashboard",
+              icon: LayoutDashboard,
+            },
+            {
+              label: "Hồ sơ công ty",
+              href: "/employer/onboarding",
+              icon: Building2,
+            },
+            {
+              label: "Tin tuyển dụng",
+              href: "/employer/jobs",
+              icon: Briefcase,
+            },
+            {
+              label: "Đăng tin mới",
+              href: "/employer/jobs/new",
+              icon: PlusCircle,
+            },
+            {
+              label: "Tài trợ học bổng",
+              href: "/employer/scholarships/pledge",
+              icon: GraduationCap,
+            },
           ],
         },
       ];
@@ -180,13 +242,35 @@ const SidebarInner = ({
       {
         title: "Hoạt động & Cơ hội",
         items: [
-          { label: "Bảng điều khiển", href: "/student/dashboard", icon: LayoutDashboard },
-          { label: "Sự kiện & Hội thảo", href: "/student/events", icon: Calendar },
+          {
+            label: "Bảng điều khiển",
+            href: "/student/dashboard",
+            icon: LayoutDashboard,
+          },
+          {
+            label: "Sự kiện & Hội thảo",
+            href: "/student/events",
+            icon: Calendar,
+          },
           { label: "Tìm việc làm", href: "/jobs", icon: Briefcase },
-          { label: "Biểu mẫu & Khảo sát", href: "/student/surveys", icon: ClipboardList },
-          { label: "Học bổng & Hỗ trợ", href: "/student/scholarships", icon: GraduationCap },
+          {
+            label: "Biểu mẫu & Khảo sát",
+            href: "/student/surveys",
+            icon: ClipboardList,
+          },
+          {
+            label: "Học bổng & Hỗ trợ",
+            href: "/student/scholarships",
+            icon: GraduationCap,
+          },
           ...(role === "alumni"
-            ? [{ label: "Viết bài chia sẻ", href: "/student/experiences/new", icon: BookOpen }]
+            ? [
+                {
+                  label: "Viết bài chia sẻ",
+                  href: "/student/experiences/new",
+                  icon: BookOpen,
+                },
+              ]
             : []),
         ],
       },

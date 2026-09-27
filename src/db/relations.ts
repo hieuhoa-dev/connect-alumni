@@ -14,8 +14,12 @@ export const relations = defineRelations(schema, (r) => ({
     eventRegistrations: r.many.eventRegistrations(),
     experiencePosts: r.many.experiencePosts(),
     formResponses: r.many.formResponses(),
-    scholarshipApplications: r.many.scholarshipApplications({ alias: "app_student" }),
-    scholarshipReviews: r.many.scholarshipApplications({ alias: "app_reviewer" }),
+    scholarshipApplications: r.many.scholarshipApplications({
+      alias: "app_student",
+    }),
+    scholarshipReviews: r.many.scholarshipApplications({
+      alias: "app_reviewer",
+    }),
     pledgesDonated: r.many.donationPledges({ alias: "pledge_donor" }),
     pledgesCreated: r.many.donationPledges({ alias: "pledge_creator" }),
     notifications: r.many.notifications(),
@@ -47,13 +51,19 @@ export const relations = defineRelations(schema, (r) => ({
     jobPosts: r.many.jobPosts(),
   },
   companyMembers: {
-    company: r.one.companies({ from: r.companyMembers.companyId, to: r.companies.id }),
+    company: r.one.companies({
+      from: r.companyMembers.companyId,
+      to: r.companies.id,
+    }),
     user: r.one.user({ from: r.companyMembers.userId, to: r.user.id }),
   },
 
   // ─── Job Posts ─────────────────────────────────────────────────────────────
   jobPosts: {
-    company: r.one.companies({ from: r.jobPosts.companyId, to: r.companies.id }),
+    company: r.one.companies({
+      from: r.jobPosts.companyId,
+      to: r.companies.id,
+    }),
     reviewer: r.one.user({ from: r.jobPosts.reviewedBy, to: r.user.id }),
   },
 
@@ -68,7 +78,10 @@ export const relations = defineRelations(schema, (r) => ({
     alumni: r.one.user({ from: r.eventSpeakers.alumniUserId, to: r.user.id }),
   },
   eventRegistrations: {
-    event: r.one.events({ from: r.eventRegistrations.eventId, to: r.events.id }),
+    event: r.one.events({
+      from: r.eventRegistrations.eventId,
+      to: r.events.id,
+    }),
     user: r.one.user({ from: r.eventRegistrations.userId, to: r.user.id }),
   },
 
@@ -89,23 +102,41 @@ export const relations = defineRelations(schema, (r) => ({
   },
   formResponses: {
     form: r.one.forms({ from: r.formResponses.formId, to: r.forms.id }),
-    respondent: r.one.user({ from: r.formResponses.respondentId, to: r.user.id }),
+    respondent: r.one.user({
+      from: r.formResponses.respondentId,
+      to: r.user.id,
+    }),
     answers: r.many.formAnswers(),
   },
   formAnswers: {
-    response: r.one.formResponses({ from: r.formAnswers.responseId, to: r.formResponses.id }),
-    question: r.one.formQuestions({ from: r.formAnswers.questionId, to: r.formQuestions.id }),
+    response: r.one.formResponses({
+      from: r.formAnswers.responseId,
+      to: r.formResponses.id,
+    }),
+    question: r.one.formQuestions({
+      from: r.formAnswers.questionId,
+      to: r.formQuestions.id,
+    }),
   },
 
   // ─── Scholarship Fund ──────────────────────────────────────────────────────
   scholarshipCampaigns: {
-    creator: r.one.user({ from: r.scholarshipCampaigns.createdBy, to: r.user.id }),
-    applicationForm: r.one.forms({ from: r.scholarshipCampaigns.applicationFormId, to: r.forms.id }),
+    creator: r.one.user({
+      from: r.scholarshipCampaigns.createdBy,
+      to: r.user.id,
+    }),
+    applicationForm: r.one.forms({
+      from: r.scholarshipCampaigns.applicationFormId,
+      to: r.forms.id,
+    }),
     pledges: r.many.donationPledges(),
     applications: r.many.scholarshipApplications(),
   },
   donationPledges: {
-    campaign: r.one.scholarshipCampaigns({ from: r.donationPledges.campaignId, to: r.scholarshipCampaigns.id }),
+    campaign: r.one.scholarshipCampaigns({
+      from: r.donationPledges.campaignId,
+      to: r.scholarshipCampaigns.id,
+    }),
     donor: r.one.user({
       from: r.donationPledges.donorId,
       to: r.user.id,
@@ -118,13 +149,19 @@ export const relations = defineRelations(schema, (r) => ({
     }),
   },
   scholarshipApplications: {
-    campaign: r.one.scholarshipCampaigns({ from: r.scholarshipApplications.campaignId, to: r.scholarshipCampaigns.id }),
+    campaign: r.one.scholarshipCampaigns({
+      from: r.scholarshipApplications.campaignId,
+      to: r.scholarshipCampaigns.id,
+    }),
     student: r.one.user({
       from: r.scholarshipApplications.studentId,
       to: r.user.id,
       alias: "app_student",
     }),
-    formResponse: r.one.formResponses({ from: r.scholarshipApplications.formResponseId, to: r.formResponses.id }),
+    formResponse: r.one.formResponses({
+      from: r.scholarshipApplications.formResponseId,
+      to: r.formResponses.id,
+    }),
     reviewer: r.one.user({
       from: r.scholarshipApplications.reviewedBy,
       to: r.user.id,

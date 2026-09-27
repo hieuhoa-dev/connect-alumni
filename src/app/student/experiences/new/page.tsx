@@ -6,8 +6,14 @@ import { createExperiencePost } from "@/actions/experience-actions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, ArrowLeft, Send, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -17,7 +23,9 @@ const NewExperiencePage = () => {
   const [title, setTitle] = React.useState("");
   const [content, setContent] = React.useState("");
   const [coverImageUrl, setCoverImageUrl] = React.useState("");
-  const [tagsInput, setTagsInput] = React.useState("Kinh nghiệm, Phỏng vấn, Kỹ năng mềm");
+  const [tagsInput, setTagsInput] = React.useState(
+    "Kinh nghiệm, Phỏng vấn, Kỹ năng mềm",
+  );
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -26,6 +34,14 @@ const NewExperiencePage = () => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+
+    // Validate content (stripping HTML tags to check actual text length)
+    const strippedContent = content.replace(/<[^>]*>/g, "").trim();
+    if (strippedContent.length < 20) {
+      setError("Nội dung bài viết cần có ít nhất 20 ký tự.");
+      setIsLoading(false);
+      return;
+    }
 
     const tags = tagsInput
       .split(",")
@@ -72,9 +88,13 @@ const NewExperiencePage = () => {
             <Sparkles className="h-4 w-4" />
             <span>Dành cho Cựu sinh viên</span>
           </div>
-          <CardTitle className="text-xl font-bold">Chia sẻ kinh nghiệm & Bài học thực tế</CardTitle>
+          <CardTitle className="text-xl font-bold">
+            Chia sẻ kinh nghiệm & Bài học thực tế
+          </CardTitle>
           <CardDescription className="text-xs">
-            Mọi bài viết sẽ được Ban Chủ nhiệm Khoa duyệt trước khi hiển thị công khai tới sinh viên nhằm đảm bảo tính định hướng và chất lượng thông tin.
+            Mọi bài viết sẽ được Ban Chủ nhiệm Khoa duyệt trước khi hiển thị
+            công khai tới sinh viên nhằm đảm bảo tính định hướng và chất lượng
+            thông tin.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -84,7 +104,8 @@ const NewExperiencePage = () => {
                 🎉 Bài viết của bạn đã được gửi thành công!
               </AlertDescription>
               <p className="text-xs text-muted-foreground">
-                Khoa sẽ duyệt và thông báo lại cho bạn sớm nhất. Đang chuyển hướng...
+                Khoa sẽ duyệt và thông báo lại cho bạn sớm nhất. Đang chuyển
+                hướng...
               </p>
             </Alert>
           ) : (
@@ -96,7 +117,9 @@ const NewExperiencePage = () => {
               )}
 
               <div className="space-y-1.5">
-                <Label htmlFor="title" className="text-xs font-medium">Tiêu đề bài viết</Label>
+                <Label htmlFor="title" className="text-xs font-medium">
+                  Tiêu đề bài viết
+                </Label>
                 <Input
                   id="title"
                   placeholder="Ví dụ: Lộ trình từ thực tập sinh đến kỹ sư chính tại các tập đoàn công nghệ"
@@ -109,7 +132,9 @@ const NewExperiencePage = () => {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="tags" className="text-xs font-medium">Từ khóa / Thẻ phân loại (cách nhau bằng dấu phẩy)</Label>
+                <Label htmlFor="tags" className="text-xs font-medium">
+                  Từ khóa / Thẻ phân loại (cách nhau bằng dấu phẩy)
+                </Label>
                 <Input
                   id="tags"
                   placeholder="Kinh nghiệm, Phỏng vấn, Frontend, Cloud"
@@ -120,7 +145,9 @@ const NewExperiencePage = () => {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="cover" className="text-xs font-medium">Đường dẫn ảnh bìa (tùy chọn)</Label>
+                <Label htmlFor="cover" className="text-xs font-medium">
+                  Đường dẫn ảnh bìa (tùy chọn)
+                </Label>
                 <Input
                   id="cover"
                   placeholder="https://images.unsplash.com/photo-..."
@@ -131,22 +158,24 @@ const NewExperiencePage = () => {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="content" className="text-xs font-medium">Nội dung chia sẻ chi tiết</Label>
-                <Textarea
-                  id="content"
-                  rows={10}
-                  placeholder="Chia sẻ về hành trình, bài học thất bại, lời khuyên thực tế dành cho các bạn khóa dưới..."
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  required
-                  minLength={20}
+                <Label className="text-xs font-medium">
+                  Nội dung chia sẻ chi tiết
+                </Label>
+                <RichTextEditor
+                  content={content}
+                  onChange={setContent}
+                  placeholder="Chia sẻ về hành trình, bài học thất bại, lời khuyên thực tế dành cho các bạn khóa dưới... Hỗ trợ in đậm, in nghiêng, gạch đầu dòng, khối mã, trích dẫn và liên kết."
                   disabled={isLoading}
-                  className="text-sm leading-relaxed"
+                  minHeight="280px"
                 />
               </div>
 
               <div className="pt-2 flex justify-end">
-                <Button type="submit" disabled={isLoading} className="gap-2 font-medium">
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="gap-2 font-medium"
+                >
                   {isLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />

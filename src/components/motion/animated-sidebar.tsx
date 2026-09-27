@@ -26,12 +26,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { SharedLayoutBg } from "@/components/motion/shared-layout-bg";
-import {
-  EASE_DRAWER,
-  EASE_OUT,
-  SPRING_LAYOUT,
-  SPRING_PRESS,
-} from "@/lib/ease";
+import { EASE_DRAWER, EASE_OUT, SPRING_LAYOUT, SPRING_PRESS } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 
 type SidebarState = "expanded" | "collapsed";
@@ -391,15 +386,11 @@ function MobileSidebar({
         tabIndex={context.openMobile ? 0 : -1}
         initial={false}
         animate={{ opacity: context.openMobile ? 1 : 0 }}
-        transition={
-          context.reduce ? REDUCED_TRANSITION : PANEL_TRANSITION
-        }
+        transition={context.reduce ? REDUCED_TRANSITION : PANEL_TRANSITION}
         onClick={() => context.setOpenMobile(false)}
         className={cn(
           "fixed inset-0 bg-black/40",
-          context.openMobile
-            ? "pointer-events-auto"
-            : "pointer-events-none",
+          context.openMobile ? "pointer-events-auto" : "pointer-events-none",
         )}
       />
 
@@ -416,11 +407,7 @@ function MobileSidebar({
         data-side={side}
         initial={false}
         animate={{
-          opacity: context.reduce
-            ? context.openMobile
-              ? 1
-              : 0
-            : 1,
+          opacity: context.reduce ? (context.openMobile ? 1 : 0) : 1,
           x: context.reduce
             ? 0
             : context.openMobile
@@ -429,9 +416,7 @@ function MobileSidebar({
                 ? "-100%"
                 : "100%",
         }}
-        transition={
-          context.reduce ? REDUCED_TRANSITION : PANEL_TRANSITION
-        }
+        transition={context.reduce ? REDUCED_TRANSITION : PANEL_TRANSITION}
         onAnimationComplete={() => {
           if (!openMobileRef.current) setHidden(true);
         }}
@@ -522,11 +507,7 @@ export const AnimatedSidebar = forwardRef<HTMLElement, AnimatedSidebarProps>(
 
     if (context.isMobile) {
       return (
-        <MobileSidebar
-          ariaLabel={ariaLabel}
-          className={className}
-          side={side}
-        >
+        <MobileSidebar ariaLabel={ariaLabel} className={className} side={side}>
           {children}
         </MobileSidebar>
       );
@@ -544,9 +525,7 @@ export const AnimatedSidebar = forwardRef<HTMLElement, AnimatedSidebarProps>(
         data-variant={variant}
         data-side={side}
         animate={{ width }}
-        transition={
-          context.reduce ? { duration: 0 } : SIDEBAR_MORPH_TRANSITION
-        }
+        transition={context.reduce ? { duration: 0 } : SIDEBAR_MORPH_TRANSITION}
         style={style}
         className={cn(
           "group/sidebar relative hidden h-auto shrink-0 md:block will-change-[width]",
@@ -561,14 +540,14 @@ export const AnimatedSidebar = forwardRef<HTMLElement, AnimatedSidebarProps>(
             opacity: offcanvas ? 0 : 1,
             x: offcanvas ? (side === "left" ? "-100%" : "100%") : "0%",
           }}
-          transition={
-            context.reduce ? REDUCED_TRANSITION : PANEL_TRANSITION
-          }
+          transition={context.reduce ? REDUCED_TRANSITION : PANEL_TRANSITION}
           className={cn(
             "sticky top-0 flex h-svh w-full flex-col overflow-hidden bg-background",
             collapsible === "offcanvas" && "w-[var(--sidebar-width)]",
             variant === "sidebar" &&
-              (side === "left" ? "border-border border-r" : "border-border border-l"),
+              (side === "left"
+                ? "border-border border-r"
+                : "border-border border-l"),
             variant === "floating" &&
               "m-2 h-[calc(100svh-1rem)] rounded-2xl border border-border shadow-sm",
             variant === "inset" && "m-2 h-[calc(100svh-1rem)] rounded-2xl",
@@ -694,8 +673,7 @@ export const AnimatedSidebarRail = forwardRef<
   );
 });
 
-export interface AnimatedSidebarInsetProps
-  extends HTMLMotionProps<"main"> {}
+export interface AnimatedSidebarInsetProps extends HTMLMotionProps<"main"> {}
 
 export const AnimatedSidebarInset = forwardRef<
   HTMLElement,
@@ -806,10 +784,7 @@ export const AnimatedSidebarGroupLabel = forwardRef<
 export const AnimatedSidebarGroupContent = forwardRef<
   HTMLDivElement,
   HTMLAttributes<HTMLDivElement>
->(function AnimatedSidebarGroupContent(
-  { className, ...props },
-  forwardedRef,
-) {
+>(function AnimatedSidebarGroupContent({ className, ...props }, forwardedRef) {
   return (
     <div
       {...props}
@@ -836,7 +811,10 @@ export const AnimatedSidebarMenu = forwardRef<
       pillClassName="rounded-xl bg-muted/70"
       pillContainerClassName="inset-y-auto top-0 h-9"
       data-slot="sidebar-menu"
-      className={cn("flex w-full min-w-0 list-none flex-col gap-0.5", className)}
+      className={cn(
+        "flex w-full min-w-0 list-none flex-col gap-0.5",
+        className,
+      )}
     >
       {children}
     </SharedLayoutBg>
@@ -903,10 +881,7 @@ export const AnimatedSidebarMenuSub = forwardRef<
 export const AnimatedSidebarMenuSubItem = forwardRef<
   HTMLLIElement,
   HTMLMotionProps<"li">
->(function AnimatedSidebarMenuSubItem(
-  { className, ...props },
-  forwardedRef,
-) {
+>(function AnimatedSidebarMenuSubItem({ className, ...props }, forwardedRef) {
   return (
     <motion.li
       {...props}
@@ -981,10 +956,7 @@ export function AnimatedSidebarMenuSubButton({
     <motion.a
       href={href}
       target={target}
-      rel={
-        rel ??
-        (target === "_blank" ? "noreferrer noopener" : undefined)
-      }
+      rel={rel ?? (target === "_blank" ? "noreferrer noopener" : undefined)}
       aria-current={isActive ? "page" : undefined}
       aria-disabled={disabled || undefined}
       tabIndex={disabled ? -1 : undefined}
@@ -1051,8 +1023,7 @@ export function AnimatedSidebarMenuButton({
       return;
     }
     onSelect?.();
-    const shouldCloseOnSelect =
-      closeOnSelect ?? ariaExpanded === undefined;
+    const shouldCloseOnSelect = closeOnSelect ?? ariaExpanded === undefined;
     if (context.isMobile && shouldCloseOnSelect) {
       context.setOpenMobile(false);
     }
@@ -1139,10 +1110,7 @@ export function AnimatedSidebarMenuButton({
     <motion.a
       href={href}
       target={target}
-      rel={
-        rel ??
-        (target === "_blank" ? "noreferrer noopener" : undefined)
-      }
+      rel={rel ?? (target === "_blank" ? "noreferrer noopener" : undefined)}
       aria-current={isActive ? "page" : undefined}
       aria-expanded={ariaExpanded}
       aria-disabled={disabled || undefined}

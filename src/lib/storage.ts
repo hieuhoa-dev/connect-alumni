@@ -68,7 +68,10 @@ export const getSignedFileUrl = async (
       expiresIn: expiresInSeconds,
     });
   } catch (error) {
-    console.warn("Failed to generate signed URL, returning fallback key URL", error);
+    console.warn(
+      "Failed to generate signed URL, returning fallback key URL",
+      error,
+    );
     return endpoint
       ? `${endpoint}/${bucketName}/${key}`
       : `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;

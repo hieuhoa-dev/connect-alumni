@@ -1,9 +1,23 @@
 import Link from "next/link";
 import { getAllApplicationsForReview } from "@/actions/scholarship-actions";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Award, ArrowLeft, Clock, CheckCircle2, XCircle, FileText, User } from "lucide-react";
+import {
+  Award,
+  ArrowLeft,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  FileText,
+  User,
+} from "lucide-react";
 import { ReviewDialog } from "./review-dialog";
 
 export const metadata = {
@@ -43,7 +57,11 @@ const ScholarshipApplicationsReviewPage = async () => {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Link href="/faculty-admin/scholarships/campaigns">
-              <Button variant="ghost" size="sm" className="h-8 px-2 gap-1 text-muted-foreground">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 gap-1 text-muted-foreground"
+              >
                 <ArrowLeft className="h-4 w-4" />
                 Về quản lý chiến dịch
               </Button>
@@ -53,7 +71,8 @@ const ScholarshipApplicationsReviewPage = async () => {
             </h1>
           </div>
           <p className="text-xs text-muted-foreground pl-2">
-            Xem hồ sơ, chấm điểm tiêu chuẩn và ban hành kết quả phê duyệt học bổng cho sinh viên.
+            Xem hồ sơ, chấm điểm tiêu chuẩn và ban hành kết quả phê duyệt học
+            bổng cho sinh viên.
           </p>
         </div>
       </div>
@@ -65,9 +84,12 @@ const ScholarshipApplicationsReviewPage = async () => {
               <Award className="h-8 w-8" />
             </div>
             <div>
-              <h3 className="text-lg font-medium text-foreground">Chưa có hồ sơ xin học bổng nào</h3>
+              <h3 className="text-lg font-medium text-foreground">
+                Chưa có hồ sơ xin học bổng nào
+              </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Các hồ sơ ứng tuyển từ sinh viên gửi lên sẽ xuất hiện tại đây để hội đồng xét duyệt.
+                Các hồ sơ ứng tuyển từ sinh viên gửi lên sẽ xuất hiện tại đây để
+                hội đồng xét duyệt.
               </p>
             </div>
           </CardContent>
@@ -77,7 +99,10 @@ const ScholarshipApplicationsReviewPage = async () => {
           {applications.map((app) => {
             const student = app.student?.profile;
             return (
-              <Card key={app.id} className="border-border hover:border-primary/40 transition-colors">
+              <Card
+                key={app.id}
+                className="border-border hover:border-primary/40 transition-colors"
+              >
                 <CardContent className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
@@ -98,11 +123,17 @@ const ScholarshipApplicationsReviewPage = async () => {
                     </div>
 
                     <div className="text-sm text-muted-foreground">
-                      Chiến dịch: <strong className="text-foreground font-medium">{app.campaign?.title}</strong>
+                      Chiến dịch:{" "}
+                      <strong className="text-foreground font-medium">
+                        {app.campaign?.title}
+                      </strong>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                      <span>Nộp ngày: {new Date(app.submittedAt).toLocaleDateString("vi-VN")}</span>
+                      <span>
+                        Nộp ngày:{" "}
+                        {new Date(app.submittedAt).toLocaleDateString("vi-VN")}
+                      </span>
                       {app.score && (
                         <span className="text-primary font-bold">
                           Điểm chấm: {app.score} / 100
@@ -110,7 +141,9 @@ const ScholarshipApplicationsReviewPage = async () => {
                       )}
                       {app.decidedAt && (
                         <span>
-                          Duyệt ngày: {new Date(app.decidedAt).toLocaleDateString("vi-VN")} bởi {app.reviewer?.profile?.fullName || "Hội đồng"}
+                          Duyệt ngày:{" "}
+                          {new Date(app.decidedAt).toLocaleDateString("vi-VN")}{" "}
+                          bởi {app.reviewer?.profile?.fullName || "Hội đồng"}
                         </span>
                       )}
                     </div>

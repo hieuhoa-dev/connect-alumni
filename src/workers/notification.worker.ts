@@ -18,11 +18,16 @@ const notificationWorker = new Worker(
   NOTIFICATION_QUEUE_NAME,
   async (job: Job<NotificationPayload & { notificationId: string }>) => {
     const { userId, type, title, body, linkUrl, sendEmail } = job.data;
-    console.log(`[Notification Worker] Processing job ${job.id} for user ${userId}:`, title);
+    console.log(
+      `[Notification Worker] Processing job ${job.id} for user ${userId}:`,
+      title,
+    );
 
     if (sendEmail) {
       // Simulate/integrate email sending service (Resend / Nodemailer / SMTP)
-      console.log(`[Email Dispatcher] Simulating email to user ${userId}: "${title}" - "${body}"`);
+      console.log(
+        `[Email Dispatcher] Simulating email to user ${userId}: "${title}" - "${body}"`,
+      );
     }
 
     return { success: true, processedAt: new Date().toISOString() };
@@ -42,7 +47,9 @@ notificationWorker.on("failed", (job, err) => {
 const jobExpiryWorker = new Worker(
   JOB_EXPIRE_QUEUE_NAME,
   async (job: Job) => {
-    console.log(`[Job Expiry Worker] Scanning for expired jobs... (${job.name})`);
+    console.log(
+      `[Job Expiry Worker] Scanning for expired jobs... (${job.name})`,
+    );
     const now = new Date();
 
     const expiredResult = await db

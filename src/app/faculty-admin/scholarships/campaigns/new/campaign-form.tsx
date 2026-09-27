@@ -87,7 +87,8 @@ export const CampaignForm = ({ availableForms }: CampaignFormProps) => {
     } catch (err: unknown) {
       toast.add({
         type: "error",
-        description: err instanceof Error ? err.message : "Lỗi khi tạo chiến dịch",
+        description:
+          err instanceof Error ? err.message : "Lỗi khi tạo chiến dịch",
       });
     } finally {
       setSubmitting(false);

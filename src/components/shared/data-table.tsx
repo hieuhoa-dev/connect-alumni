@@ -49,7 +49,9 @@ export interface DataTableProps<
   TData extends Record<string, any> = any,
   TValue = any,
 > {
-  columns: readonly ColumnDef<DataTableFeatures, TData, TValue>[] | readonly any[];
+  columns:
+    | readonly ColumnDef<DataTableFeatures, TData, TValue>[]
+    | readonly any[];
   data?: TData[];
   searchKey?: string;
   searchPlaceholder?: string;
@@ -65,7 +67,9 @@ export const DataTable = <
   searchPlaceholder = "Tìm kiếm...",
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
 
   const table = useTable({
     features,
@@ -93,7 +97,9 @@ export const DataTable = <
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={searchPlaceholder}
-              value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+              value={
+                (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
+              }
               onChange={(event) =>
                 table.getColumn(searchKey)?.setFilterValue(event.target.value)
               }

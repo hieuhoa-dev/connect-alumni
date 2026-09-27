@@ -4,7 +4,11 @@ import { eq, and } from "drizzle-orm";
 import { db } from "@/db";
 import { companies, companyMembers } from "@/db/schema";
 import { getCurrentUser, requireRole } from "@/lib/permissions";
-import { companyCreateSchema, companyReviewSchema, CompanyCreateInput } from "@/validators/company-schema";
+import {
+  companyCreateSchema,
+  companyReviewSchema,
+  CompanyCreateInput,
+} from "@/validators/company-schema";
 import { logAuditEvent } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications";
 
@@ -186,7 +190,9 @@ export const getMyCompanies = async () => {
 /**
  * Faculty/Admin: Get all companies with status filter
  */
-export const getCompaniesForFaculty = async (status?: "pending" | "verified" | "rejected") => {
+export const getCompaniesForFaculty = async (
+  status?: "pending" | "verified" | "rejected",
+) => {
   await requireRole(["faculty_staff", "admin"]);
 
   return await db.query.companies.findMany({

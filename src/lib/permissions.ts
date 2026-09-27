@@ -4,7 +4,12 @@ import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { profiles, companyMembers } from "@/db/schema";
 
-export type UserRole = "student" | "alumni" | "employer" | "faculty_staff" | "admin";
+export type UserRole =
+  | "student"
+  | "alumni"
+  | "employer"
+  | "faculty_staff"
+  | "admin";
 
 export class UnauthorizedError extends Error {
   constructor(message = "Bạn cần đăng nhập để thực hiện thao tác này") {
@@ -57,7 +62,9 @@ export const requireRole = async (allowedRoles: UserRole | UserRole[]) => {
   }
 
   if (current.profile?.status === "locked") {
-    throw new ForbiddenError("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
+    throw new ForbiddenError(
+      "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.",
+    );
   }
 
   const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
@@ -98,7 +105,9 @@ export const requireCompanyContext = async (companyId?: string) => {
     .where(eq(companyMembers.userId, current.user.id));
 
   if (!memberships || memberships.length === 0) {
-    throw new ForbiddenError("Bạn chưa thuộc công ty nào. Vui lòng hoàn tất đăng ký hồ sơ doanh nghiệp.");
+    throw new ForbiddenError(
+      "Bạn chưa thuộc công ty nào. Vui lòng hoàn tất đăng ký hồ sơ doanh nghiệp.",
+    );
   }
 
   let activeMembership = companyId

@@ -13,7 +13,13 @@ import {
   Cell,
   CartesianGrid,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 interface AnalyticsChartsProps {
   jobsByIndustry: { industry: string; count: number }[];
@@ -39,7 +45,10 @@ export const AnalyticsCharts = ({
     { name: "Đang cam kết", value: fundStats.pledged, fill: "#f59e0b" },
     {
       name: "Còn thiếu",
-      value: Math.max(0, fundStats.target - fundStats.fulfilled - fundStats.pledged),
+      value: Math.max(
+        0,
+        fundStats.target - fundStats.fulfilled - fundStats.pledged,
+      ),
       fill: "#6366f1",
     },
   ];
@@ -57,7 +66,9 @@ export const AnalyticsCharts = ({
       {/* 1. Jobs by Industry Bar Chart */}
       <Card className="shadow-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-bold">Nhu cầu tuyển dụng theo Lĩnh vực</CardTitle>
+          <CardTitle className="text-sm font-bold">
+            Nhu cầu tuyển dụng theo Lĩnh vực
+          </CardTitle>
           <CardDescription className="text-xs">
             Phân bổ số lượng tin tuyển dụng được đối tác đăng tải
           </CardDescription>
@@ -69,12 +80,28 @@ export const AnalyticsCharts = ({
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={jobsByIndustry} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
-                <XAxis dataKey="industry" tick={{ fontSize: 11 }} interval={0} angle={-15} textAnchor="end" />
+              <BarChart
+                data={jobsByIndustry}
+                margin={{ top: 10, right: 10, left: -20, bottom: 20 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  opacity={0.3}
+                />
+                <XAxis
+                  dataKey="industry"
+                  tick={{ fontSize: 11 }}
+                  interval={0}
+                  angle={-15}
+                  textAnchor="end"
+                />
                 <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
                 <Tooltip
-                  formatter={(val: any) => [`${val} tin tuyển dụng`, "Số lượng"]}
+                  formatter={(val: any) => [
+                    `${val} tin tuyển dụng`,
+                    "Số lượng",
+                  ]}
                   contentStyle={{ fontSize: 12, borderRadius: 8 }}
                 />
                 <Bar dataKey="count" fill="#4f46e5" radius={[4, 4, 0, 0]} />
@@ -87,7 +114,9 @@ export const AnalyticsCharts = ({
       {/* 2. Fund Distribution Pie Chart */}
       <Card className="shadow-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-bold">Cơ cấu Quỹ Khuyến học (VNĐ)</CardTitle>
+          <CardTitle className="text-sm font-bold">
+            Cơ cấu Quỹ Khuyến học (VNĐ)
+          </CardTitle>
           <CardDescription className="text-xs">
             Tiến độ tiếp nhận thực tế so với mục tiêu chiến dịch
           </CardDescription>
@@ -110,7 +139,10 @@ export const AnalyticsCharts = ({
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(val: any) => [`${Number(val).toLocaleString("vi-VN")} đ`, "Số tiền"]}
+                  formatter={(val: any) => [
+                    `${Number(val).toLocaleString("vi-VN")} đ`,
+                    "Số tiền",
+                  ]}
                   contentStyle={{ fontSize: 11, borderRadius: 8 }}
                 />
               </PieChart>
@@ -120,15 +152,24 @@ export const AnalyticsCharts = ({
           <div className="space-y-2 text-xs">
             <div className="flex items-center gap-2">
               <span className="h-3 w-3 rounded-full bg-emerald-500 shrink-0" />
-              <span>Đã thực thu: <strong>{fundStats.fulfilled.toLocaleString("vi-VN")} đ</strong></span>
+              <span>
+                Đã thực thu:{" "}
+                <strong>{fundStats.fulfilled.toLocaleString("vi-VN")} đ</strong>
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="h-3 w-3 rounded-full bg-amber-500 shrink-0" />
-              <span>Đang cam kết: <strong>{fundStats.pledged.toLocaleString("vi-VN")} đ</strong></span>
+              <span>
+                Đang cam kết:{" "}
+                <strong>{fundStats.pledged.toLocaleString("vi-VN")} đ</strong>
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="h-3 w-3 rounded-full bg-indigo-500 shrink-0" />
-              <span>Mục tiêu đề ra: <strong>{fundStats.target.toLocaleString("vi-VN")} đ</strong></span>
+              <span>
+                Mục tiêu đề ra:{" "}
+                <strong>{fundStats.target.toLocaleString("vi-VN")} đ</strong>
+              </span>
             </div>
           </div>
         </CardContent>
@@ -137,7 +178,9 @@ export const AnalyticsCharts = ({
       {/* 3. Alumni count by batch */}
       <Card className="shadow-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-bold">Mạng lưới Cựu sinh viên theo Niên khóa</CardTitle>
+          <CardTitle className="text-sm font-bold">
+            Mạng lưới Cựu sinh viên theo Niên khóa
+          </CardTitle>
           <CardDescription className="text-xs">
             Số lượng cựu sinh viên kết nối tài khoản trên hệ thống
           </CardDescription>
@@ -149,8 +192,15 @@ export const AnalyticsCharts = ({
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={batchData} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
+              <BarChart
+                data={batchData}
+                margin={{ top: 10, right: 10, left: -20, bottom: 5 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  opacity={0.3}
+                />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                 <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
                 <Tooltip
@@ -167,7 +217,9 @@ export const AnalyticsCharts = ({
       {/* 4. Applications by Status */}
       <Card className="shadow-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-bold">Hồ sơ Học bổng theo Trạng thái</CardTitle>
+          <CardTitle className="text-sm font-bold">
+            Hồ sơ Học bổng theo Trạng thái
+          </CardTitle>
           <CardDescription className="text-xs">
             Tổng hợp hồ sơ sinh viên nộp xin xét duyệt
           </CardDescription>
@@ -180,15 +232,19 @@ export const AnalyticsCharts = ({
                   s.status === "approved"
                     ? "Đã duyệt"
                     : s.status === "reviewing"
-                    ? "Đang chấm"
-                    : s.status === "rejected"
-                    ? "Từ chối"
-                    : "Chờ duyệt",
+                      ? "Đang chấm"
+                      : s.status === "rejected"
+                        ? "Từ chối"
+                        : "Chờ duyệt",
                 count: s.count,
               }))}
               margin={{ top: 10, right: 10, left: -20, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                opacity={0.3}
+              />
               <XAxis dataKey="status" tick={{ fontSize: 11 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip

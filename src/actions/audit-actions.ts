@@ -23,4 +23,6 @@ export const getAuditLogs = async (limit = 100) => {
   return logs;
 };
 
-export type AuditLogWithActor = Awaited<ReturnType<typeof getAuditLogs>>[number];
+export type AuditLogWithActor = Awaited<
+  ReturnType<typeof getAuditLogs>
+>[number];

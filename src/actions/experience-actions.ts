@@ -127,7 +127,10 @@ export const getMyExperiencePosts = async () => {
 /**
  * Faculty/Admin: Review experience post (Publish or Reject)
  */
-export const reviewExperiencePost = async (postId: string, status: "published" | "rejected") => {
+export const reviewExperiencePost = async (
+  postId: string,
+  status: "published" | "rejected",
+) => {
   const current = await requireRole(["faculty_staff", "admin"]);
   const validated = experienceReviewSchema.parse({ status });
 
@@ -173,7 +176,9 @@ export const reviewExperiencePost = async (postId: string, status: "published" |
 /**
  * Faculty/Admin: Get posts for review
  */
-export const getExperiencePostsForFaculty = async (status?: "pending" | "published" | "rejected") => {
+export const getExperiencePostsForFaculty = async (
+  status?: "pending" | "published" | "rejected",
+) => {
   await requireRole(["faculty_staff", "admin"]);
 
   return await db.query.experiencePosts.findMany({
