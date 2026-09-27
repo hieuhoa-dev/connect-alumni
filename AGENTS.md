@@ -10,3 +10,6 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 When working on TanStack React Table code, read and follow:
 node_modules/@tanstack/react-table/skills/getting-started/SKILL.md
+
+Luôn dùng around function để wrap các component, tránh lỗi khi render server-side.
+Đây là ứng đồ án tốt nghiệp nên cần chỉnh chu, đổi mới
