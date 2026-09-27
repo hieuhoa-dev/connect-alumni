@@ -84,10 +84,10 @@ export const CampaignForm = ({ availableForms }: CampaignFormProps) => {
       });
       router.push("/scholarships/campaigns");
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast.add({
         type: "error",
-        description: err.message || "Lỗi khi tạo chiến dịch",
+        description: err instanceof Error ? err.message : "Lỗi khi tạo chiến dịch",
       });
     } finally {
       setSubmitting(false);
@@ -173,7 +173,7 @@ export const CampaignForm = ({ availableForms }: CampaignFormProps) => {
               <Label>Mẫu biểu ứng tuyển đính kèm</Label>
               <Select
                 value={applicationFormId}
-                onValueChange={setApplicationFormId}
+                onValueChange={(val) => setApplicationFormId(val || "none")}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Chọn biểu mẫu hồ sơ..." />
@@ -193,7 +193,11 @@ export const CampaignForm = ({ availableForms }: CampaignFormProps) => {
               <Label>Trạng thái chiến dịch</Label>
               <Select
                 value={status}
-                onValueChange={(val: any) => setStatus(val)}
+                onValueChange={(val) => {
+                  if (val === "open" || val === "draft") {
+                    setStatus(val);
+                  }
+                }}
               >
                 <SelectTrigger>
                   <SelectValue />

@@ -60,7 +60,7 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
   if (success) {
     return (
       <Alert className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 py-6 text-center space-y-2">
-        <CheckCircle2 className="h-8 w-8 mx-auto" />
+        <CheckCircle2 className="size-8 mx-auto" />
         <AlertDescription className="text-sm font-bold">
           Tin tuyển dụng đã được gửi phê duyệt thành công!
         </AlertDescription>
@@ -194,15 +194,15 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
       </div>
 
       <div className="pt-2 flex justify-end">
-        <Button type="submit" disabled={isLoading} className="gap-2 font-medium">
+        <Button type="submit" disabled={isLoading} className="font-medium">
           {isLoading ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 data-icon="inline-start" className="animate-spin" />
               Đang tạo tin...
             </>
           ) : (
             <>
-              <Send className="h-4 w-4" />
+              <Send data-icon="inline-start" />
               Gửi tin chờ Khoa duyệt
             </>
           )}

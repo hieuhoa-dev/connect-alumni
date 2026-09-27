@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/lib/permissions";
 import { getMyEventsAndInvites } from "@/actions/event-actions";
 import { getMyScholarshipApplications } from "@/actions/scholarship-actions";
 import { getAvailableFormsForUser } from "@/actions/form-actions";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -147,30 +147,35 @@ const StudentDashboardPage = async () => {
               eventsData.registrations
                 .filter((reg) => reg.event != null)
                 .slice(0, 3)
-                .map((reg) => (
-                  <div
-                    key={reg.id}
-                    className="p-3 rounded-lg border border-border bg-card/60 flex items-center justify-between text-xs"
-                  >
-                    <div className="space-y-1">
-                      <Link
-                        href={`/events/${reg.event.id}`}
-                        className="font-semibold text-foreground hover:text-primary transition-colors line-clamp-1"
-                      >
-                        {reg.event.title}
-                      </Link>
-                      <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-                        <Clock className="h-3 w-3" />
-                        {new Date(reg.event.startTime).toLocaleDateString("vi-VN", {
-                          dateStyle: "medium",
-                        })}
+                .map((reg) => {
+                  const event = reg.event;
+                  if (!event) return null;
+
+                  return (
+                    <div
+                      key={reg.id}
+                      className="p-3 rounded-lg border border-border bg-card/60 flex items-center justify-between text-xs"
+                    >
+                      <div className="space-y-1">
+                        <Link
+                          href={`/events/${event.id}`}
+                          className="font-semibold text-foreground hover:text-primary transition-colors line-clamp-1"
+                        >
+                          {event.title}
+                        </Link>
+                        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                          <Clock className="h-3 w-3" />
+                          {new Date(event.startTime).toLocaleDateString("vi-VN", {
+                            dateStyle: "medium",
+                          })}
+                        </div>
                       </div>
+                      <Badge variant="outline" className="text-[10px] capitalize">
+                        {reg.attendanceStatus === "attended" ? "Đã điểm danh" : "Đã đăng ký"}
+                      </Badge>
                     </div>
-                    <Badge variant="outline" className="text-[10px] capitalize">
-                      {reg.attendanceStatus === "attended" ? "Đã điểm danh" : "Đã đăng ký"}
-                    </Badge>
-                  </div>
-                ))
+                  );
+                })
             )}
           </CardContent>
         </Card>

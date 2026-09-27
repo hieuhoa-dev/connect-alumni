@@ -23,7 +23,8 @@ const JobDetailPage = async ({ params }: JobDetailPageProps) => {
   const { id } = await params;
   const job = await getJobPostById(id);
 
-  if (!job) {
+  // Chỉ approved và expired mới hiển thị công khai — pending/rejected không lộ
+  if (!job || (job.status !== "approved" && job.status !== "expired")) {
     notFound();
   }
 

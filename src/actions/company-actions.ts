@@ -19,32 +19,37 @@ export const registerCompany = async (input: CompanyCreateInput) => {
 
   const validated = companyCreateSchema.parse(input);
 
-  // 1. Create company
-  const [newCompany] = await db
-    .insert(companies)
-    .values({
-      name: validated.name,
-      description: validated.description,
-      industry: validated.industry,
-      website: validated.website || null,
-      logoUrl: validated.logoUrl || null,
-      verificationStatus: "pending",
-      createdBy: current.user.id,
-    })
-    .returning();
+  // Bọc 3 thao tác trong 1 transaction để tránh race condition
+  const newCompany = await db.transaction(async (tx) => {
+    // 1. Create company
+    const [company] = await tx
+      .insert(companies)
+      .values({
+        name: validated.name,
+        description: validated.description,
+        industry: validated.industry,
+        website: validated.website || null,
+        logoUrl: validated.logoUrl || null,
+        verificationStatus: "pending",
+        createdBy: current.user.id,
+      })
+      .returning();
 
-  // 2. Set previous companies isActiveContext to false for this user
-  await db
-    .update(companyMembers)
-    .set({ isActiveContext: false })
-    .where(eq(companyMembers.userId, current.user.id));
+    // 2. Set previous companies isActiveContext to false for this user
+    await tx
+      .update(companyMembers)
+      .set({ isActiveContext: false })
+      .where(eq(companyMembers.userId, current.user.id));
 
-  // 3. Add user as active member of new company
-  await db.insert(companyMembers).values({
-    companyId: newCompany.id,
-    userId: current.user.id,
-    roleInCompany: validated.roleInCompany,
-    isActiveContext: true,
+    // 3. Add user as active member of new company
+    await tx.insert(companyMembers).values({
+      companyId: company.id,
+      userId: current.user.id,
+      roleInCompany: validated.roleInCompany,
+      isActiveContext: true,
+    });
+
+    return company;
   });
 
   await logAuditEvent({

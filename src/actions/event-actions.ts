@@ -2,7 +2,12 @@
 
 import { eq, and } from "drizzle-orm";
 import { db } from "@/db";
-import { events, eventSpeakers, eventRegistrations, profiles } from "@/db/schema";
+import {
+  events,
+  eventSpeakers,
+  eventRegistrations,
+  profiles,
+} from "@/db/schema";
 import { requireRole, getCurrentUser } from "@/lib/permissions";
 import {
   eventCreateSchema,
@@ -142,8 +147,8 @@ export const inviteSpeaker = async (input: SpeakerInviteInput) => {
   await sendNotification({
     userId: validated.alumniUserId,
     type: "speaker_invitation",
-    title: `Lời mời diễn giả: "${eventItem?.title || 'Sự kiện Khoa'}"`,
-    body: `Khoa trân trọng kính mời bạn tham gia làm diễn giả/khách mời sự kiện. Lời nhắn: ${validated.note || 'Không có ghi chú'}.`,
+    title: `Lời mời diễn giả: "${eventItem?.title || "Sự kiện Khoa"}"`,
+    body: `Khoa trân trọng kính mời bạn tham gia làm diễn giả/khách mời sự kiện. Lời nhắn: ${validated.note || "Không có ghi chú"}.`,
     linkUrl: `/student/events`,
     sendEmail: true,
   });
@@ -153,7 +158,10 @@ export const inviteSpeaker = async (input: SpeakerInviteInput) => {
     action: "invite_speaker",
     entityType: "event_speaker",
     entityId: invitation.id,
-    metadata: { eventId: validated.eventId, alumniUserId: validated.alumniUserId },
+    metadata: {
+      eventId: validated.eventId,
+      alumniUserId: validated.alumniUserId,
+    },
   });
 
   return invitation;
@@ -162,9 +170,13 @@ export const inviteSpeaker = async (input: SpeakerInviteInput) => {
 /**
  * Alumni: Respond to speaker invitation
  */
-export const respondSpeakerInvitation = async (speakerId: string, status: "accepted" | "declined", note?: string) => {
-  const current = await getCurrentUser();
-  if (!current?.user) throw new Error("Chưa đăng nhập");
+export const respondSpeakerInvitation = async (
+  speakerId: string,
+  status: "accepted" | "declined",
+  note?: string,
+) => {
+  // Chỉ alumni (và admin do bypass) mới có thể phản hồi lời mời diễn giả
+  const current = await requireRole(["alumni"]);
 
   const [updated] = await db
     .update(eventSpeakers)
@@ -202,9 +214,13 @@ export const registerForEvent = async (eventId: string) => {
   });
 
   if (!eventItem) throw new Error("Không tìm thấy sự kiện");
-  if (eventItem.status !== "published") throw new Error("Sự kiện chưa mở đăng ký");
+  if (eventItem.status !== "published")
+    throw new Error("Sự kiện chưa mở đăng ký");
 
-  if (eventItem.capacity && eventItem.registrations.length >= eventItem.capacity) {
+  if (
+    eventItem.capacity &&
+    eventItem.registrations.length >= eventItem.capacity
+  ) {
     throw new Error("Sự kiện đã đủ số lượng người tham dự");
   }
 
@@ -227,7 +243,7 @@ export const registerForEvent = async (eventId: string) => {
 export const markAttendance = async (
   registrationId: string,
   status: "attended" | "absent" | "registered",
-  ) => {
+) => {
   await requireRole(["faculty_staff", "admin"]);
 
   const [updated] = await db
@@ -290,7 +306,9 @@ export const getAlumniForSpeakerInvitation = async () => {
   await requireRole(["faculty_staff", "admin"]);
 
   return await db.query.profiles.findMany({
-    where: (profiles, { eq }) => eq(profiles.role, "alumni"),
+    where: {
+      role: "alumni", // hoặc { role: { eq: "alumni" } }
+    },
     with: {
       user: true,
     },
@@ -300,4 +318,6 @@ export const getAlumniForSpeakerInvitation = async () => {
   });
 };
 
-export type AlumniSpeakerCandidate = Awaited<ReturnType<typeof getAlumniForSpeakerInvitation>>[number];
+export type AlumniSpeakerCandidate = Awaited<
+  ReturnType<typeof getAlumniForSpeakerInvitation>
+>[number];

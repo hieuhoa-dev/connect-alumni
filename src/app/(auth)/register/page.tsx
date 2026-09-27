@@ -262,12 +262,12 @@ const RegisterPage = () => {
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 data-icon="inline-start" className="animate-spin" />
                 Đang tạo tài khoản...
               </>
             ) : (
               <>
-                Đăng ký tài khoản <ArrowRight className="ml-2 h-4 w-4" />
+                Đăng ký tài khoản <ArrowRight data-icon="inline-end" />
               </>
             )}
           </Button>

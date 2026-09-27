@@ -56,6 +56,14 @@ export const getActiveJobPosts = async (params?: {
     offset,
   });
 
+  // Post-filter theo industry (industry nằm trên companies, không thể filter trực tiếp trong where của jobPosts)
+  if (params?.industry) {
+    const industryLower = params.industry.toLowerCase();
+    return posts.filter(
+      (p) => p.company?.industry?.toLowerCase().includes(industryLower),
+    );
+  }
+
   return posts;
 };
 

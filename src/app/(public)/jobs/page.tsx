@@ -13,6 +13,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from "@/components/ui/empty";
+import {
   Briefcase,
   Building2,
   MapPin,
@@ -96,16 +103,17 @@ const JobsPage = async ({ searchParams }: JobsPageProps) => {
         </div>
 
         {jobs.length === 0 ? (
-          <div className="text-center py-16 bg-card border border-dashed border-border/80 rounded-xl">
-            <Briefcase className="size-10 text-muted-foreground mx-auto mb-3 opacity-40" />
-            <h3 className="text-sm font-semibold text-foreground">
-              Không tìm thấy tin tuyển dụng
-            </h3>
-            <p className="text-xs text-muted-foreground mt-1">
-              Thử tìm kiếm với từ khóa khác hoặc xóa bộ lọc để xem tất cả vị
-              trí.
-            </p>
-          </div>
+          <Empty className="border border-dashed border-border/80 bg-card py-16">
+            <EmptyHeader>
+              <EmptyMedia>
+                <Briefcase className="size-8 opacity-40" />
+              </EmptyMedia>
+              <EmptyTitle>Không tìm thấy tin tuyển dụng</EmptyTitle>
+              <EmptyDescription>
+                Thử tìm kiếm với từ khóa khác hoặc xóa bộ lọc để xem tất cả vị trí.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : (
           <div className="grid grid-cols-1 gap-4">
             {jobs.map((job) => (

@@ -63,11 +63,12 @@ const ExperiencesReviewPage = async () => {
                         <span>
                           Tác giả:{" "}
                           <strong>
-                            {post.author.profile?.fullName || post.author.name}
+                            {post.author?.profile?.fullName ||
+                              post.author?.name}
                           </strong>
                         </span>
-                        {post.author.profile?.batchYear && (
-                          <span>(Khóa {post.author.profile.batchYear})</span>
+                        {post.author?.profile?.batchYear && (
+                          <span>(Khóa {post.author?.profile?.batchYear})</span>
                         )}
                         <span>·</span>
                         <span>
@@ -119,7 +120,7 @@ const ExperiencesReviewPage = async () => {
                   {post.title}
                 </span>
                 <span className="text-muted-foreground text-[11px]">
-                  Bởi {post.author.profile?.fullName || post.author.name} ·{" "}
+                  Bởi {post.author?.profile?.fullName || post.author?.name} ·{" "}
                   {post.viewCount} lượt xem
                 </span>
                 <div className="pt-2 flex justify-end">

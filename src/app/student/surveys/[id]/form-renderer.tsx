@@ -224,36 +224,41 @@ export const SurveyFormRenderer = ({ form, isExpired }: FormRendererProps) => {
               </div>
             )}
 
-            {/* 5. Scale Rating (1-5) */}
-            {q.questionType === "scale" && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  {[1, 2, 3, 4, 5].map((num) => {
-                    const isSelected = answers[q.id] === num;
-                    return (
-                      <button
-                        key={num}
-                        type="button"
-                        onClick={() => handleScale(q.id, num)}
-                        className={`h-9 w-9 rounded-md border text-xs font-bold transition-all ${
-                          isSelected
-                            ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                            : "bg-background text-foreground hover:bg-muted"
-                        }`}
-                      >
-                        {num}
-                      </button>
-                    );
-                  })}
-                </div>
-                {q.config && (
-                  <div className="flex justify-between text-[11px] text-muted-foreground max-w-[220px]">
-                    <span>{q.config.minLabel || "1 - Kém"}</span>
-                    <span>{q.config.maxLabel || "5 - Rất tốt"}</span>
+            {/* 5. Scale Rating (dynamic range từ config) */}
+            {q.questionType === "scale" && (() => {
+              const min = q.config?.min ?? 1;
+              const max = q.config?.max ?? 5;
+              const range = Array.from({ length: max - min + 1 }, (_, i) => min + i);
+              return (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {range.map((num) => {
+                      const isSelected = answers[q.id] === num;
+                      return (
+                        <button
+                          key={num}
+                          type="button"
+                          onClick={() => handleScale(q.id, num)}
+                          className={`h-9 w-9 rounded-md border text-xs font-bold transition-all ${
+                            isSelected
+                              ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                              : "bg-background text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {num}
+                        </button>
+                      );
+                    })}
                   </div>
-                )}
-              </div>
-            )}
+                  {q.config && (
+                    <div className="flex justify-between text-[11px] text-muted-foreground" style={{ maxWidth: `${range.length * 44}px` }}>
+                      <span>{q.config.minLabel || `${min} — Kém nhất`}</span>
+                      <span>{q.config.maxLabel || `${max} — Tốt nhất`}</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* 6. File Upload */}
             {q.questionType === "file_upload" && (
@@ -274,15 +279,15 @@ export const SurveyFormRenderer = ({ form, isExpired }: FormRendererProps) => {
       ))}
 
       <div className="pt-2 flex justify-end">
-        <Button type="submit" disabled={isLoading} className="gap-2 font-medium">
+        <Button type="submit" disabled={isLoading} className="font-medium">
           {isLoading ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 data-icon="inline-start" className="animate-spin" />
               Đang gửi phản hồi...
             </>
           ) : (
             <>
-              <Send className="h-4 w-4" />
+              <Send data-icon="inline-start" />
               Gửi câu trả lời
             </>
           )}

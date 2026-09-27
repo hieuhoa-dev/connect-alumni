@@ -62,7 +62,7 @@ const JobsReviewPage = async () => {
                       </div>
                       <CardDescription className="text-xs flex items-center gap-2">
                         <span className="font-semibold text-foreground">
-                          {job.company.name}
+                          {job.company?.name}
                         </span>
                         <span>·</span>
                         <span className="capitalize">
@@ -133,7 +133,7 @@ const JobsReviewPage = async () => {
                   </Badge>
                 </div>
                 <div className="text-muted-foreground text-[11px]">
-                  {job.company.name}
+                  {job.company?.name}
                 </div>
                 <div className="text-[11px] text-muted-foreground pt-1 flex justify-between">
                   <span>

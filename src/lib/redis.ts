@@ -7,21 +7,17 @@ declare global {
   var __redisClient: Redis | undefined;
 }
 
+/**
+ * Singleton Redis client — dùng global để tránh tạo connection mới mỗi
+ * lần gọi trong cả development lẫn production (Next.js serverless edge).
+ */
 export const getRedisClient = (): Redis => {
-  if (process.env.NODE_ENV === "production") {
-    return new Redis(redisUrl, {
-      maxRetriesPerRequest: null,
-      enableReadyCheck: false,
-    });
-  }
-
   if (!global.__redisClient) {
     global.__redisClient = new Redis(redisUrl, {
       maxRetriesPerRequest: null,
       enableReadyCheck: false,
     });
   }
-
   return global.__redisClient;
 };
 

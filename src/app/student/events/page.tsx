@@ -5,7 +5,7 @@ import {
   getMyEventsAndInvites,
 } from "@/actions/event-actions";
 import { getCurrentUser } from "@/lib/permissions";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -39,7 +39,7 @@ const StudentEventsPage = async () => {
 
   const isAlumni = current?.role === "alumni" || current?.role === "admin";
   const registeredEventIds = new Set(
-    myData.registrations.map((r) => r.event.id),
+    myData.registrations.map((r) => r.event?.id),
   );
   const pendingInvitesCount = myData.speakerInvites.filter(
     (i) => i.invitationStatus === "pending",
@@ -62,26 +62,26 @@ const StudentEventsPage = async () => {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <Link href="/student/events/my-registrations">
-            <Button
-              variant="outline"
-              size="sm"
-              className="relative flex items-center gap-2"
-            >
-              <BookmarkCheck className="h-4 w-4 text-primary" />
-              Sự kiện của tôi
-              {myData.registrations.length > 0 && (
-                <span className="ml-1 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-primary/10 text-primary">
-                  {myData.registrations.length}
-                </span>
-              )}
-              {pendingInvitesCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
-                  {pendingInvitesCount}
-                </span>
-              )}
-            </Button>
-          </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            render={<Link href="/student/events/my-registrations" />}
+            nativeButton={false}
+            className="relative flex items-center gap-2"
+          >
+            <BookmarkCheck className="h-4 w-4 text-primary" />
+            Sự kiện của tôi
+            {myData.registrations.length > 0 && (
+              <span className="ml-1 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-primary/10 text-primary">
+                {myData.registrations.length}
+              </span>
+            )}
+            {pendingInvitesCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                {pendingInvitesCount}
+              </span>
+            )}
+          </Button>
         </div>
       </div>
 
@@ -103,15 +103,15 @@ const StudentEventsPage = async () => {
                 </p>
               </div>
             </div>
-            <Link href="/student/events/my-registrations">
-              <Button
-                size="sm"
-                className="bg-amber-600 hover:bg-amber-700 text-white shrink-0"
-              >
-                Xem và phản hồi
-                <ArrowRight className="h-3.5 w-3.5 ml-1" />
-              </Button>
-            </Link>
+            <Button
+              size="sm"
+              render={<Link href="/student/events/my-registrations" />}
+              nativeButton={false}
+              className="bg-amber-600 hover:bg-amber-700 text-white shrink-0"
+            >
+              Xem và phản hồi
+              <ArrowRight className="h-3.5 w-3.5 ml-1" />
+            </Button>
           </CardContent>
         </Card>
       )}
@@ -216,8 +216,8 @@ const StudentEventsPage = async () => {
                         <Users className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                         <span>
                           {event.registrations?.length || 0} người tham gia
-                          {event.maxParticipants
-                            ? ` / ${event.maxParticipants}`
+                          {event.capacity
+                            ? ` / ${event.capacity}`
                             : ""}
                         </span>
                       </div>
@@ -233,9 +233,9 @@ const StudentEventsPage = async () => {
                                 key={spk.id}
                                 className="text-[11px] truncate text-muted-foreground"
                               >
-                                • {spk.alumni?.profile?.fullName || "Khách mời"}
-                                {spk.alumni?.profile?.currentPosition &&
-                                  ` - ${spk.alumni.profile.currentPosition}`}
+                                • {spk.alumni?.profile?.fullName || spk.alumni?.name || "Khách mời"}
+                                {spk.alumni?.profile?.batchYear &&
+                                  ` (Khóa ${spk.alumni.profile.batchYear})`}
                               </p>
                             ))}
                           </div>
@@ -245,18 +245,18 @@ const StudentEventsPage = async () => {
                   </div>
 
                   <CardFooter className="pt-0 border-t border-border/40 p-4">
-                    <Link href={`/events/${event.id}`} className="w-full">
-                      <Button
-                        variant={isRegistered ? "outline" : "default"}
-                        size="sm"
-                        className="w-full flex items-center justify-center gap-1.5"
-                      >
-                        {isRegistered
-                          ? "Xem chi tiết sự kiện"
-                          : "Xem chi tiết & Đăng ký"}
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </Button>
-                    </Link>
+                    <Button
+                      variant={isRegistered ? "outline" : "default"}
+                      size="sm"
+                      render={<Link href={`/events/${event.id}`} />}
+                      nativeButton={false}
+                      className="w-full flex items-center justify-center gap-1.5"
+                    >
+                      {isRegistered
+                        ? "Xem chi tiết sự kiện"
+                        : "Xem chi tiết & Đăng ký"}
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </Button>
                   </CardFooter>
                 </Card>
               );

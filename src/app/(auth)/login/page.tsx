@@ -19,7 +19,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, ArrowRight, Sparkles } from "lucide-react";
 
-const LoginPage = () => {
+const LoginForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
@@ -117,12 +117,12 @@ const LoginPage = () => {
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 data-icon="inline-start" className="animate-spin" />
                   Đang xác thực...
                 </>
               ) : (
                 <>
-                  Đăng nhập <ArrowRight className="ml-2 h-4 w-4" />
+                  Đăng nhập <ArrowRight data-icon="inline-end" />
                 </>
               )}
             </Button>
@@ -248,6 +248,21 @@ const LoginPage = () => {
         </CardContent>
       </Card>
     </div>
+  );
+};
+
+const LoginPage = () => {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="flex items-center justify-center p-8 text-xs text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+          Đang tải...
+        </div>
+      }
+    >
+      <LoginForm />
+    </React.Suspense>
   );
 };
 

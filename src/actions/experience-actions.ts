@@ -79,10 +79,8 @@ export const getExperiencePostById = async (id: string) => {
  * Strictly always requires faculty review (status: pending)
  */
 export const createExperiencePost = async (input: ExperiencePostInput) => {
-  const current = await getCurrentUser();
-  if (!current?.user) {
-    throw new Error("Vui lòng đăng nhập để chia sẻ kinh nghiệm");
-  }
+  // Chỉ alumni (và admin do bypass) mới được đăng bài chia sẻ kinh nghiệm
+  const current = await requireRole(["alumni"]);
 
   const validated = experiencePostSchema.parse(input);
 

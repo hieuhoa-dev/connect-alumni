@@ -162,31 +162,29 @@ export const createDonationPledge = async (input: DonationPledgeInput) => {
 export const confirmFulfillPledge = async (pledgeId: string) => {
   const current = await requireRole(["faculty_staff", "admin"]);
 
-  return await db.transaction(async (tx) => {
-    // 1. Fetch current pledge
-    const pledge = await tx.query.donationPledges.findFirst({
-      where: {
-        id: pledgeId, // hoặc { id: { eq: pledgeId } }
-      },
-    });
-    if (!pledge) {
-      throw new Error("Không tìm thấy cam kết tài trợ");
-    }
+  // Pre-fetch và validate ngoài transaction để giảm thời gian giữ lock
+  const pledge = await db.query.donationPledges.findFirst({
+    where: {
+      id: pledgeId,
+    },
+  });
+  if (!pledge) {
+    throw new Error("Không tìm thấy cam kết tài trợ");
+  }
+  if (pledge.status !== "pledged") {
+    throw new Error(
+      `Cam kết đang ở trạng thái "${pledge.status}", không thể xác nhận nhận tiền.`,
+    );
+  }
 
-    if (pledge.status !== "pledged") {
-      throw new Error(
-        `Cam kết đang ở trạng thái "${pledge.status}", không thể xác nhận nhận tiền.`,
-      );
-    }
-
-    // 2. Update pledge status to 'fulfilled'
-    const [updatedPledge] = await tx
+  // Transaction chỉ bao gồm 2 UPDATE nguyên tử — không có side effects
+  const updatedPledge = await db.transaction(async (tx) => {
+    const [updated] = await tx
       .update(donationPledges)
       .set({ status: "fulfilled" })
       .where(eq(donationPledges.id, pledgeId))
       .returning();
 
-    // 3. Atomically add to campaign current_amount
     await tx
       .update(scholarshipCampaigns)
       .set({
@@ -194,29 +192,30 @@ export const confirmFulfillPledge = async (pledgeId: string) => {
       })
       .where(eq(scholarshipCampaigns.id, pledge.campaignId));
 
-    // 4. Log audit event
-    await logAuditEvent({
-      actorId: current.user.id,
-      action: "fulfill_donation_pledge",
-      entityType: "donation_pledge",
-      entityId: pledge.id,
-      metadata: { amount: pledge.amount, campaignId: pledge.campaignId },
-    });
-
-    // 5. Notify donor if they have an account
-    if (pledge.donorId) {
-      await sendNotification({
-        userId: pledge.donorId,
-        type: "donation_fulfilled",
-        title: "Xác nhận nhận tiền tài trợ Quỹ Khuyến học",
-        body: `Khoa đã nhận được số tiền ${Number(pledge.amount).toLocaleString("vi-VN")} VNĐ từ bạn. Trân trọng cảm ơn tấm lòng hảo tâm!`,
-        linkUrl: "/scholarships",
-        sendEmail: true,
-      });
-    }
-
-    return updatedPledge;
+    return updated;
   });
+
+  // Side effects sau khi transaction commit thành công
+  await logAuditEvent({
+    actorId: current.user.id,
+    action: "fulfill_donation_pledge",
+    entityType: "donation_pledge",
+    entityId: pledge.id,
+    metadata: { amount: pledge.amount, campaignId: pledge.campaignId },
+  });
+
+  if (pledge.donorId) {
+    await sendNotification({
+      userId: pledge.donorId,
+      type: "donation_fulfilled",
+      title: "Xác nhận nhận tiền tài trợ Quỹ Khuyến học",
+      body: `Khoa đã nhận được số tiền ${Number(pledge.amount).toLocaleString("vi-VN")} VNĐ từ bạn. Trân trọng cảm ơn tấm lòng hảo tâm!`,
+      linkUrl: "/scholarships",
+      sendEmail: true,
+    });
+  }
+
+  return updatedPledge;
 };
 
 /**
@@ -268,6 +267,17 @@ export const applyForScholarship = async (
 
   if (new Date() > new Date(campaign.applicationDeadline)) {
     throw new Error("Đã hết hạn nộp hồ sơ xin học bổng");
+  }
+
+  // Kiểm tra trùng lặp: mỗi sinh viên chỉ được nộp 1 hồ sơ cho 1 chiến dịch
+  const existing = await db.query.scholarshipApplications.findFirst({
+    where: {
+      campaignId: campaignId,
+      studentId: current.user.id,
+    },
+  });
+  if (existing) {
+    throw new Error("Bạn đã nộp hồ sơ cho chiến dịch học bổng này rồi. Vui lòng chờ kết quả xét duyệt.");
   }
 
   const [application] = await db

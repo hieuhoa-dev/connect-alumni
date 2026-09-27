@@ -2,16 +2,25 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { adminToggleUserLock, adminUpdateUserRole } from "@/actions/auth-actions";
+import {
+  adminToggleUserLock,
+  adminUpdateUserRole,
+} from "@/actions/auth-actions";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Lock, Unlock, Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/toast";
-import { UserRole } from "@/db/schema";
+import { roleEnum } from "@/db/schema";
 
 interface UserRowActionsProps {
   userId: string;
-  currentRole: UserRole;
+  currentRole: (typeof roleEnum.enumValues)[number];
   currentStatus: string;
   isSelf: boolean;
 }
@@ -24,11 +33,23 @@ export const UserRowActions = ({
 }: UserRowActionsProps) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [role, setRole] = useState<UserRole>(currentRole);
+  const [role, setRole] =
+    useState<(typeof roleEnum.enumValues)[number]>(currentRole);
 
-  const handleRoleChange = async (newRole: UserRole) => {
+  const getErrorMessage = (err: unknown, fallback: string): string => {
+    if (err instanceof Error) return err.message;
+    if (typeof err === "string") return err;
+    return fallback;
+  };
+
+  const handleRoleChange = async (
+    newRole: (typeof roleEnum.enumValues)[number],
+  ) => {
     if (isSelf) {
-      toast.error("Không thể tự thay đổi vai trò của chính mình!");
+      toast.add({
+        type: "error",
+        description: "Không thể tự thay đổi vai trò của chính mình!",
+      });
       return;
     }
 
@@ -36,10 +57,16 @@ export const UserRowActions = ({
     try {
       await adminUpdateUserRole(userId, newRole);
       setRole(newRole);
-      toast.success("Cập nhật vai trò người dùng thành công");
+      toast.add({
+        type: "success",
+        description: "Cập nhật vai trò người dùng thành công",
+      });
       router.refresh();
-    } catch (err: any) {
-      toast.error(err.message || "Lỗi khi cập nhật vai trò");
+    } catch (err: unknown) {
+      toast.add({
+        type: "error",
+        description: getErrorMessage(err, "Lỗi khi cập nhật vai trò"),
+      });
     } finally {
       setLoading(false);
     }
@@ -47,7 +74,10 @@ export const UserRowActions = ({
 
   const handleToggleLock = async () => {
     if (isSelf) {
-      toast.error("Không thể tự khóa tài khoản của chính mình!");
+      toast.add({
+        type: "error",
+        description: "Không thể tự khóa tài khoản của chính mình!",
+      });
       return;
     }
 
@@ -56,15 +86,27 @@ export const UserRowActions = ({
       ? "Bạn có chắc chắn muốn khóa tài khoản này?"
       : "Bạn có chắc chắn muốn mở khóa tài khoản này?";
 
-    if (!confirm(confirmMsg)) return;
+    if (!window.confirm(confirmMsg)) return;
 
     setLoading(true);
     try {
       await adminToggleUserLock(userId, willLock);
-      toast.success(willLock ? "Đã khóa tài khoản người dùng" : "Đã mở khóa tài khoản");
+
+      // Cập nhật ngay trạng thái hiển thị (nếu có state setCurrentStatus)
+      // setCurrentStatus(willLock ? "locked" : "active");
+
+      toast.add({
+        type: "success",
+        description: willLock
+          ? "Đã khóa tài khoản người dùng"
+          : "Đã mở khóa tài khoản",
+      });
       router.refresh();
-    } catch (err: any) {
-      toast.error(err.message || "Lỗi khi thao tác");
+    } catch (err: unknown) {
+      toast.add({
+        type: "error",
+        description: getErrorMessage(err, "Lỗi khi thao tác"),
+      });
     } finally {
       setLoading(false);
     }
@@ -99,7 +141,9 @@ export const UserRowActions = ({
             ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
             : "text-rose-600 hover:text-rose-700 hover:bg-rose-50"
         }`}
-        title={currentStatus === "locked" ? "Mở khóa tài khoản" : "Khóa tài khoản"}
+        title={
+          currentStatus === "locked" ? "Mở khóa tài khoản" : "Khóa tài khoản"
+        }
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" />

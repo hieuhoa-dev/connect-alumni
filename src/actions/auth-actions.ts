@@ -2,7 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { profiles, roleEnum } from "@/db/schema";
+import { profiles, user, roleEnum } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { getCurrentUser, requireRole } from "@/lib/permissions";
 import { logAuditEvent } from "@/lib/audit";
@@ -39,22 +39,40 @@ export const registerWithProfile = async (input: SignUpProfileInput) => {
     );
   }
 
-  // 2. Insert into profiles table
-  const [newProfile] = await db
-    .insert(profiles)
-    .values({
-      userId: res.user.id,
-      role: input.role,
-      fullName: input.name,
-      studentCode: input.studentCode || null,
-      faculty: input.faculty || "Công nghệ Thông tin",
-      batchYear: input.batchYear || null,
-      graduationYear: input.graduationYear || null,
-      phone: input.phone || null,
-      bio: input.bio || null,
-      status: "active",
-    })
-    .returning();
+  // 2. Insert vào bảng profiles — nếu thất bại phải xoá user vừa tạo để tránh orphaned account
+  let newProfile;
+  try {
+    const [inserted] = await db
+      .insert(profiles)
+      .values({
+        userId: res.user.id,
+        role: input.role,
+        fullName: input.name,
+        studentCode: input.studentCode || null,
+        faculty: input.faculty || "Công nghệ Thông tin",
+        batchYear: input.batchYear || null,
+        graduationYear: input.graduationYear || null,
+        phone: input.phone || null,
+        bio: input.bio || null,
+        status: "active",
+      })
+      .returning();
+    newProfile = inserted;
+  } catch (profileError) {
+    // Rollback: xoá user vừa tạo khỏi DB để tránh trạng thái broken
+    try {
+      await db.delete(user).where(eq(user.id, res.user.id));
+    } catch (cleanupError) {
+      console.error(
+        "Critical: Không thể dọn dẹp user mồ côi sau lỗi tạo profile. UserID:",
+        res.user.id,
+        cleanupError,
+      );
+    }
+    throw new Error(
+      "Không thể khởi tạo hồ sơ người dùng. Vui lòng thử lại hoặc liên hệ quản trị viên.",
+    );
+  }
 
   await logAuditEvent({
     actorId: res.user.id,
