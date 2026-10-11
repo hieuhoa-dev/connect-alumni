@@ -21,25 +21,37 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import { sampleDLUScholarships } from "@/lib/dlu-sample-data";
+
 const ScholarshipsPage = async () => {
-  const campaigns = await getScholarshipCampaigns();
+  let campaigns: any[] = [];
+  try {
+    campaigns = await getScholarshipCampaigns();
+  } catch (err) {
+    console.error("Failed to fetch scholarships:", err);
+  }
+
+  const displayCampaigns = campaigns.length > 0 ? campaigns : sampleDLUScholarships;
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-2">
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-            Quỹ Khuyến học & Tiếp sức Tài năng Trẻ
+          <h1 className="text-3xl font-extrabold tracking-tight text-[#1E4D2B]">
+            Quỹ Khuyến học & Tiếp sức Tài năng Trẻ — Đại học Đà Lạt
           </h1>
           <p className="text-sm text-muted-foreground">
-            Cầu nối tài trợ từ các Doanh nghiệp đối tác và Cựu sinh viên nhằm
-            trao học bổng, hỗ trợ tài chính cho sinh viên vượt khó
+            Cầu nối tài trợ từ Cựu sinh viên DLU và các Doanh nghiệp đối tác nhằm
+            trao học bổng, hỗ trợ tài chính cho sinh viên vượt khó hiếu học
           </p>
         </div>
         <Link
           href="/employer/scholarships/pledge"
-          className={buttonVariants({ size: "sm" })}
+          className={buttonVariants({
+            size: "sm",
+            className: "bg-[#1E4D2B] hover:bg-[#1E4D2B]/90 text-white",
+          })}
         >
           <HeartHandshake className="h-4 w-4 mr-2" />
           Đồng hành tài trợ
@@ -48,18 +60,18 @@ const ScholarshipsPage = async () => {
 
       {/* Campaigns list */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {campaigns.length === 0 ? (
+        {displayCampaigns.length === 0 ? (
           <div className="col-span-full text-center py-16 bg-card border border-dashed rounded-xl">
             <HeartHandshake className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-40" />
             <h3 className="text-sm font-semibold text-foreground">
               Hiện chưa có chiến dịch học bổng mới
             </h3>
             <p className="text-xs text-muted-foreground mt-1">
-              Khoa sẽ sớm thông báo các đợt xét học bổng tiếp theo.
+              Nhà trường sẽ sớm thông báo các đợt xét học bổng tiếp theo.
             </p>
           </div>
         ) : (
-          campaigns.map((camp) => {
+          displayCampaigns.map((camp) => {
             const target = Number(camp.targetAmount);
             const current = Number(camp.currentAmount);
             const percent = Math.min(

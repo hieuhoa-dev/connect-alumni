@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/card";
 import { BookOpen, Search, Eye, Calendar, User } from "lucide-react";
 
+import { sampleDLUExperiences } from "@/lib/dlu-sample-data";
+
 interface ExperiencesPageProps {
   searchParams: Promise<{
     search?: string;
@@ -20,28 +22,35 @@ interface ExperiencesPageProps {
 
 const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
   const params = await searchParams;
-  const posts = await getPublishedExperiencePosts({
-    search: params.search,
-    limit: 30,
-  });
+  let posts: any[] = [];
+  try {
+    posts = await getPublishedExperiencePosts({
+      search: params.search,
+      limit: 30,
+    });
+  } catch (err) {
+    console.error("Failed to fetch experiences:", err);
+  }
+
+  const displayPosts = posts.length > 0 ? posts : sampleDLUExperiences;
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-1.5">
-          <h1 className="font-serif text-3xl font-medium tracking-tight text-foreground">
-            Góc chia sẻ kinh nghiệm Cựu sinh viên
+          <h1 className="font-serif text-3xl font-bold tracking-tight text-[#1E4D2B]">
+            Góc chia sẻ kinh nghiệm — Cựu sinh viên Đại học Đà Lạt
           </h1>
           <p className="text-sm text-muted-foreground">
-            Học hỏi bí quyết từ các thế hệ cựu sinh viên: kinh nghiệm phỏng vấn,
-            thực tập, kỹ năng mềm và định hướng nghề nghiệp
+            Học hỏi bí quyết từ các thế hệ cựu sinh viên DLU: khởi nghiệp, kinh nghiệm làm việc, kỹ năng mềm và định hướng tương lai
           </p>
         </div>
         <Button
           render={<Link href="/student/experiences/new" />}
           nativeButton={false}
           size="sm"
+          className="bg-[#1E4D2B] hover:bg-[#1E4D2B]/90 text-white"
         >
           Viết bài chia sẻ mới
         </Button>
@@ -60,7 +69,7 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
 
       {/* Posts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {posts.length === 0 ? (
+        {displayPosts.length === 0 ? (
           <div className="col-span-full text-center py-16 bg-card border border-dashed border-border/80 rounded-xl">
             <BookOpen className="size-10 text-muted-foreground mx-auto mb-3 opacity-40" />
             <h3 className="text-sm font-semibold text-foreground">
@@ -71,7 +80,7 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
             </p>
           </div>
         ) : (
-          posts.map((post) => {
+          displayPosts.map((post) => {
             const author = post.author?.profile;
             return (
               <Card
