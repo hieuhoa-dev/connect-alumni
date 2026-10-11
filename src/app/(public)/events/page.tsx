@@ -18,37 +18,45 @@ import {
   Video,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { sampleDLUEvents } from "@/lib/dlu-sample-data";
 
 const EventsPage = async () => {
-  const events = await getPublishedEvents();
+  let events: any[] = [];
+  try {
+    events = await getPublishedEvents();
+  } catch (err) {
+    console.error("Failed to fetch published events:", err);
+  }
+
+  const displayEvents = events.length > 0 ? events : sampleDLUEvents;
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-          Talkshow, Hội thảo & Sự kiện
+        <h1 className="text-3xl font-extrabold tracking-tight text-[#1E4D2B]">
+          Talkshow, Hội thảo & Sự kiện — Đại học Đà Lạt
         </h1>
         <p className="text-sm text-muted-foreground">
-          Các chương trình kết nối định kỳ giữa Cựu sinh viên, Khoa và Sinh viên
-          nhằm chia sẻ kinh nghiệm thực tế
+          Các chương trình kết nối định kỳ giữa Cựu sinh viên, Trường Đại học Đà Lạt và Sinh viên
+          nhằm chia sẻ kinh nghiệm và kết nối tương lai
         </p>
       </div>
 
       {/* Events Listing */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {events.length === 0 ? (
+        {displayEvents.length === 0 ? (
           <div className="col-span-full text-center py-16 bg-card border border-dashed rounded-xl">
             <Calendar className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-40" />
             <h3 className="text-sm font-semibold text-foreground">
               Hiện chưa có sự kiện nào sắp diễn ra
             </h3>
             <p className="text-xs text-muted-foreground mt-1">
-              Khoa sẽ sớm cập nhật lịch talkshow và hội thảo mới nhất.
+              Nhà trường sẽ sớm cập nhật lịch talkshow và hội thảo mới nhất.
             </p>
           </div>
         ) : (
-          events.map((event) => (
+          displayEvents.map((event) => (
             <Card
               key={event.id}
               className="group flex flex-col justify-between overflow-hidden rounded-[24px] border border-border/70 bg-card p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-foreground/20 hover:shadow-lg"
