@@ -15,16 +15,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { DLULogo } from "@/components/shared/dlu-logo";
 import {
-  GraduationCap,
   Briefcase,
   Calendar,
   BookOpen,
   HeartHandshake,
   LayoutDashboard,
   LogOut,
-  User,
   Menu,
   X,
 } from "lucide-react";
@@ -54,22 +52,20 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-[#1E4D2B]/15 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90">
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Brand */}
+        {/* Brand: Logo & Tên Trường Đại học Đà Lạt */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 transition hover:opacity-90"
+          className="flex items-center gap-3 transition hover:opacity-95"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold shadow-sm">
-            <GraduationCap className="h-5 w-5" />
-          </div>
+          <DLULogo size={42} />
           <div className="flex flex-col">
-            <span className="font-bold text-base tracking-tight leading-none text-foreground">
-              CONNECT ALUMNI
+            <span className="font-bold text-base sm:text-lg tracking-tight leading-none text-[#1E4D2B]">
+              DLU ALUMNI
             </span>
-            <span className="text-[11px] font-medium text-muted-foreground leading-tight">
-              Khoa Công nghệ Thông tin
+            <span className="text-[11px] font-semibold text-[#E67300] leading-tight mt-0.5 uppercase tracking-wide">
+              Trường Đại học Đà Lạt
             </span>
           </div>
         </Link>
@@ -87,8 +83,8 @@ export const Navbar = () => {
                 href={link.href}
                 className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                   isActive
-                    ? "bg-secondary text-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "bg-[#1E4D2B] text-white font-semibold"
+                    : "text-muted-foreground hover:bg-[#1E4D2B]/10 hover:text-[#1E4D2B]"
                 }`}
               >
                 {link.icon && <link.icon className="h-4 w-4" />}
@@ -104,14 +100,21 @@ export const Navbar = () => {
             <div className="h-8 w-20 animate-pulse rounded-md bg-muted" />
           ) : session?.user ? (
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-2 rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer">
-                <Avatar className="h-8 w-8 border border-border">
+              <DropdownMenuTrigger
+                render={
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 rounded-full p-1 border border-border hover:bg-muted transition-colors cursor-pointer"
+                  />
+                }
+              >
+                <Avatar className="h-8 w-8 border border-[#1E4D2B]/20">
                   <AvatarImage src={session.user.image || undefined} />
-                  <AvatarFallback className="bg-primary/10 text-primary font-semibold text-xs">
-                    {session.user.name?.slice(0, 2).toUpperCase() || "US"}
+                  <AvatarFallback className="bg-[#1E4D2B]/10 text-[#1E4D2B] font-semibold text-xs">
+                    {session.user.name?.slice(0, 2).toUpperCase() || "DLU"}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-sm font-medium max-w-[120px] truncate text-foreground">
+                <span className="text-sm font-medium max-w-[120px] truncate text-foreground pr-1">
                   {session.user.name}
                 </span>
               </DropdownMenuTrigger>
@@ -154,7 +157,13 @@ export const Navbar = () => {
               >
                 Đăng nhập
               </Link>
-              <Link href="/register" className={buttonVariants({ size: "sm" })}>
+              <Link
+                href="/register"
+                className={buttonVariants({
+                  size: "sm",
+                  className: "bg-[#1E4D2B] hover:bg-[#1E4D2B]/90 text-white",
+                })}
+              >
                 Đăng ký
               </Link>
             </div>
@@ -200,7 +209,7 @@ export const Navbar = () => {
                 <Link
                   href={getDashboardHref()}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-foreground"
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-[#1E4D2B]/10 text-[#1E4D2B]"
                 >
                   <LayoutDashboard className="h-4 w-4" />
                   Trang điều khiển ({session.user.name})
@@ -232,7 +241,8 @@ export const Navbar = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className={buttonVariants({
                     size: "sm",
-                    className: "w-full justify-center",
+                    className:
+                      "w-full justify-center bg-[#1E4D2B] hover:bg-[#1E4D2B]/90 text-white",
                   })}
                 >
                   Đăng ký
