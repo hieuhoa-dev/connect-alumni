@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Shadow filter -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15" />
+    </filter>
+  </defs>
+
+  <!-- Background White Circle -->
+  <circle cx="250" cy="250" r="236" fill="#FFFFFF" stroke="#E67300" stroke-width="12" />
+  <circle cx="250" cy="250" r="222" fill="#FFFFFF" stroke="#E67300" stroke-width="3" stroke-dasharray="6,4" />
+
+  <!-- Outer Bronze Drum Radial Pattern (Trống đồng cách điệu) -->
+  <circle cx="250" cy="250" r="208" fill="none" stroke="#E67300" stroke-width="2" />
+  <g stroke="#E67300" stroke-width="2" opacity="0.85">
+    <!-- Họa tiết tia sáng mặt trời trống đồng -->
+    <circle cx="250" cy="250" r="70" fill="#E67300" opacity="0.15" />
+    <circle cx="250" cy="250" r="95" fill="none" stroke="#E67300" stroke-width="3" />
+    <circle cx="250" cy="250" r="145" fill="none" stroke="#E67300" stroke-width="2" stroke-dasharray="4,4" />
+    <circle cx="250" cy="250" r="185" fill="none" stroke="#E67300" stroke-width="3" />
+    
+    <!-- Chim Lạc cách điệu -->
+    <path d="M 210,120 Q 250,90 290,120 Q 250,110 210,120 Z" fill="#E67300" opacity="0.7" />
+    <path d="M 120,210 Q 90,250 120,290 Q 110,250 120,210 Z" fill="#E67300" opacity="0.7" />
+    <path d="M 380,210 Q 410,250 380,290 Q 390,250 380,210 Z" fill="#E67300" opacity="0.7" />
+  </g>
+
+  <!-- Pine Tree (Cây thông xanh đặc trưng của Đại học Đà Lạt) -->
+  <!-- Left light green shadow branch -->
+  <path d="M 250,105 Q 248,220 100,285 Q 150,370 250,450 Z" fill="#7FA967" />
+  <!-- Center medium green branch -->
+  <path d="M 250,105 Q 242,240 145,360 Q 195,415 250,460 Z" fill="#4D803E" />
+  <!-- Right dark forest green trunk / pine body -->
+  <path d="M 250,105 L 250,460 Q 255,460 262,455 L 262,105 Z" fill="#20542C" />
+
+  <!-- Red Star atop the pine tree (Ngôi sao đỏ trên đỉnh thông) -->
+  <polygon points="250,45 258,70 285,70 263,86 272,111 250,95 228,111 237,86 215,70 242,70" fill="#DC2626" stroke="#B91C1C" stroke-width="1.5" />
+
+  <!-- DLU Text along outer curve (ĐẠI HỌC ĐÀ LẠT) -->
+  <path id="textPathCurve" d="M 260,450 A 200,200 0 0,0 450,260" fill="none" stroke="none" />
+  <text fill="#20542C" font-family="'Geist Sans', 'Arial', sans-serif" font-weight="900" font-size="34" letter-spacing="2">
+    <textPath href="#textPathCurve" startOffset="5%">
+      ĐẠI HỌC ĐÀ LẠT
+    </textPath>
+  </text>
+</svg>

@@ -24,9 +24,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Khoa CNTT - Mạng Lưới Cựu Sinh Viên & Hợp Tác Doanh Nghiệp",
+  title: "Trường Đại học Đà Lạt - Mạng Lưới Cựu Sinh Viên & Hợp Tác Doanh Nghiệp (DLU Alumni)",
   description:
-    "Cổng thông tin kết nối Sinh viên - Cựu sinh viên - Doanh nghiệp - Khoa Công nghệ Thông tin",
+    "Cổng thông tin chính thức kết nối Cựu sinh viên - Doanh nghiệp - Sinh viên Trường Đại học Đà Lạt",
 };
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
