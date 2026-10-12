@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX "form_responses_form_respondent_unique" ON "form_responses" ("form_id","respondent_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "scholarship_applications_campaign_student_unique" ON "scholarship_applications" ("campaign_id","student_id");
