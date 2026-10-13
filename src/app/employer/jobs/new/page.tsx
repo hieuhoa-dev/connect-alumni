@@ -34,13 +34,28 @@ const NewJobPage = async () => {
 
       {!activeCompany || !activeCompany.id ? (
         <Card className="p-8 text-center text-xs text-muted-foreground">
-          Bạn cần đăng ký và được Khoa xác minh hồ sơ công ty trước khi đăng
-          tin.
+          Bạn cần đăng ký và được Ban quản trị xác minh hồ sơ công ty trước khi
+          đăng tin.
         </Card>
       ) : activeCompany.verificationStatus !== "verified" ? (
         <Card className="p-8 text-center text-xs text-muted-foreground">
-          Hồ sơ công ty <strong>{activeCompany.name}</strong> hiện đang chờ Khoa
-          xác minh. Chưa thể đăng tin tuyển dụng.
+          <p>
+            Hồ sơ công ty <strong>{activeCompany.name}</strong>{" "}
+            {activeCompany.verificationStatus === "rejected"
+              ? "đã bị từ chối xác minh."
+              : "đang chờ Ban quản trị xác minh."}{" "}
+            Chưa thể đăng tin tuyển dụng.
+          </p>
+          {activeCompany.verificationStatus === "rejected" &&
+            activeCompany.rejectedReason && (
+              <p>Lý do: {activeCompany.rejectedReason}</p>
+            )}
+          <Link
+            href="/employer/dashboard"
+            className="underline underline-offset-4"
+          >
+            Xem hồ sơ doanh nghiệp
+          </Link>
         </Card>
       ) : (
         <Card className="shadow-sm">
@@ -53,8 +68,8 @@ const NewJobPage = async () => {
               Tạo tin tuyển dụng mới
             </CardTitle>
             <CardDescription className="text-xs">
-              Tin sau khi gửi sẽ ở trạng thái chờ duyệt (Pending) để Ban Chủ
-              nhiệm Khoa kiểm duyệt nội dung trước khi xuất bản tới sinh viên.
+              Tin sau khi gửi sẽ ở trạng thái chờ duyệt để Ban quản trị kiểm tra
+              nội dung trước khi xuất bản tới cộng đồng.
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -120,7 +120,7 @@ export const ROLE_LABEL: Record<string, string> = {
   student: "Sinh viên",
   alumni: "Cựu sinh viên",
   employer: "Doanh nghiệp",
-  faculty_staff: "Cán bộ Khoa",
+  faculty_staff: "Nhân sự quản trị",
   admin: "Quản trị viên",
 };
 

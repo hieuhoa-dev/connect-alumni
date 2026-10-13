@@ -122,7 +122,7 @@ const CompaniesReviewPage = async () => {
                     variant="outline"
                     className="text-[10px] text-emerald-600 border-emerald-500/30"
                   >
-                    Verified
+                    Đã xác minh
                   </Badge>
                 </div>
                 <p className="text-muted-foreground line-clamp-2">
@@ -140,6 +140,40 @@ const CompaniesReviewPage = async () => {
           ))}
         </div>
       </div>
+
+      <details className="rounded-lg border border-border bg-card">
+        <summary className="cursor-pointer px-4 py-3 text-sm font-semibold">
+          Hồ sơ đã từ chối ({rejectedList.length})
+        </summary>
+        {rejectedList.length === 0 ? (
+          <p className="px-4 pb-4 text-xs text-muted-foreground">
+            Chưa có hồ sơ doanh nghiệp bị từ chối.
+          </p>
+        ) : (
+          <div className="divide-y divide-border border-t border-border">
+            {rejectedList.map((company) => (
+              <div key={company.id} className="space-y-2 p-4 text-xs">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      {company.name}
+                    </p>
+                    <p className="mt-1 text-muted-foreground">
+                      {company.industry}
+                    </p>
+                  </div>
+                  <Badge variant="outline">Đã từ chối</Badge>
+                </div>
+                {company.rejectedReason && (
+                  <p className="text-muted-foreground">
+                    Lý do: {company.rejectedReason}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </details>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { GraduationCap, HeartHandshake, Users } from "lucide-react";
 import Link from "next/link";
 import { getScholarshipCampaigns } from "@/actions/scholarship-actions";
+import { PublicPageTitle } from "@/components/shared/public-page-title";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -21,21 +22,23 @@ const ScholarshipsPage = async () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-2">
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+          <PublicPageTitle>
             Quỹ Khuyến học & Tiếp sức Tài năng Trẻ
-          </h1>
+          </PublicPageTitle>
           <p className="text-sm text-muted-foreground">
             Cầu nối tài trợ từ các Doanh nghiệp đối tác và Cựu sinh viên nhằm
             trao học bổng, hỗ trợ tài chính cho sinh viên vượt khó
           </p>
         </div>
-        <Link
-          href="/employer/scholarships/pledge"
-          className={buttonVariants({ size: "sm" })}
-        >
-          <HeartHandshake className="h-4 w-4 mr-2" />
-          Đồng hành tài trợ
-        </Link>
+        {campaigns.length > 0 && (
+          <Link
+            href="/account/scholarships/pledge"
+            className={buttonVariants({ size: "sm" })}
+          >
+            <HeartHandshake className="h-4 w-4 mr-2" />
+            Đồng hành tài trợ
+          </Link>
+        )}
       </div>
 
       {/* Campaigns list */}
@@ -47,7 +50,7 @@ const ScholarshipsPage = async () => {
               Hiện chưa có chiến dịch học bổng mới
             </h3>
             <p className="text-xs text-muted-foreground mt-1">
-              Khoa sẽ sớm thông báo các đợt xét học bổng tiếp theo.
+              Ban quản trị sẽ sớm thông báo các đợt xét học bổng tiếp theo.
             </p>
           </div>
         ) : (
@@ -67,7 +70,7 @@ const ScholarshipsPage = async () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <Badge className="bg-primary text-primary-foreground text-[10px]">
-                      Quỹ Khoa CNTT
+                      Quỹ Khuyến học DLU Alumni
                     </Badge>
                     <span className="text-[11px] text-muted-foreground">
                       Hạn nộp:{" "}
@@ -126,7 +129,7 @@ const ScholarshipsPage = async () => {
 
                 <CardFooter className="pt-3 border-t border-border/40 flex items-center justify-between gap-2">
                   <Link
-                    href="/employer/scholarships/pledge"
+                    href={`/account/scholarships/pledge?${new URLSearchParams({ campaignId: camp.id })}`}
                     className={buttonVariants({
                       variant: "outline",
                       size: "sm",
@@ -138,7 +141,7 @@ const ScholarshipsPage = async () => {
                     href={`/scholarships/${camp.id}`}
                     className={buttonVariants({ size: "sm" })}
                   >
-                    Nộp hồ sơ học bổng
+                    Xem chi tiết
                   </Link>
                 </CardFooter>
               </Card>

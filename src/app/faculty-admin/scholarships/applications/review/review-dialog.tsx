@@ -79,11 +79,17 @@ export const ReviewDialog = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(nextOpen) => {
-      if (submitting) return;
-      if (nextOpen) { setScore(currentScore ?? "85"); setReviewNote(currentNote ?? ""); }
-      setOpen(nextOpen);
-    }}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (submitting) return;
+        if (nextOpen) {
+          setScore(currentScore ?? "85");
+          setReviewNote(currentNote ?? "");
+        }
+        setOpen(nextOpen);
+      }}
+    >
       <DialogTrigger
         render={
           <Button

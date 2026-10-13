@@ -9,6 +9,7 @@ import {
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getJobPostById } from "@/actions/job-actions";
+import { PublicPageTitle } from "@/components/shared/public-page-title";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,9 +64,7 @@ const JobDetailPage = async ({ params }: JobDetailPageProps) => {
               )}
             </div>
 
-            <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-foreground leading-snug">
-              {job.title}
-            </h1>
+            <PublicPageTitle>{job.title}</PublicPageTitle>
 
             <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground pt-1">
               <span className="flex items-center gap-1.5 font-medium text-foreground">

@@ -133,7 +133,7 @@ export const NewsForm = ({
             id="news-title"
             value={values.title}
             onChange={(e) => setField("title", e.target.value)}
-            placeholder="Ví dụ: Gặp mặt cựu sinh viên khóa 2016 nhân kỷ niệm 20 năm thành lập Khoa"
+            placeholder="Ví dụ: Gặp mặt cựu sinh viên khóa 2016 nhân ngày hội kết nối toàn trường"
             maxLength={200}
             disabled={disabled}
           />

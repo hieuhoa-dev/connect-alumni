@@ -1,44 +1,46 @@
-# Thông tin tham chiếu Đại học Đà Lạt
+# Nguồn thông tin Đại học Đà Lạt
 
-Đối chiếu ngày **12/10/2026** từ các website thuộc tên miền `dlu.edu.vn`. Dữ liệu hiển thị tập trung tại `src/lib/site-config.ts`.
+Đối chiếu ngày **13/10/2026**. DLU Alumni là dự án riêng dành cho sinh viên và cựu sinh viên **toàn Trường Đại học Đà Lạt**, ở tất cả các khoa, ngành. Nhận diện và nội dung công khai nằm trong `src/lib/site-config.ts`.
 
-## Thông tin đưa vào dự án
+## Thông tin hiển thị trên trang Giới thiệu
 
-| Nội dung | Thông tin đã đối chiếu | Nguồn |
-| --- | --- | --- |
-| Trường | Trường Đại học Đà Lạt | [Website Trường](https://dlu.edu.vn/) |
-| Khoa | Khoa Công nghệ Thông tin | [Website Khoa](https://cntt.dlu.edu.vn/) |
-| Thành lập Khoa | Năm 2003 | [Bài kỷ niệm 20 năm, đăng 16/10/2023](https://cntt.dlu.edu.vn/le-ky-niem-20-nam-thanh-lap-khoa-cong-nghe-thong-tin-truong-dai-hoc-da-lat-2003-2023/) |
-| Văn phòng Khoa | Tầng 2, Tòa nhà A7, 01 Phù Đổng Thiên Vương | [Trang chủ Khoa](https://cntt.dlu.edu.vn/), [cẩm nang K50, đăng 18/08/2026](https://cntt.dlu.edu.vn/en/cam-nang-danh-cho-sinh-vien-nganh-cntt-khoa-50/) |
-| Email Khoa | it@dlu.edu.vn | Trang chủ Khoa và cẩm nang K50 |
-| Điện thoại Khoa | 0911 843 962 | Trang chủ Khoa và cẩm nang K50 |
-| Đơn vị hành chính trong địa chỉ | Phường Lâm Viên – Đà Lạt, tỉnh Lâm Đồng | [Cổng cựu sinh viên Trường](https://csv.dlu.edu.vn/gioi-thieu), [báo cáo thường niên 2025](https://dlu.edu.vn/wp-content/uploads/2025/10/1134-BC-DHDL-Bao-cao-thuong-nien-nam-2025.pdf) |
-| Ra mắt Ban liên lạc Hội cựu sinh viên Khoa CNTT | Ngày 14/10/2023, trong lễ kỷ niệm 20 năm thành lập Khoa | Bài kỷ niệm 20 năm |
-| Ban Liên lạc Cựu sinh viên | Tên và lớp của 11 người trong danh sách Khoa công bố ngày 25/12/2023 | [Danh sách chính thức](https://cntt.dlu.edu.vn/ban-lien-lac-cuu-sinh-vien-khoa-cntt/) |
+| Nội dung | Nguồn chính thức |
+| --- | --- |
+| Trường đại học công lập, đào tạo đa ngành, đa lĩnh vực; hoạt động đào tạo, nghiên cứu, chuyển giao công nghệ, phục vụ cộng đồng | [Lời ngỏ của Hiệu trưởng](https://dlu.edu.vn/loi-ngo-cua-hieu-truong/), [cẩm nang tuyển sinh 2025](https://sp.dlu.edu.vn/Resources/Docs/SubDomain/sp/Thong%20tin%20SV%20can%20biet/2025/Cam%20nang%20Thong%20tin%20tuyen%20sinh%20DLU%202025%20%281%29.pdf) |
+| Viện Đại học Đà Lạt thành lập năm 1957, bắt đầu tuyển sinh năm 1958; Trường Đại học Đà Lạt được thành lập ngày 27/10/1976 theo Quyết định 426/TTg | [Lịch sử Trường](https://50nam.dlu.edu.vn/lich-su/), [gặp mặt 65 năm](https://dlu.edu.vn/gap-mat-65-nam-truong-dai-hoc-da-lat-hinh-thanh-va-phat-trien/) |
 
-Địa chỉ đầy đủ trong dự án ghép vị trí văn phòng Khoa với tên phường hiện dùng trong nguồn của Trường. Liên kết bản đồ là tìm kiếm theo địa chỉ này; không xác lập tọa độ của Tòa nhà A7.
+Trang `/about#ve-truong` hiển thị bản tóm tắt trong dự án, không yêu cầu tải website bên ngoài khi render. Hai mục lục “Về Đại học Đà Lạt” và “Về DLU Alumni” cuộn trong cùng trang. Nội dung ghi tên nguồn và ngày đối chiếu bằng văn bản; không có nút chuyển sang website Trường/Khoa.
 
-## Liên kết đào tạo và cộng đồng
+## Thông tin liên hệ trong footer
 
-- [Kỹ thuật phần mềm](https://cntt.dlu.edu.vn/chuyen-nganh-ky-thuat-phan-mem/)
-- [Khoa học dữ liệu](https://cntt.dlu.edu.vn/chuyen-nganh-khoa-hoc-du-lieu/)
-- [Mạng máy tính](https://cntt.dlu.edu.vn/chuyen-nganh-mang-may-tinh/)
-- [Chuyên mục cựu sinh viên Khoa CNTT](https://cntt.dlu.edu.vn/category/sinh-vien/cuu-sinh-vien/)
-- [Cổng cựu sinh viên Trường Đại học Đà Lạt](https://csv.dlu.edu.vn/)
-- [Giới thiệu Khoa](https://cntt.dlu.edu.vn/gioi-thieu-khoa-cong-nghe-thong-tin/)
+Footer trang cộng đồng hiển thị thông tin liên hệ của **Trường Đại học Đà Lạt**, đối chiếu ngày 13/10/2026:
 
-Ba trang chuyên ngành là các URL có nội dung được lập chỉ mục trên website chính thức. Chỉ dẫn đến nội dung đào tạo, không suy ra điều kiện đăng ký chuyên ngành của từng khóa.
+- Địa chỉ: Số 01 Phù Đổng Thiên Vương, phường Lâm Viên - Đà Lạt, tỉnh Lâm Đồng.
+- Điện thoại: 0263 3822 246; liên kết gọi `tel:+842633822246`.
+- Email: info@dlu.edu.vn; liên kết mở ứng dụng email.
 
-## Phạm vi sử dụng
+Nguồn: [footer cổng chính thức Khoa Sinh học, mục Đại học Đà Lạt](https://ksh.dlu.edu.vn/en/) và [hồ sơ giới thiệu Trường](https://tckh.dlu.edu.vn/uploads/2021/03/DLU_Profile.pdf). Tên khoa của nguồn không dùng làm tên hay thông tin liên hệ của dự án; đây là khối thông tin chung về Trường trong footer nguồn. Địa chỉ mới đã đối chiếu thêm với [cổng tuyển sinh](https://tuyensinh.dlu.edu.vn/vi/dau-an-dlu). Việc tải trực tiếp một số URL bị timeout; nội dung được đối chiếu qua kết quả lập chỉ mục từ các tên miền chính thức.
 
-- `mission`, `vision`, `values` là mục tiêu biên soạn cho nền tảng Connect Alumni; không trích dẫn thành sứ mệnh hoặc tầm nhìn chính thức của Khoa.
-- Danh sách `board` phản ánh bài công bố **25/12/2023**. Không gán chức vụ trưởng/phó Ban hoặc diễn giải thành danh sách lãnh đạo hiện tại.
-- Contact trên là đầu mối của **Khoa CNTT**. Hotline tuyển sinh Trường và email tuyển sinh thuộc đầu mối khác.
-- Không dùng giờ làm việc, tọa độ mẫu, số người học, nhân sự mẫu hoặc cột mốc chưa có nguồn xác nhận.
-- Không đưa tên người thật vào tài khoản quản trị, tài khoản mẫu hoặc dữ liệu người dùng.
-- Không sao chép bài viết, hình ảnh hay các thông báo thời hạn vào cơ sở dữ liệu. Website dẫn đến bài gốc để người dùng đọc thông tin cập nhật.
-- Tham khảo thông tin công khai không xác nhận Connect Alumni đã được Khoa vận hành chính thức hoặc được triển khai lên website của Khoa.
+Hỗ trợ DLU Alumni vẫn dùng biểu mẫu `/contact`. Footer không gắn logo, địa chỉ hoặc tên Trường với một liên kết mở website bên ngoài.
 
-## Giới hạn đối chiếu
+## Nhận diện và hình ảnh
 
-Một số yêu cầu tải trang trực tiếp trả về timeout hoặc lỗi 502. Những mục trên được đối chiếu bằng nội dung được lập chỉ mục từ URL chính thức, với nhiều nguồn cho contact và địa chỉ. Khi nguồn Khoa thay đổi, cập nhật cấu hình và ngày đối chiếu; kiểm tra lại danh sách Ban Liên lạc trước khi dùng cho công tác vận hành thực tế.
+- Logo hiển thị: **Trường Đại học Đà Lạt**, bản lưu `public/images/dlu-logo.png` (2106 × 2106 px), từ [trang công bố logo](https://dlu.edu.vn/logo-truong-dai-hoc-da-lat/) và [tệp PNG](https://dlu.edu.vn/wp-content/uploads/2025/07/00.-Newest_DLU-Logo.png). Logo được dùng thống nhất ở trang công khai, đăng nhập/đăng ký và sidebar. Bấm logo tải lại trang chủ của dự án.
+- Ảnh khuôn viên: `public/images/dlu-campus.jpg` (900 × 597 px), từ [cổng cựu sinh viên DLU](https://csv.dlu.edu.vn/) và [tệp ảnh gốc](https://csv.dlu.edu.vn/api/media/file/2023-05-21(2)-900x597.jpg). Ảnh giới thiệu khuôn viên, không gán cho một sự kiện cụ thể.
+- Bản logo IT DLU `public/images/it-dlu-logo.png` được giữ làm tài sản cũ; không dùng làm nhận diện toàn trường.
+
+## Phạm vi nội dung
+
+- `mission`, `vision`, `values` là mục tiêu của dự án DLU Alumni; không phải tuyên bố chính thức của Trường.
+- Giới thiệu tập trung vào lịch sử, môi trường đào tạo đa ngành và mục tiêu kết nối cộng đồng. Không dùng ba chuyên ngành CNTT để đại diện cho toàn trường.
+- Tài khoản sinh viên/cựu sinh viên có trường khoa/ngành do người dùng nhập và cập nhật. Không tự gán “Công nghệ Thông tin” khi chưa có thông tin.
+- Khoa/ngành và năm học hiện có của tài khoản được giữ nguyên. Thay đổi phạm vi không tự sửa dữ liệu hồ sơ đã lưu hoặc chạy seed trên database.
+- Vai trò kỹ thuật `faculty_staff` và đường dẫn `/faculty-admin` được giữ để tương thích dữ liệu; nhãn giao diện là nhân sự quản trị của dự án, không giới hạn vào một khoa.
+- Liên hệ hỗ trợ dự án qua biểu mẫu của DLU Alumni. Footer có khối liên hệ chung của Trường theo yêu cầu; khối “Hỗ trợ & góp ý” dẫn tới biểu mẫu dự án.
+- Tham khảo nội dung và logo của Trường không xác nhận Trường vận hành hoặc bảo trợ dự án.
+
+## Tham khảo nội dung cốt lõi
+
+[Website Khoa CNTT](https://cntt.dlu.edu.vn/) là nguồn tham khảo cách tổ chức bản tin, thông báo, sự kiện, chia sẻ cựu sinh viên. Đề xuất sử dụng các nhóm nội dung này cho **toàn trường**, bổ sung chủ đề và khoa/ngành phù hợp. Không sao chép thông báo có thời hạn, bảng nhân sự, số liệu hoặc chương trình đào tạo riêng của Khoa để dùng làm nội dung toàn trường.
+
+Một số yêu cầu tải trực tiếp trả timeout/502. Các thông tin lịch sử và tổng quan đã được đối chiếu với nội dung được lập chỉ mục từ URL chính thức. Không xem ngày lập chỉ mục là ngày công bố bài viết.

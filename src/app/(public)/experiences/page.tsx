@@ -1,6 +1,8 @@
-import { BookOpen, Calendar, Eye, Search, User } from "lucide-react";
+import { BookOpen, Calendar, Eye, User } from "lucide-react";
 import Link from "next/link";
 import { getPublishedExperiencePosts } from "@/actions/experience-actions";
+import { LiveSearch } from "@/components/shared/live-search";
+import { PublicPageTitle } from "@/components/shared/public-page-title";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { makeExcerpt } from "@/lib/text";
 
 interface ExperiencesPageProps {
   searchParams: Promise<{
@@ -30,9 +32,9 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-1.5">
-          <h1 className="font-serif text-3xl font-medium tracking-tight text-foreground">
+          <PublicPageTitle>
             Góc chia sẻ kinh nghiệm Cựu sinh viên
-          </h1>
+          </PublicPageTitle>
           <p className="text-sm text-muted-foreground">
             Học hỏi bí quyết từ các thế hệ cựu sinh viên: kinh nghiệm phỏng vấn,
             thực tập, kỹ năng mềm và định hướng nghề nghiệp
@@ -48,15 +50,12 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
       </div>
 
       {/* Search */}
-      <form method="GET" className="max-w-md relative">
-        <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
-        <Input
-          name="search"
-          placeholder="Tìm kiếm bài viết theo từ khóa..."
-          defaultValue={params.search || ""}
-          className="pl-9 text-xs"
-        />
-      </form>
+      <LiveSearch
+        initialValue={params.search?.trim()}
+        label="Tìm bài chia sẻ"
+        placeholder="Tìm tiêu đề, nội dung hoặc chủ đề..."
+        className="max-w-md"
+      />
 
       {/* Posts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -99,13 +98,13 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
                     </span>
                     {author?.batchYear && (
                       <span className="text-muted-foreground">
-                        · K{author.batchYear % 100}
+                        · Nhập học {author.batchYear}
                       </span>
                     )}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground line-clamp-3 pb-3 leading-relaxed">
-                  {post.content}
+                  {makeExcerpt(post.content, 220)}
                 </CardContent>
                 <CardFooter className="pt-3 border-t border-border/50 flex items-center justify-between text-[11px] text-muted-foreground font-mono">
                   <span className="flex items-center gap-3">

@@ -40,10 +40,10 @@ export const NewsCard = ({
           </Tag>
           {item.isPinned && <Tag tone="yellow">Ghim</Tag>}
         </div>
-        <h3 className="font-serif text-xl font-medium leading-snug tracking-tight text-foreground">
+        <h3 className="font-heading text-xl font-semibold leading-snug tracking-tight text-foreground">
           <Link
             href={`/news/${item.id}`}
-            className="underline-offset-4 group-hover:underline after:absolute after:inset-0"
+            className="decoration-primary underline-offset-4 group-hover:text-primary group-hover:underline after:absolute after:inset-0"
           >
             {item.title}
           </Link>

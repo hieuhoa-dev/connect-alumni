@@ -1,6 +1,6 @@
 "use server";
 
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { experiencePosts } from "@/db/schema";
 import { logAuditEvent } from "@/lib/audit";
@@ -8,6 +8,8 @@ import { sendNotification } from "@/lib/notifications";
 import { getCurrentUser, requireRole } from "@/lib/permissions";
 import { getPagination, isEntityId } from "@/lib/query-input";
 import { sanitizeRichHtml } from "@/lib/sanitize";
+import { getSearchableText, getSearchCondition } from "@/lib/search-query";
+import { stripHtml } from "@/lib/text";
 import {
   type ExperiencePostInput,
   experiencePostSchema,
@@ -25,16 +27,23 @@ export const getPublishedExperiencePosts = async (params?: {
 }) => {
   const { limit, offset } = getPagination(params);
   const tag = params?.tag?.trim();
-
   const posts = await db.query.experiencePosts.findMany({
     where: {
       status: "published",
-      ...(params?.search ? { title: { ilike: `%${params.search}%` } } : {}),
-      // tags là jsonb string[]: lọc bằng toán tử chứa @>
-      ...(tag
+      ...(params?.search?.trim() || tag
         ? {
             RAW: (table) =>
-              sql`${table.tags} @> ${JSON.stringify([tag])}::jsonb`,
+              and(
+                getSearchCondition(params?.search, [
+                  table.title,
+                  getSearchableText(table.content),
+                  sql`(select string_agg(tag, ' ') from jsonb_array_elements_text(coalesce(${table.tags}, '[]'::jsonb)) as search_tags(tag))`,
+                ]),
+                // Keep the JSONB tag filter together with the word search.
+                tag
+                  ? sql`${table.tags} @> ${JSON.stringify([tag])}::jsonb`
+                  : undefined,
+              ) ?? sql`false`,
           }
         : {}),
     },
@@ -66,7 +75,7 @@ export const getPublishedExperiencePosts = async (params?: {
 
 /**
  * Get single post by ID and increment view count.
- * Bài chưa xuất bản (pending, rejected, draft) chỉ tác giả và nhân viên Khoa xem được.
+ * Bài chưa xuất bản (pending, rejected, draft) chỉ tác giả và nhân sự quản trị xem được.
  */
 export const getExperiencePostById = async (id: string) => {
   if (!isEntityId(id)) return null;
@@ -96,9 +105,11 @@ export const getExperiencePostById = async (id: string) => {
 
   if (!post) return null;
 
+  const isActive = current?.profile?.status === "active";
   const isStaff =
-    current?.role === "faculty_staff" || current?.role === "admin";
-  const isAuthor = current?.user.id === post.authorId;
+    isActive &&
+    (current?.role === "faculty_staff" || current?.role === "admin");
+  const isAuthor = isActive && current?.user.id === post.authorId;
   if (post.status !== "published" && !isStaff && !isAuthor) return null;
 
   if (post.status === "published") {
@@ -121,13 +132,19 @@ export const createExperiencePost = async (input: ExperiencePostInput) => {
   const current = await requireRole(["alumni"]);
 
   const validated = experiencePostSchema.parse(input);
+  const content = sanitizeRichHtml(validated.content);
+  if (stripHtml(content).length < 20) {
+    throw new Error(
+      "Nội dung bài viết cần có ít nhất 20 ký tự sau khi định dạng",
+    );
+  }
 
   const [post] = await db
     .insert(experiencePosts)
     .values({
       authorId: current.user.id,
       title: validated.title,
-      content: sanitizeRichHtml(validated.content),
+      content,
       coverImageUrl: validated.coverImageUrl || null,
       tags: validated.tags || [],
       status: "pending", // Mandated review pipeline
@@ -150,7 +167,7 @@ export const createExperiencePost = async (input: ExperiencePostInput) => {
  */
 export const getMyExperiencePosts = async () => {
   const current = await getCurrentUser();
-  if (!current?.user) return [];
+  if (!current?.user || current.profile?.status !== "active") return [];
 
   return await db.query.experiencePosts.findMany({
     where: {
@@ -195,9 +212,9 @@ export const reviewExperiencePost = async (
         : `Bài chia sẻ "${updated.title}" chưa được phê duyệt`,
     body:
       validated.status === "published"
-        ? "Cảm ơn bạn đã đóng góp chia sẻ kinh nghiệm quý báu cho cộng đồng sinh viên Khoa."
+        ? "Cảm ơn bạn đã đóng góp chia sẻ kinh nghiệm quý báu cho cộng đồng sinh viên Đại học Đà Lạt."
         : "Vui lòng xem lại nội dung và chỉnh sửa phù hợp hơn.",
-    linkUrl: `/student/experiences`,
+    linkUrl: `/experiences/${updated.id}`,
     sendEmail: true,
   });
 

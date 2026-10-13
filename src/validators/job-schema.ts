@@ -1,14 +1,14 @@
 import { z } from "zod";
 
 export const jobPostSchema = z.object({
-  title: z.string().min(3, "Tiêu đề công việc ít nhất 3 ký tự"),
-  description: z.string().min(10, "Mô tả công việc ít nhất 10 ký tự"),
-  requirements: z.string().min(10, "Yêu cầu công việc ít nhất 10 ký tự"),
-  location: z.string().min(2, "Địa điểm làm việc không được để trống"),
+  title: z.string().trim().min(3, "Tiêu đề công việc ít nhất 3 ký tự"),
+  description: z.string().trim().min(10, "Mô tả công việc ít nhất 10 ký tự"),
+  requirements: z.string().trim().min(10, "Yêu cầu công việc ít nhất 10 ký tự"),
+  location: z.string().trim().min(2, "Địa điểm làm việc không được để trống"),
   jobType: z.enum(["full_time", "part_time", "internship"], {
     message: "Hình thức làm việc không hợp lệ",
   }),
-  salaryRange: z.string().optional().nullable(),
+  salaryRange: z.string().trim().optional().nullable(),
   applyUrlOrEmail: z
     .string()
     .trim()
@@ -36,7 +36,7 @@ export const jobPostSchema = z.object({
 
 export const jobReviewSchema = z.object({
   status: z.enum(["approved", "rejected"]),
-  rejectedReason: z.string().optional().nullable(),
+  rejectedReason: z.string().trim().optional().nullable(),
 });
 
 export type JobPostInput = z.infer<typeof jobPostSchema>;

@@ -27,11 +27,13 @@ const EmployerDashboardPage = async () => {
 
   const jobs = activeCompany ? await getEmployerJobs(activeCompany.id) : [];
 
+  const isNotVerified = activeCompany?.verificationStatus !== "verified";
   const pendingJobs = jobs.filter((j) => j.status === "pending").length;
-  const approvedJobs = jobs.filter((j) => j.status === "approved").length;
+  const approvedJobs = isNotVerified
+    ? 0
+    : jobs.filter((j) => j.status === "approved").length;
   const expiredJobs = jobs.filter((j) => j.status === "expired").length;
 
-  const isNotVerified = activeCompany?.verificationStatus !== "verified";
   return (
     <div className="space-y-8">
       {/* Top Banner */}
@@ -42,8 +44,8 @@ const EmployerDashboardPage = async () => {
             Bạn chưa có hồ sơ doanh nghiệp
           </h2>
           <p className="text-xs text-muted-foreground max-w-md mx-auto">
-            Vui lòng đăng ký thông tin doanh nghiệp để Khoa CNTT xác minh trước
-            khi có thể đăng tin tuyển dụng.
+            Vui lòng đăng ký thông tin doanh nghiệp để Ban quản trị xác minh
+            trước khi có thể đăng tin tuyển dụng.
           </p>
           <Link
             href="/employer/onboarding"
@@ -56,20 +58,20 @@ const EmployerDashboardPage = async () => {
         <>
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="break-words text-2xl font-bold tracking-tight text-foreground">
                   {activeCompany.name}
                 </h1>
                 {activeCompany.verificationStatus === "verified" && (
                   <Badge className="bg-emerald-600 text-white gap-1 text-xs">
                     <ShieldCheck className="h-3.5 w-3.5" />
-                    Đã xác minh bởi Khoa
+                    Đã xác minh
                   </Badge>
                 )}
                 {activeCompany.verificationStatus === "pending" && (
                   <Badge className="bg-amber-600 text-white gap-1 text-xs">
                     <Clock className="h-3.5 w-3.5" />
-                    Chờ Khoa xác minh
+                    Chờ xác minh
                   </Badge>
                 )}
                 {activeCompany.verificationStatus === "rejected" && (
@@ -85,7 +87,7 @@ const EmployerDashboardPage = async () => {
               </p>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {isNotVerified ? (
                 <Button size="sm" disabled>
                   <PlusCircle className="h-4 w-4 mr-1.5" />
@@ -115,9 +117,24 @@ const EmployerDashboardPage = async () => {
           {activeCompany.verificationStatus === "pending" && (
             <Alert className="bg-amber-500/10 border-amber-500/20 text-amber-800 dark:text-amber-300 py-3 text-xs">
               <AlertDescription>
-                Hồ sơ doanh nghiệp của bạn đang được Ban Chủ nhiệm Khoa CNTT xem
+                Hồ sơ doanh nghiệp của bạn đang được Ban quản trị DLU Alumni xem
                 xét. Tính năng đăng tin tuyển dụng sẽ tự động kích hoạt ngay khi
                 hồ sơ được phê duyệt.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {activeCompany.verificationStatus === "rejected" && (
+            <Alert variant="destructive">
+              <AlertDescription>
+                <p>Hồ sơ doanh nghiệp chưa được xác minh.</p>
+                {activeCompany.rejectedReason && (
+                  <p>Lý do: {activeCompany.rejectedReason}</p>
+                )}
+                <p>
+                  Tin tuyển dụng của doanh nghiệp tạm ẩn khỏi cộng đồng. Vui
+                  lòng liên hệ Ban quản trị để được hướng dẫn bổ sung hồ sơ.
+                </p>
               </AlertDescription>
             </Alert>
           )}
@@ -134,7 +151,11 @@ const EmployerDashboardPage = async () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-[11px] text-muted-foreground flex justify-between items-center">
-                <span>Hiển thị công khai</span>
+                <span>
+                  {isNotVerified
+                    ? "Chờ xác minh doanh nghiệp"
+                    : "Hiển thị công khai"}
+                </span>
                 <Link
                   href="/employer/jobs"
                   className="text-primary font-medium hover:underline"
@@ -147,7 +168,7 @@ const EmployerDashboardPage = async () => {
             <Card>
               <CardHeader className="pb-2">
                 <CardDescription className="text-xs">
-                  Tin đang chờ Khoa duyệt
+                  Tin đang chờ duyệt
                 </CardDescription>
                 <CardTitle className="text-2xl font-bold text-amber-600">
                   {pendingJobs}

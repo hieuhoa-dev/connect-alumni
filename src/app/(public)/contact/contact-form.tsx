@@ -53,8 +53,8 @@ export const ContactForm = () => {
         <CheckCircle2 className="size-8 text-[#346538]" />
         <h2 className="font-serif text-2xl text-foreground">Đã gửi tin nhắn</h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Cảm ơn bạn. Ban Chủ nhiệm Khoa sẽ phản hồi qua email trong thời gian
-          sớm nhất.
+          Cảm ơn bạn. Tin nhắn đã được gửi tới bộ phận quản trị DLU Alumni.
+          Chúng tôi sẽ liên hệ qua email bạn cung cấp khi có phản hồi.
         </p>
         <Button variant="outline" onClick={() => setSent(false)}>
           Gửi tin nhắn khác

@@ -40,8 +40,8 @@ const SurveysPage = async () => {
                 Hiện không có biểu mẫu khảo sát nào
               </p>
               <p>
-                Mọi khảo sát mới từ Khoa sẽ tự động hiển thị tại đây khi được
-                mở.
+                Mọi khảo sát mới từ Ban quản trị sẽ tự động hiển thị tại đây khi
+                được mở.
               </p>
             </CardContent>
           </Card>

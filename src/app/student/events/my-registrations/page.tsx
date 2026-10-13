@@ -9,7 +9,7 @@ import {
 import Link from "next/link";
 import { getMyEventsAndInvites } from "@/actions/event-actions";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -33,15 +33,12 @@ const MyRegistrationsPage = async () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <Link href="/student/events">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 px-2 text-muted-foreground gap-1"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Khám phá sự kiện
-              </Button>
+            <Link
+              href="/student/events"
+              className={buttonVariants({ variant: "ghost", size: "sm" })}
+            >
+              <ArrowLeft data-icon="inline-start" />
+              Khám phá sự kiện
             </Link>
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
@@ -49,7 +46,7 @@ const MyRegistrationsPage = async () => {
           </h1>
           <p className="text-xs text-muted-foreground mt-1">
             Theo dõi lịch trình các buổi talkshow đã đăng ký và phản hồi lời mời
-            diễn giả từ Khoa
+            diễn giả từ Ban quản trị
           </p>
         </div>
       </div>
@@ -60,13 +57,17 @@ const MyRegistrationsPage = async () => {
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-amber-500" />
             <h2 className="text-base font-bold text-foreground">
-              Lời mời tham gia Diễn giả từ Ban Chủ nhiệm Khoa
+              Lời mời tham gia Diễn giả từ Ban quản trị DLU Alumni
             </h2>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
             {data.speakerInvites.map((inv) => {
               if (!inv.event) return null;
+              const canRespond =
+                inv.event.status !== "cancelled" &&
+                inv.event.status !== "completed" &&
+                inv.event.endTime > new Date();
               return (
                 <Card
                   key={inv.id}
@@ -102,19 +103,26 @@ const MyRegistrationsPage = async () => {
                           ? "Đã nhận lời"
                           : inv.invitationStatus === "declined"
                             ? "Đã từ chối"
-                            : "Chờ bạn phản hồi"}
+                            : canRespond
+                              ? "Chờ bạn phản hồi"
+                              : "Đã hết hạn phản hồi"}
                       </Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3 text-xs">
                     {inv.note && (
                       <div className="rounded bg-background/80 p-2.5 border text-muted-foreground italic">
-                        "Lời nhắn từ Khoa: {inv.note}"
+                        "Lời nhắn từ Ban quản trị: {inv.note}"
                       </div>
                     )}
 
-                    {inv.invitationStatus === "pending" && (
+                    {inv.invitationStatus === "pending" && canRespond && (
                       <SpeakerInviteResponseActions inviteId={inv.id} />
+                    )}
+                    {inv.invitationStatus === "pending" && !canRespond && (
+                      <p className="text-muted-foreground">
+                        Sự kiện đã đóng hoặc kết thúc nhận phản hồi diễn giả.
+                      </p>
                     )}
                   </CardContent>
                 </Card>

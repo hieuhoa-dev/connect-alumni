@@ -1,11 +1,13 @@
 "use server";
 
 import { and, eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { companies, companyMembers, user } from "@/db/schema";
 import { logAuditEvent } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications";
 import { getCurrentUser, requireRole } from "@/lib/permissions";
+import { isEntityId } from "@/lib/query-input";
 import {
   type CompanyCreateInput,
   companyCreateSchema,
@@ -67,6 +69,8 @@ export const registerCompany = async (input: CompanyCreateInput) => {
     metadata: { name: newCompany.name },
   });
 
+  revalidatePath("/employer", "layout");
+  revalidatePath("/faculty-admin/companies/review");
   return newCompany;
 };
 
@@ -75,6 +79,7 @@ export const registerCompany = async (input: CompanyCreateInput) => {
  */
 export const switchActiveCompany = async (companyId: string) => {
   const current = await requireRole(["employer"]);
+  if (!isEntityId(companyId)) throw new Error("ID doanh nghiệp không hợp lệ");
 
   await db.transaction(async (tx) => {
     await tx
@@ -103,6 +108,7 @@ export const switchActiveCompany = async (companyId: string) => {
       );
   });
 
+  revalidatePath("/employer", "layout");
   return { success: true, companyId };
 };
 
@@ -115,6 +121,8 @@ export const reviewCompany = async (data: {
   rejectedReason?: string;
 }) => {
   const current = await requireRole(["faculty_staff", "admin"]);
+  if (!isEntityId(data.companyId))
+    throw new Error("ID doanh nghiệp không hợp lệ");
   const validated = companyReviewSchema.parse({
     status: data.status,
     rejectedReason: data.rejectedReason,
@@ -146,7 +154,7 @@ export const reviewCompany = async (data: {
     body:
       validated.status === "verified"
         ? "Doanh nghiệp của bạn hiện có thể đăng tin tuyển dụng và tham gia các hoạt động kết nối."
-        : `Lý do: ${validated.rejectedReason || "Chưa đạt tiêu chuẩn kết nối của Khoa."}`,
+        : `Lý do: ${validated.rejectedReason || "Chưa đạt tiêu chuẩn kết nối của dự án."}`,
     linkUrl: "/employer/dashboard",
     sendEmail: true,
   });
@@ -159,6 +167,11 @@ export const reviewCompany = async (data: {
     metadata: { status: validated.status, reason: validated.rejectedReason },
   });
 
+  revalidatePath("/employer", "layout");
+  revalidatePath("/faculty-admin/companies/review");
+  revalidatePath("/jobs");
+  revalidatePath("/jobs/[id]", "page");
+  revalidatePath("/");
   return company;
 };
 

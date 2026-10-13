@@ -18,20 +18,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
+import { getInternalHref } from "@/lib/internal-href";
 
 const LoginForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const rawCallback = searchParams.get("callbackUrl") || "/dashboard";
-  // Chỉ cho phép đường dẫn nội bộ, chặn open redirect (//evil.com, https://evil.com, /\\evil.com)
-  const callbackUrl =
-    rawCallback.startsWith("/") &&
-    !rawCallback.startsWith("//") &&
-    !Array.from(rawCallback).some(
-      (char) => char === "\\" || char.charCodeAt(0) <= 32,
-    )
-      ? rawCallback
-      : "/dashboard";
+  const callbackUrl = getInternalHref(rawCallback) ?? "/dashboard";
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -159,111 +152,113 @@ const LoginForm = () => {
       </Card>
 
       {/* Demo Fast Login Box for Reviewers */}
-      <Card className="border-primary/20 bg-primary/5">
-        <CardHeader className="py-3 px-4">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-primary">
-            <Sparkles className="h-4 w-4" />
-            <span>Tài khoản mẫu cho môi trường trình diễn</span>
-          </div>
-        </CardHeader>
-        <CardContent className="px-4 pb-4 pt-0 space-y-2">
-          <p className="text-[11px] text-muted-foreground">
-            Bấm chọn để tự động điền tài khoản mẫu (Mật khẩu chung:{" "}
-            <code className="font-mono font-semibold">Password123!</code>):
-          </p>
-          <div className="grid grid-cols-1 gap-1.5">
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("staff@khoacntt.edu.vn")}
-              className="flex items-center justify-between rounded p-1.5 text-left text-xs bg-background/80 hover:bg-background border border-border transition-colors"
-            >
-              <div>
-                <div className="font-medium text-foreground">
-                  Tài khoản cán bộ mẫu
+      {process.env.NODE_ENV === "development" && (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardHeader className="py-3 px-4">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-primary">
+              <Sparkles className="h-4 w-4" />
+              <span>Tài khoản mẫu cho môi trường trình diễn</span>
+            </div>
+          </CardHeader>
+          <CardContent className="px-4 pb-4 pt-0 space-y-2">
+            <p className="text-[11px] text-muted-foreground">
+              Bấm chọn để tự động điền tài khoản mẫu (Mật khẩu chung:{" "}
+              <code className="font-mono font-semibold">Password123!</code>):
+            </p>
+            <div className="grid grid-cols-1 gap-1.5">
+              <button
+                type="button"
+                onClick={() => handleQuickLogin("staff@khoacntt.edu.vn")}
+                className="flex items-center justify-between rounded p-1.5 text-left text-xs bg-background/80 hover:bg-background border border-border transition-colors"
+              >
+                <div>
+                  <div className="font-medium text-foreground">
+                    Tài khoản vận hành mẫu
+                  </div>
+                  <div className="text-[10px] text-muted-foreground">
+                    Quản lý nội dung và hoạt động cộng đồng
+                  </div>
                 </div>
-                <div className="text-[10px] text-muted-foreground">
-                  staff@khoacntt.edu.vn
-                </div>
-              </div>
-              <Badge className="text-[10px] bg-indigo-600 text-white">
-                Khoa
-              </Badge>
-            </button>
+                <Badge className="text-[10px] bg-indigo-600 text-white">
+                  Vận hành
+                </Badge>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("admin@khoacntt.edu.vn")}
-              className="flex items-center justify-between rounded p-1.5 text-left text-xs bg-background/80 hover:bg-background border border-border transition-colors"
-            >
-              <div>
-                <div className="font-medium text-foreground">
-                  Tài khoản quản trị mẫu
+              <button
+                type="button"
+                onClick={() => handleQuickLogin("admin@khoacntt.edu.vn")}
+                className="flex items-center justify-between rounded p-1.5 text-left text-xs bg-background/80 hover:bg-background border border-border transition-colors"
+              >
+                <div>
+                  <div className="font-medium text-foreground">
+                    Tài khoản quản trị mẫu
+                  </div>
+                  <div className="text-[10px] text-muted-foreground">
+                    Quản lý tài khoản và phân quyền
+                  </div>
                 </div>
-                <div className="text-[10px] text-muted-foreground">
-                  admin@khoacntt.edu.vn
-                </div>
-              </div>
-              <Badge className="text-[10px] bg-destructive text-destructive-foreground">
-                Admin
-              </Badge>
-            </button>
+                <Badge className="text-[10px] bg-destructive text-destructive-foreground">
+                  Admin
+                </Badge>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("student.hoa@khoacntt.edu.vn")}
-              className="flex items-center justify-between rounded p-1.5 text-left text-xs bg-background/80 hover:bg-background border border-border transition-colors"
-            >
-              <div>
-                <div className="font-medium text-foreground">
-                  Nguyễn Tiến Hoa (Sinh viên K21)
+              <button
+                type="button"
+                onClick={() => handleQuickLogin("student.hoa@khoacntt.edu.vn")}
+                className="flex items-center justify-between rounded p-1.5 text-left text-xs bg-background/80 hover:bg-background border border-border transition-colors"
+              >
+                <div>
+                  <div className="font-medium text-foreground">
+                    Tài khoản sinh viên mẫu
+                  </div>
+                  <div className="text-[10px] text-muted-foreground">
+                    Sự kiện, học bổng và khảo sát
+                  </div>
                 </div>
-                <div className="text-[10px] text-muted-foreground">
-                  student.hoa@khoacntt.edu.vn
-                </div>
-              </div>
-              <Badge variant="secondary" className="text-[10px]">
-                Sinh viên
-              </Badge>
-            </button>
+                <Badge variant="secondary" className="text-[10px]">
+                  Sinh viên
+                </Badge>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("alumni.le@gmail.com")}
-              className="flex items-center justify-between rounded p-1.5 text-left text-xs bg-background/80 hover:bg-background border border-border transition-colors"
-            >
-              <div>
-                <div className="font-medium text-foreground">
-                  Lê Hoàng Nam (Cựu SV K18)
+              <button
+                type="button"
+                onClick={() => handleQuickLogin("alumni.le@gmail.com")}
+                className="flex items-center justify-between rounded p-1.5 text-left text-xs bg-background/80 hover:bg-background border border-border transition-colors"
+              >
+                <div>
+                  <div className="font-medium text-foreground">
+                    Tài khoản cựu sinh viên mẫu
+                  </div>
+                  <div className="text-[10px] text-muted-foreground">
+                    Chia sẻ kinh nghiệm và tham gia sự kiện
+                  </div>
                 </div>
-                <div className="text-[10px] text-muted-foreground">
-                  alumni.le@gmail.com
-                </div>
-              </div>
-              <Badge className="text-[10px] bg-amber-600 text-white">
-                Alumni
-              </Badge>
-            </button>
+                <Badge className="text-[10px] bg-amber-600 text-white">
+                  Alumni
+                </Badge>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => handleQuickLogin("hr@vng.com.vn")}
-              className="flex items-center justify-between rounded p-1.5 text-left text-xs bg-background/80 hover:bg-background border border-border transition-colors"
-            >
-              <div>
-                <div className="font-medium text-foreground">
-                  Phạm Thu Trang (HR VNG)
+              <button
+                type="button"
+                onClick={() => handleQuickLogin("hr@vng.com.vn")}
+                className="flex items-center justify-between rounded p-1.5 text-left text-xs bg-background/80 hover:bg-background border border-border transition-colors"
+              >
+                <div>
+                  <div className="font-medium text-foreground">
+                    Tài khoản doanh nghiệp mẫu
+                  </div>
+                  <div className="text-[10px] text-muted-foreground">
+                    Tuyển dụng và đồng hành cùng học bổng
+                  </div>
                 </div>
-                <div className="text-[10px] text-muted-foreground">
-                  hr@vng.com.vn
-                </div>
-              </div>
-              <Badge className="text-[10px] bg-emerald-600 text-white">
-                Doanh nghiệp
-              </Badge>
-            </button>
-          </div>
-        </CardContent>
-      </Card>
+                <Badge className="text-[10px] bg-emerald-600 text-white">
+                  Doanh nghiệp
+                </Badge>
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

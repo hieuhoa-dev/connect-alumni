@@ -1,20 +1,19 @@
-import { GraduationCap } from "lucide-react";
-import Link from "next/link";
 import type * as React from "react";
+import { DluLogo } from "@/components/shared/dlu-logo";
+import { SITE } from "@/lib/site-config";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen flex flex-col justify-between bg-muted/20">
       <header className="p-6">
-        <Link
+        <a
           href="/"
-          className="inline-flex items-center gap-2 font-bold text-foreground"
+          aria-label="Tải lại trang chủ DLU Alumni"
+          className="inline-flex items-center gap-3 font-semibold text-foreground"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <GraduationCap className="h-4 w-4" />
-          </div>
-          <span>CONNECT ALUMNI</span>
-        </Link>
+          <DluLogo className="size-11" alt="" />
+          <span>{SITE.appName}</span>
+        </a>
       </header>
 
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6">
@@ -22,8 +21,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
       </main>
 
       <footer className="p-6 text-center text-xs text-muted-foreground">
-        © 2026 Khoa Công nghệ Thông tin. Nền tảng kết nối Sinh viên – Cựu sinh
-        viên – Doanh nghiệp.
+        © 2026 {SITE.appName} · Dự án kết nối cộng đồng
       </footer>
     </div>
   );

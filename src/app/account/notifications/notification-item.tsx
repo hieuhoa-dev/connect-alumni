@@ -10,6 +10,7 @@ import {
 } from "@/actions/notification-actions";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
+import { getInternalHref } from "@/lib/internal-href";
 import { cn } from "@/lib/utils";
 
 interface NotificationItemProps {
@@ -48,8 +49,7 @@ export const NotificationRow = ({
   };
 
   // Chỉ chấp nhận liên kết nội bộ, tránh thông báo trỏ ra trang ngoài
-  const safeLink =
-    linkUrl?.startsWith("/") && !linkUrl.startsWith("//") ? linkUrl : null;
+  const safeLink = getInternalHref(linkUrl);
 
   return (
     <li

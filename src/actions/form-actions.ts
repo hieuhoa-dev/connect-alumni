@@ -1,7 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { formAnswers, formQuestions, formResponses, forms } from "@/db/schema";
 import { logAuditEvent } from "@/lib/audit";
@@ -14,8 +14,8 @@ import {
   type FormCreateInput,
   type FormResponseSubmitInput,
   formCreateSchema,
-  formResponseSubmitSchema,
   formQuestionInputSchema,
+  formResponseSubmitSchema,
   formStatusUpdateSchema,
   getFormAnswerError,
   isFormEligible,
@@ -27,6 +27,12 @@ import {
 export const createFormWithQuestions = async (input: FormCreateInput) => {
   const current = await requireRole(["faculty_staff", "admin"]);
   const validated = formCreateSchema.parse(input);
+  if (
+    validated.status === "open" &&
+    validated.deadline &&
+    validated.deadline <= new Date()
+  )
+    throw new Error("Biểu mẫu đã quá hạn nhận phản hồi");
 
   const newForm = await db.transaction(async (tx) => {
     const [created] = await tx
@@ -113,7 +119,7 @@ export const getFormById = async (formId: string) => {
  */
 export const getAvailableFormsForUser = async () => {
   const current = await getCurrentUser();
-  if (!current?.user) return [];
+  if (!current?.user || current.profile?.status !== "active") return [];
 
   const allForms = await db.query.forms.findMany({
     where: {
@@ -159,7 +165,7 @@ export const submitFormResponse = async (input: FormResponseSubmitInput) => {
     throw new Error("Biểu mẫu hiện đang đóng hoặc không tồn tại");
   }
 
-  if (form.deadline && new Date() > new Date(form.deadline)) {
+  if (form.deadline && new Date() >= new Date(form.deadline)) {
     throw new Error("Biểu mẫu đã quá hạn nộp");
   }
 
@@ -231,6 +237,7 @@ export const submitFormResponse = async (input: FormResponseSubmitInput) => {
  */
 export const getFormResponsesAndAnalytics = async (formId: string) => {
   await requireRole(["faculty_staff", "admin"]);
+  formResponseSubmitSchema.shape.formId.parse(formId);
 
   const form = await db.query.forms.findFirst({
     where: {
@@ -351,18 +358,40 @@ export const getFormsForFaculty = async () => {
   });
 };
 
-export const updateFormStatus = async (input: { formId: string; status: "draft" | "open" | "closed" }) => {
+export const updateFormStatus = async (input: {
+  formId: string;
+  status: "draft" | "open" | "closed";
+}) => {
   const current = await requireRole(["faculty_staff", "admin"]);
   const validated = formStatusUpdateSchema.parse(input);
-  const form = await db.query.forms.findFirst({ where: { id: validated.formId }, with: { questions: true } });
+  const form = await db.query.forms.findFirst({
+    where: { id: validated.formId },
+    with: { questions: true },
+  });
   if (!form) throw new Error("Không tìm thấy biểu mẫu");
   if (validated.status === "open") {
-    if (form.deadline && form.deadline <= new Date()) throw new Error("Biểu mẫu đã quá hạn nhận phản hồi");
-    if (!form.questions.length || form.questions.some((question) => !formQuestionInputSchema.safeParse(question).success)) throw new Error("Vui lòng hoàn thiện câu hỏi trước khi mở biểu mẫu");
+    if (form.deadline && form.deadline <= new Date())
+      throw new Error("Biểu mẫu đã quá hạn nhận phản hồi");
+    if (
+      !form.questions.length ||
+      form.questions.some(
+        (question) => !formQuestionInputSchema.safeParse(question).success,
+      )
+    )
+      throw new Error("Vui lòng hoàn thiện câu hỏi trước khi mở biểu mẫu");
   }
-  const [updated] = await db.update(forms).set({ status: validated.status }).where(eq(forms.id, validated.formId)).returning();
+  const [updated] = await db
+    .update(forms)
+    .set({ status: validated.status })
+    .where(eq(forms.id, validated.formId))
+    .returning();
   if (!updated) throw new Error("Không tìm thấy biểu mẫu");
-  await logAuditEvent({ actorId: current.user.id, action: `update_form_status_${validated.status}`, entityType: "form", entityId: validated.formId });
+  await logAuditEvent({
+    actorId: current.user.id,
+    action: `update_form_status_${validated.status}`,
+    entityType: "form",
+    entityId: validated.formId,
+  });
   revalidatePath("/faculty-admin/forms");
   revalidatePath("/student/surveys");
   revalidatePath(`/student/surveys/${validated.formId}`);

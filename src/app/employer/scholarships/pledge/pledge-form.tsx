@@ -19,11 +19,21 @@ interface PledgeFormProps {
     targetAmount: string;
   }[];
   defaultName: string;
+  initialCampaignId?: string;
 }
 
-export const PledgeForm = ({ campaigns, defaultName }: PledgeFormProps) => {
+export const PledgeForm = ({
+  campaigns,
+  defaultName,
+  initialCampaignId,
+}: PledgeFormProps) => {
   const router = useRouter();
-  const [campaignId, setCampaignId] = React.useState(campaigns[0]?.id || "");
+  const [campaignId, setCampaignId] = React.useState(() =>
+    initialCampaignId &&
+    campaigns.some((campaign) => campaign.id === initialCampaignId)
+      ? initialCampaignId
+      : campaigns[0]?.id || "",
+  );
   const [donorDisplayName, setDonorDisplayName] = React.useState(defaultName);
   const [isAnonymous, setIsAnonymous] = React.useState(false);
   const [amount, setAmount] = React.useState("10000000");
@@ -37,6 +47,7 @@ export const PledgeForm = ({ campaigns, defaultName }: PledgeFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return;
     setIsLoading(true);
     setError(null);
 
@@ -67,8 +78,8 @@ export const PledgeForm = ({ campaigns, defaultName }: PledgeFormProps) => {
           Cam kết tài trợ của bạn đã được ghi nhận!
         </AlertDescription>
         <p className="text-xs text-muted-foreground">
-          Ban Chủ nhiệm Khoa trân trọng cảm ơn sự đồng hành quý báu của Quý đơn
-          vị/Nhà hảo tâm. Đang chuyển hướng...
+          Ban quản trị DLU Alumni trân trọng cảm ơn sự đồng hành quý báu của Quý
+          đơn vị/Nhà hảo tâm. Đang chuyển hướng...
         </p>
       </Alert>
     );
@@ -92,6 +103,7 @@ export const PledgeForm = ({ campaigns, defaultName }: PledgeFormProps) => {
           onChange={(e) => setCampaignId(e.target.value)}
           className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
           required
+          disabled={isLoading}
         >
           {campaigns.map((c) => (
             <option key={c.id} value={c.id}>
@@ -120,6 +132,7 @@ export const PledgeForm = ({ campaigns, defaultName }: PledgeFormProps) => {
           id="anon"
           checked={isAnonymous}
           onCheckedChange={(checked) => setIsAnonymous(!!checked)}
+          disabled={isLoading}
         />
         <Label
           htmlFor="anon"

@@ -14,7 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { PledgeActions } from "./pledge-actions";
 
 export const metadata = {
-  title: "Quản lý Chiến dịch Học bổng & Đóng góp | Khoa CNTT",
+  title: "Quản lý Chiến dịch Học bổng & Đóng góp | DLU Alumni",
 };
 
 const CampaignsManagementPage = async () => {

@@ -56,7 +56,7 @@ export const AnalyticsCharts = ({
     .filter((b) => b.batchYear)
     .sort((a, b) => (a.batchYear || 0) - (b.batchYear || 0))
     .map((b) => ({
-      name: `K${(b.batchYear || 2020) % 100}`,
+      name: String(b.batchYear),
       count: b.count,
     }));
 

@@ -52,7 +52,7 @@ export const ScholarshipApplyForm = ({
       <Alert>
         <AlertDescription>
           Biểu mẫu hồ sơ hiện chưa khả dụng cho tài khoản của bạn. Vui lòng liên
-          hệ Khoa để được hướng dẫn.
+          hệ Ban quản trị để được hướng dẫn.
         </AlertDescription>
       </Alert>
     );

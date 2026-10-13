@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getFormResponsesAndAnalytics } from "@/actions/form-actions";
 import { Button } from "@/components/ui/button";
+import { isEntityId } from "@/lib/query-input";
 import { ResponseAnalytics } from "./response-analytics";
 
 interface PageProps {
@@ -10,16 +11,19 @@ interface PageProps {
 }
 
 export const metadata = {
-  title: "Báo cáo Kết quả Khảo sát | Khoa CNTT",
+  title: "Báo cáo Kết quả Khảo sát | DLU Alumni",
 };
 
 const FormResponsesPage = async ({ params }: PageProps) => {
   const { id } = await params;
+  if (!isEntityId(id)) notFound();
   let data: Awaited<ReturnType<typeof getFormResponsesAndAnalytics>>;
   try {
     data = await getFormResponsesAndAnalytics(id);
-  } catch {
-    notFound();
+  } catch (error) {
+    if (error instanceof Error && error.message === "Không tìm thấy biểu mẫu")
+      notFound();
+    throw error;
   }
 
   return (

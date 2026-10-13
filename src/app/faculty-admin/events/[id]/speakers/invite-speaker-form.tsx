@@ -24,7 +24,7 @@ export const InviteSpeakerForm = ({
     alumniList[0]?.userId || "",
   );
   const [note, setNote] = React.useState(
-    "Trân trọng kính mời Anh/Chị tham gia chia sẻ kinh nghiệm cùng các bạn sinh viên Khoa CNTT.",
+    "Trân trọng kính mời Anh/Chị tham gia chia sẻ kinh nghiệm cùng các bạn sinh viên Đại học Đà Lạt.",
   );
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState(false);

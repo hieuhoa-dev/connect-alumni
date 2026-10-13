@@ -1,44 +1,41 @@
+import Link from "next/link";
 import { SITE } from "@/lib/site-config";
 
-export const FacultyLinks = () => (
+export const CommunityLinks = () => (
   <section
-    aria-labelledby="faculty-links-heading"
-    className="border-t border-border pt-8"
+    aria-labelledby="community-links-heading"
+    className="border-t-2 border-primary pt-8"
   >
     <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
       <div className="flex max-w-lg flex-col gap-4">
         <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-          {SITE.universityName}
+          Khám phá {SITE.appName}
         </p>
         <h2
-          id="faculty-links-heading"
-          className="font-serif text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
+          id="community-links-heading"
+          className="text-2xl font-semibold leading-tight tracking-tight sm:text-3xl"
         >
           Cùng một mái trường,
           <br />
           nhiều thế hệ kết nối.
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Khoa Công nghệ Thông tin được thành lập năm {SITE.founded}. Tại lễ kỷ
-          niệm 20 năm vào ngày 14/10/2023, Khoa ra mắt Ban liên lạc Hội cựu sinh
-          viên, tiếp nối sự đồng hành giữa các thế hệ.
+          DLU Alumni là dự án riêng dành cho sinh viên, cựu sinh viên toàn
+          Trường Đại học Đà Lạt và doanh nghiệp. Cùng chia sẻ kinh nghiệm, tham
+          gia hoạt động và tìm những cơ hội đồng hành ngay trên nền tảng.
         </p>
-        <a
-          href={SITE.milestones[1].sourceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-fit text-xs text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground"
+        <Link
+          href="/about"
+          className="w-fit text-xs text-muted-foreground underline decoration-primary underline-offset-4 transition-colors hover:text-primary"
         >
-          Đọc câu chuyện trên website Khoa <span aria-hidden="true">↗</span>
-        </a>
+          Giới thiệu Trường và dự án <span aria-hidden="true">→</span>
+        </Link>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
-        {SITE.officialLinks.map((link) => (
-          <a
+        {SITE.communityLinks.map((link) => (
+          <Link
             key={link.href}
             href={link.href}
-            target="_blank"
-            rel="noopener noreferrer"
             className="group flex flex-col justify-between gap-5 rounded-lg border border-border bg-card p-5 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
           >
             <div className="flex items-start justify-between gap-4">
@@ -49,13 +46,13 @@ export const FacultyLinks = () => (
                 aria-hidden="true"
                 className="text-muted-foreground transition-transform group-hover:translate-x-0.5"
               >
-                ↗
+                →
               </span>
             </div>
             <p className="text-xs leading-relaxed text-muted-foreground">
               {link.description}
             </p>
-          </a>
+          </Link>
         ))}
       </div>
     </div>

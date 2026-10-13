@@ -24,7 +24,7 @@ import { CopyFormLinkButton } from "./copy-form-link-button";
 import { FormStatusActions } from "./form-status-actions";
 
 export const metadata = {
-  title: "Quản lý Khảo sát & Biểu mẫu | Khoa CNTT",
+  title: "Quản lý Khảo sát & Biểu mẫu | DLU Alumni",
 };
 
 const FacultyFormsPage = async () => {
@@ -63,12 +63,14 @@ const FacultyFormsPage = async () => {
             Khảo sát
           </span>
         );
-      case "scholarship_app":
+      case "scholarship_application":
         return (
           <span className="text-xs font-semibold px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300">
             Học bổng
           </span>
         );
+      case "event_feedback":
+        return <span className="text-xs font-semibold">Đánh giá sự kiện</span>;
       default:
         return (
           <span className="text-xs font-semibold px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
@@ -132,7 +134,7 @@ const FacultyFormsPage = async () => {
                 ) và Bảng điều khiển của họ nếu đúng đối tượng áp dụng.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                • <strong>Khoa / Giáo vụ</strong>: Bạn có thể nhấn{" "}
+                • <strong>Ban quản trị</strong>: Bạn có thể nhấn{" "}
                 <strong>Làm thử / Xem trước</strong> để trải nghiệm giao diện
                 người dùng điền biểu mẫu, hoặc dùng <strong>Chép link</strong>{" "}
                 để gửi trực tiếp cho sinh viên.

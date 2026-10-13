@@ -19,6 +19,7 @@ const ExperiencesReviewPage = async () => {
 
   const pendingList = posts.filter((p) => p.status === "pending");
   const publishedList = posts.filter((p) => p.status === "published");
+  const rejectedList = posts.filter((p) => p.status === "rejected");
 
   return (
     <div className="space-y-8">
@@ -141,6 +142,41 @@ const ExperiencesReviewPage = async () => {
           ))}
         </div>
       </div>
+      <details className="rounded-lg border border-border bg-card">
+        <summary className="cursor-pointer px-4 py-3 text-sm font-semibold">
+          Bài viết đã từ chối ({rejectedList.length})
+        </summary>
+        {rejectedList.length === 0 ? (
+          <p className="px-4 pb-4 text-xs text-muted-foreground">
+            Chưa có bài viết bị từ chối.
+          </p>
+        ) : (
+          <div className="divide-y divide-border border-t border-border">
+            {rejectedList.map((post) => (
+              <div
+                key={post.id}
+                className="flex flex-wrap items-center justify-between gap-3 p-4 text-xs"
+              >
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    {post.title}
+                  </p>
+                  <p className="mt-1 text-muted-foreground">
+                    {post.author?.profile?.fullName || post.author?.name} ·{" "}
+                    {new Date(post.createdAt).toLocaleDateString("vi-VN")}
+                  </p>
+                </div>
+                <Link
+                  href={`/experiences/${post.id}`}
+                  className="font-medium text-primary hover:underline"
+                >
+                  Xem bài đã từ chối
+                </Link>
+              </div>
+            ))}
+          </div>
+        )}
+      </details>
     </div>
   );
 };

@@ -120,7 +120,7 @@ const StudentScholarshipsPage = async () => {
                   {app.reviewNote && (
                     <div className="rounded-lg bg-muted/60 p-3 text-muted-foreground border">
                       <strong className="text-foreground">
-                        Nhận xét từ Khoa:{" "}
+                        Nhận xét từ hội đồng xét duyệt:{" "}
                       </strong>
                       {app.reviewNote}
                     </div>
@@ -140,43 +140,84 @@ const StudentScholarshipsPage = async () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {activeCampaigns.map((camp) => {
-            const hasApplied = myApplications.some((application) => application.campaignId === camp.id);
+            const hasApplied = myApplications.some(
+              (application) => application.campaignId === camp.id,
+            );
             const isExpired = camp.applicationDeadline < new Date();
             return (
-            <Card
-              key={camp.id}
-              className="flex flex-col justify-between shadow-sm"
-            >
-              <CardHeader className="pb-2">
-                <Badge variant={isExpired ? "outline" : "secondary"} className="w-fit text-[10px] mb-1">{isExpired ? "Đã hết hạn nhận hồ sơ" : "Đang mở hồ sơ"}</Badge>
-                <CardTitle className="text-base font-bold leading-snug">
-                  <Link href={`/scholarships/${camp.id}`}>{camp.title}</Link>
-                </CardTitle>
-                <CardDescription className="text-xs line-clamp-2 mt-1">
-                  {camp.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="text-xs text-muted-foreground space-y-1 pb-3">
-                <div>
-                  Hạn chót:{" "}
-                  <strong className="text-foreground">
-                    {new Date(camp.applicationDeadline).toLocaleDateString(
-                      "vi-VN",
-                    )}
-                  </strong>
-                </div>
-                <div>
-                  Mục tiêu quỹ:{" "}
-                  <strong className="text-emerald-600">
-                    {Number(camp.targetAmount).toLocaleString("vi-VN")} đ
-                  </strong>
-                </div>
-              </CardContent>
-              <CardFooter className="pt-3 border-t border-border/40 flex justify-end gap-2">
-                {hasApplied ? <Button variant="outline" size="sm" render={<Link href="#my-applications" />} nativeButton={false}>Đã nộp hồ sơ</Button> : canApply ? <Button size="sm" disabled={isExpired} render={isExpired ? undefined : <Link href={`/student/scholarships/${camp.id}/apply`} />} nativeButton={isExpired}>Nộp hồ sơ</Button> : <Button size="sm" variant="outline" render={<Link href={`/scholarships/${camp.id}`} />} nativeButton={false}>Xem chiến dịch</Button>}
-              </CardFooter>
-            </Card>
-          );})}
+              <Card
+                key={camp.id}
+                className="flex flex-col justify-between shadow-sm"
+              >
+                <CardHeader className="pb-2">
+                  <Badge
+                    variant={isExpired ? "outline" : "secondary"}
+                    className="w-fit text-[10px] mb-1"
+                  >
+                    {isExpired ? "Đã hết hạn nhận hồ sơ" : "Đang mở hồ sơ"}
+                  </Badge>
+                  <CardTitle className="text-base font-bold leading-snug">
+                    <Link href={`/scholarships/${camp.id}`}>{camp.title}</Link>
+                  </CardTitle>
+                  <CardDescription className="text-xs line-clamp-2 mt-1">
+                    {camp.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1 pb-3">
+                  <div>
+                    Hạn chót:{" "}
+                    <strong className="text-foreground">
+                      {new Date(camp.applicationDeadline).toLocaleDateString(
+                        "vi-VN",
+                      )}
+                    </strong>
+                  </div>
+                  <div>
+                    Mục tiêu quỹ:{" "}
+                    <strong className="text-emerald-600">
+                      {Number(camp.targetAmount).toLocaleString("vi-VN")} đ
+                    </strong>
+                  </div>
+                </CardContent>
+                <CardFooter className="pt-3 border-t border-border/40 flex justify-end gap-2">
+                  {hasApplied ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      render={<Link href="#my-applications" />}
+                      nativeButton={false}
+                    >
+                      Đã nộp hồ sơ
+                    </Button>
+                  ) : canApply ? (
+                    <Button
+                      size="sm"
+                      disabled={isExpired}
+                      render={
+                        isExpired ? undefined : (
+                          <Link
+                            href={`/student/scholarships/${camp.id}/apply`}
+                          />
+                        )
+                      }
+                      nativeButton={isExpired}
+                    >
+                      Nộp hồ sơ
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      render={<Link href={`/scholarships/${camp.id}`} />}
+                      nativeButton={false}
+                    >
+                      Xem chiến dịch
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 # ĐẶC TẢ HỆ THỐNG
 
-### Nền tảng kết nối Sinh viên – Khoa – Cựu sinh viên – Doanh nghiệp
+### DLU Alumni: kết nối Sinh viên – Cựu sinh viên toàn trường – Doanh nghiệp
 
 ---
 
@@ -8,7 +8,7 @@
 
 ### 1.1 Mục tiêu
 
-Xây dựng nền tảng web do Khoa quản lý, dùng để:
+Xây dựng dự án riêng DLU Alumni dành cho sinh viên và cựu sinh viên tất cả các khoa, ngành tại Trường Đại học Đà Lạt, dùng để:
 
 - Kết nối sinh viên với cơ hội việc làm từ đối tác doanh nghiệp
 - Tổ chức các buổi talkshow/sự kiện với cựu sinh viên
@@ -18,7 +18,7 @@ Xây dựng nền tảng web do Khoa quản lý, dùng để:
 
 ### 1.2 Phạm vi
 
-Hệ thống là website nhà trường quản lý và cấp phát cho đối tác sử dụng — nghĩa là mọi tài khoản doanh nghiệp phải qua bước xác minh/duyệt của Khoa trước khi được phép hoạt động.
+Hệ thống là dự án riêng dành cho cộng đồng toàn trường. Hồ sơ doanh nghiệp phải được Ban quản trị xác minh trước khi hoạt động; tham khảo thông tin công khai của Trường không xác nhận Trường vận hành dự án.
 
 ### 1.3 Công nghệ sử dụng
 
@@ -51,8 +51,8 @@ Hệ thống là website nhà trường quản lý và cấp phát cho đối t�
 | **Sinh viên**                       | Người dùng đang theo học   | Xem/ứng tuyển việc làm, đăng ký sự kiện, đọc bài chia sẻ, làm khảo sát, nộp hồ sơ xin học bổng                                               |
 | **Cựu sinh viên (Alumni)**          | Sinh viên đã tốt nghiệp    | Như sinh viên + nhận lời mời talkshow, đăng bài chia sẻ kinh nghiệm, cam kết tài trợ quỹ                                                     |
 | **Đối tác/Doanh nghiệp (Employer)** | Tài khoản bên ngoài trường | Đăng ký hồ sơ công ty (chờ duyệt), đăng tin tuyển dụng (chờ duyệt), cam kết tài trợ quỹ                                                      |
-| **Nhân sự Khoa (Faculty Staff)**    | Người vận hành nội dung    | Duyệt tin tuyển dụng, duyệt hồ sơ công ty, tạo sự kiện, mời cựu SV, tạo form khảo sát, tạo chiến dịch học bổng, xét duyệt hồ sơ xin học bổng |
-| **Quản trị viên (Admin)**           | Quản trị hệ thống          | Toàn quyền + quản lý người dùng, phân quyền nhân sự Khoa, xem audit log                                                                      |
+| **Nhân sự quản trị (Faculty Staff)**    | Người vận hành nội dung    | Duyệt tin tuyển dụng, duyệt hồ sơ công ty, tạo sự kiện, mời cựu SV, tạo form khảo sát, tạo chiến dịch học bổng, xét duyệt hồ sơ xin học bổng |
+| **Quản trị viên (Admin)**           | Quản trị hệ thống          | Toàn quyền + quản lý người dùng, phân quyền nhân sự quản trị, xem audit log                                                                      |
 
 ---
 
@@ -66,16 +66,16 @@ Hệ thống là website nhà trường quản lý và cấp phát cho đối t�
 
 ### 3.2 Tuyển dụng (Job Board)
 
-- Doanh nghiệp đăng ký hồ sơ công ty → Khoa xác minh (`verified` / `rejected`)
+- Doanh nghiệp đăng ký hồ sơ công ty → Ban quản trị xác minh (`verified` / `rejected`)
 - Doanh nghiệp đã xác minh đăng tin tuyển dụng → trạng thái `pending`
-- Khoa duyệt (`approved` / `rejected`, có lý do từ chối)
+- Ban quản trị duyệt (`approved` / `rejected`, có lý do từ chối)
 - Tin hết hạn bị ẩn theo 2 cơ chế kết hợp (xem mục 4.2)
 - Sinh viên tìm kiếm/lọc theo ngành, hình thức, địa điểm
 
 ### 3.3 Sự kiện & Talkshow
 
-- Khoa tạo sự kiện (talkshow/workshop/job fair), chọn hình thức online/offline
-- Khoa mời cựu sinh viên làm diễn giả → cựu SV `accept`/`decline` (có lịch sử mời)
+- Ban quản trị tạo sự kiện (talkshow/workshop/job fair), chọn hình thức online/offline
+- Ban quản trị mời cựu sinh viên làm diễn giả → cựu SV `accept`/`decline` (có lịch sử mời)
 - Sinh viên đăng ký tham gia (giới hạn số lượng nếu có)
 - Điểm danh (`attended` / `absent`)
 
@@ -87,26 +87,26 @@ Hệ thống là website nhà trường quản lý và cấp phát cho đối t�
 
 ### 3.5 Form Builder & Khảo sát _(tự xây, không dùng Google Form)_
 
-- Khoa tạo form (loại: khảo sát việc làm, hồ sơ xin học bổng, feedback sự kiện...)
+- Ban quản trị tạo form (loại: khảo sát việc làm, hồ sơ xin học bổng, feedback sự kiện...)
 - Tự thêm câu hỏi với nhiều kiểu: văn bản ngắn/dài, chọn 1, chọn nhiều, thang đo, upload file
 - Nhắm đối tượng theo nhiều khoá (`target_batches`) và/hoặc vai trò, có hạn nộp
-- Người dùng trả lời; Khoa xem kết quả dạng bảng + thống kê biểu đồ
+- Người dùng trả lời; Ban quản trị xem kết quả dạng bảng + thống kê biểu đồ
 
 ### 3.6 Quỹ Khuyến học & Hỗ trợ tài chính
 
-- Khoa tạo chiến dịch học bổng (mục tiêu số tiền, thời hạn nộp hồ sơ)
-- Doanh nghiệp/Cựu SV cam kết tài trợ — ghi nhận danh dự, **không xử lý giao dịch tiền thật** trong hệ thống; Khoa xác nhận thủ công khi đã nhận tiền ngoài hệ thống (`pledged` → `fulfilled`)
-- Khi Khoa xác nhận nhận tiền, `current_amount` được cộng dồn trong một transaction tường minh (xem mục 4.6)
+- Ban quản trị tạo chiến dịch học bổng (mục tiêu số tiền, thời hạn nộp hồ sơ)
+- Doanh nghiệp/Cựu SV cam kết tài trợ — ghi nhận danh dự, **không xử lý giao dịch tiền thật** trong hệ thống; Ban quản trị xác nhận thủ công khi đã nhận tiền ngoài hệ thống (`pledged` → `fulfilled`)
+- Khi Ban quản trị xác nhận nhận tiền, `current_amount` được cộng dồn trong một transaction tường minh (xem mục 4.6)
 - Sinh viên nộp hồ sơ xin hỗ trợ qua form (minh chứng hoàn cảnh, bảng điểm dạng file upload)
-- Khoa xét duyệt (`pending` / `reviewing` / `approved` / `rejected`), có thể chấm điểm theo tiêu chí
-- **Bảo mật:** hồ sơ chứa dữ liệu tài chính cá nhân nhạy cảm → chỉ chủ hồ sơ và Khoa xem được, truy cập file qua signed URL có thời hạn, mọi lượt xem được ghi audit log
+- Hội đồng xét duyệt (`pending` / `reviewing` / `approved` / `rejected`), có thể chấm điểm theo tiêu chí
+- **Bảo mật:** hồ sơ chứa dữ liệu tài chính cá nhân nhạy cảm → chỉ chủ hồ sơ và Ban quản trị xem được, truy cập file qua signed URL có thời hạn, mọi lượt xem được ghi audit log
 
 ### 3.7 Thông báo
 
 - Gửi thông báo in-app + email khi: tin tuyển dụng được duyệt/từ chối, được mời talkshow, sắp đến hạn khảo sát, kết quả xét học bổng
 - Xử lý bất đồng bộ qua BullMQ + Redis: app gọi `queue.add()` đẩy job vào Redis; worker (`src/workers/notification.worker.ts`) chạy như tiến trình Node.js riêng, tự kết nối Redis lắng nghe — không đi qua HTTP route
 
-### 3.8 Dashboard & Thống kê _(Khoa/Admin)_
+### 3.8 Dashboard & Thống kê _(Vận hành/Admin)_
 
 - Tỷ lệ sinh viên có việc làm theo khoá (từ dữ liệu khảo sát)
 - Số tin tuyển dụng theo ngành/trạng thái (bao gồm `expired`)
@@ -115,7 +115,7 @@ Hệ thống là website nhà trường quản lý và cấp phát cho đối t�
 
 ### 3.9 Quản trị & Audit
 
-- Quản lý tài khoản, phân quyền nhân sự Khoa
+- Quản lý tài khoản, phân quyền nhân sự quản trị
 - Audit log: ai duyệt/từ chối/xem gì, khi nào
 
 ---
@@ -288,7 +288,7 @@ form_answers
 
 ### 4.6 Nhóm Quỹ Khuyến học
 
-> **Cập nhật `current_amount`:** xử lý tường minh trong Server Action "Khoa xác nhận đã nhận tiền", không dùng DB trigger:
+> **Cập nhật `current_amount`:** xử lý tường minh trong Server Action "Ban quản trị xác nhận đã nhận tiền", không dùng DB trigger:
 >
 > ```sql
 > BEGIN TRANSACTION
@@ -321,10 +321,10 @@ donation_pledges
 ├─ amount              numeric
 ├─ status              enum(pledged, fulfilled, cancelled)
 ├─ note                text      (nullable)
-├─ created_by          uuid      FK → user.id NOT NULL  -- ai nhập bản ghi này (chính donor hoặc nhân sự Khoa)
+├─ created_by          uuid      FK → user.id NOT NULL  -- ai nhập bản ghi này (chính donor hoặc nhân sự quản trị)
 └─ created_at          timestamp
 -- Khi donor tự cam kết: donor_id = created_by = chính họ
--- Khi Khoa nhập hộ (tài trợ ngoài hệ thống): donor_id = NULL, created_by = tài khoản nhân sự Khoa
+-- Khi Ban quản trị nhập hộ (tài trợ ngoài hệ thống): donor_id = NULL, created_by = tài khoản nhân sự quản trị
 
 scholarship_applications
 ├─ id               uuid      PK
@@ -469,7 +469,7 @@ project-root/
 │  │  │  ├─ scholarships/pledge/
 │  │  │  └─ layout.tsx                 # chứa company switcher nếu user thuộc >1 công ty
 │  │  │
-│  │  ├─ (faculty-admin)/              # Khoa + Admin (UX guard, không phải hard guard)
+│  │  ├─ (faculty-admin)/              # Nhân sự vận hành + Admin (UX guard, không phải hard guard)
 │  │  │  ├─ dashboard/page.tsx
 │  │  │  ├─ companies/review/
 │  │  │  ├─ jobs/review/

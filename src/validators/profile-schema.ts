@@ -15,7 +15,7 @@ const optionalText = (max: number, message: string) =>
 const optionalYear = z
   .number()
   .int("Năm phải là số nguyên")
-  .min(1990, "Năm phải từ 1990")
+  .min(1958, "Năm phải từ 1958")
   .max(currentYear + 6, `Năm tối đa ${currentYear + 6}`)
   .nullish()
   .transform((value) => value ?? null);
@@ -55,6 +55,7 @@ export const profileUpdateSchema = z
         }
       }, "Ảnh đại diện phải là đường dẫn http hoặc https"),
     studentCode: optionalText(20, "Mã sinh viên tối đa 20 ký tự"),
+    faculty: optionalText(150, "Khoa/ngành tối đa 150 ký tự"),
     batchYear: optionalYear,
     graduationYear: optionalYear,
   })

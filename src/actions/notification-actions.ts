@@ -4,7 +4,7 @@ import { and, count, desc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { notifications } from "@/db/schema";
 import { requireActiveUser } from "@/lib/permissions";
-import { getPagination } from "@/lib/query-input";
+import { getPagination, isEntityId } from "@/lib/query-input";
 
 /**
  * Danh sách thông báo của chính người dùng đang đăng nhập.
@@ -54,6 +54,8 @@ export const getMyNotifications = async (params?: {
 
 export const markNotificationRead = async (id: string, isRead = true) => {
   const current = await requireActiveUser();
+  if (!isEntityId(id)) throw new Error("Không tìm thấy thông báo");
+  if (typeof isRead !== "boolean") throw new Error("Trạng thái không hợp lệ");
 
   const [updated] = await db
     .update(notifications)
@@ -85,6 +87,7 @@ export const markAllNotificationsRead = async () => {
 
 export const deleteNotification = async (id: string) => {
   const current = await requireActiveUser();
+  if (!isEntityId(id)) throw new Error("Không tìm thấy thông báo");
 
   const [removed] = await db
     .delete(notifications)

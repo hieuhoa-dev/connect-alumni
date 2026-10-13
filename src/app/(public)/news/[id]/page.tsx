@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getNewsById, getRelatedNews } from "@/actions/news-actions";
 import { SectionHeading, Tag } from "@/components/landing/landing-parts";
 import { NewsCard } from "@/components/news/news-card";
+import { PublicPageTitle } from "@/components/shared/public-page-title";
 import { Button } from "@/components/ui/button";
 import { RichTextContent } from "@/components/ui/rich-text-content";
 import { formatDateVi, formatNumberVi, NEWS_CATEGORY_LABEL } from "@/lib/text";
@@ -46,9 +47,7 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
             <Tag tone="blue">{NEWS_CATEGORY_LABEL[article.category]}</Tag>
             {article.status === "draft" && <Tag tone="yellow">Bản nháp</Tag>}
           </div>
-          <h1 className="font-serif text-3xl font-normal leading-[1.15] tracking-tight text-foreground sm:text-5xl">
-            {article.title}
-          </h1>
+          <PublicPageTitle>{article.title}</PublicPageTitle>
           {article.summary && (
             <p className="text-lg leading-relaxed text-muted-foreground">
               {article.summary}
@@ -86,7 +85,10 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
           />
         )}
 
-        <RichTextContent content={article.content} />
+        <RichTextContent
+          content={article.content}
+          className="[&_h2]:font-heading [&_h3]:font-heading"
+        />
       </article>
 
       {related.length > 0 && (

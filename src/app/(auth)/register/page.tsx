@@ -27,7 +27,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type RoleOption = "student" | "alumni" | "employer";
 
-const RegisterPage = () => {
+const RegisterForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const requestedRole = searchParams.get("role");
@@ -41,6 +41,7 @@ const RegisterPage = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [studentCode, setStudentCode] = React.useState("");
+  const [faculty, setFaculty] = React.useState("");
   const [batchYear, setBatchYear] = React.useState("");
   const [graduationYear, setGraduationYear] = React.useState("");
   const [phone, setPhone] = React.useState("");
@@ -60,6 +61,7 @@ const RegisterPage = () => {
         password,
         role,
         studentCode: role === "student" ? studentCode : undefined,
+        faculty: role !== "employer" ? faculty : undefined,
         batchYear:
           role !== "employer" && batchYear ? Number(batchYear) : undefined,
         graduationYear:
@@ -226,12 +228,29 @@ const RegisterPage = () => {
                   value={batchYear}
                   onChange={(e) => setBatchYear(e.target.value)}
                   required
-                  min={1990}
+                  min={1958}
                   max={new Date().getFullYear() + 6}
                   step={1}
                   disabled={isLoading}
                 />
               </div>
+            </div>
+          )}
+
+          {role !== "employer" && (
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="faculty">Khoa / ngành học</Label>
+              <Input
+                id="faculty"
+                value={faculty}
+                onChange={(e) => setFaculty(e.target.value)}
+                maxLength={150}
+                placeholder="Nhập khoa hoặc ngành học của bạn"
+                disabled={isLoading}
+              />
+              <p className="text-xs text-muted-foreground">
+                Cộng đồng dành cho sinh viên và cựu sinh viên toàn trường.
+              </p>
             </div>
           )}
 
@@ -247,7 +266,7 @@ const RegisterPage = () => {
                   placeholder="2018"
                   value={batchYear}
                   onChange={(e) => setBatchYear(e.target.value)}
-                  min={1990}
+                  min={1958}
                   max={new Date().getFullYear() + 6}
                   step={1}
                   disabled={isLoading}
@@ -263,7 +282,7 @@ const RegisterPage = () => {
                   placeholder="2022"
                   value={graduationYear}
                   onChange={(e) => setGraduationYear(e.target.value)}
-                  min={batchYear ? Number(batchYear) : 1990}
+                  min={batchYear ? Number(batchYear) : 1958}
                   max={new Date().getFullYear() + 6}
                   step={1}
                   disabled={isLoading}
@@ -320,5 +339,17 @@ const RegisterPage = () => {
     </Card>
   );
 };
+
+const RegisterPage = () => (
+  <React.Suspense
+    fallback={
+      <p className="py-8 text-center text-sm text-muted-foreground">
+        Đang tải biểu mẫu đăng ký...
+      </p>
+    }
+  >
+    <RegisterForm />
+  </React.Suspense>
+);
 
 export default RegisterPage;

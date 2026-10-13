@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/toast";
+import { getInternalHref } from "@/lib/internal-href";
 import { cn } from "@/lib/utils";
 
 export interface NotificationItem {
@@ -181,9 +182,11 @@ export const NotificationsPopover = ({
                 <p className="text-muted-foreground mt-1 line-clamp-2 leading-relaxed text-[11px]">
                   {n.body}
                 </p>
-                {n.linkUrl && (
+                {getInternalHref(n.linkUrl) && (
                   <Link
-                    href={n.linkUrl}
+                    href={
+                      getInternalHref(n.linkUrl) ?? "/account/notifications"
+                    }
                     className="inline-block mt-2 text-primary font-medium hover:underline text-[11px]"
                   >
                     Xem chi tiết →

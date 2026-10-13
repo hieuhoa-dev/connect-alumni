@@ -15,9 +15,16 @@ const JobsReviewPage = async () => {
   const jobs = await getJobsForFacultyReview();
 
   const pendingList = jobs.filter((j) => j.status === "pending");
-  const approvedList = jobs.filter((j) => j.status === "approved");
-  const rejectedList = jobs.filter((j) => j.status === "rejected");
-  const expiredList = jobs.filter((j) => j.status === "expired");
+  const approvedList = jobs.filter(
+    (j) =>
+      j.status === "approved" && j.company?.verificationStatus === "verified",
+  );
+  const historyList = jobs.filter(
+    (j) =>
+      j.status === "rejected" ||
+      j.status === "expired" ||
+      (j.status === "approved" && j.company?.verificationStatus !== "verified"),
+  );
 
   return (
     <div className="space-y-8">
@@ -129,7 +136,7 @@ const JobsReviewPage = async () => {
                     variant="outline"
                     className="text-[10px] text-emerald-600 border-emerald-500/30"
                   >
-                    Approved
+                    Đã duyệt
                   </Badge>
                 </div>
                 <div className="text-muted-foreground text-[11px]">
@@ -151,6 +158,55 @@ const JobsReviewPage = async () => {
           ))}
         </div>
       </div>
+
+      <details className="rounded-lg border border-border bg-card">
+        <summary className="cursor-pointer px-4 py-3 text-sm font-semibold">
+          Lịch sử xử lý và tin tạm ẩn ({historyList.length})
+        </summary>
+        {historyList.length === 0 ? (
+          <p className="px-4 pb-4 text-xs text-muted-foreground">
+            Chưa có tin bị từ chối, hết hạn hoặc tạm ẩn.
+          </p>
+        ) : (
+          <div className="divide-y divide-border border-t border-border">
+            {historyList.map((job) => (
+              <div key={job.id} className="space-y-2 p-4 text-xs">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      {job.title}
+                    </p>
+                    <p className="mt-1 text-muted-foreground">
+                      {job.company?.name}
+                    </p>
+                  </div>
+                  <Badge variant="outline">
+                    {job.status === "rejected"
+                      ? "Đã từ chối"
+                      : job.status === "expired"
+                        ? "Đã hết hạn"
+                        : "Đã duyệt · Tạm ẩn"}
+                  </Badge>
+                </div>
+                {job.status === "rejected" && job.rejectedReason && (
+                  <p className="text-muted-foreground">
+                    Lý do: {job.rejectedReason}
+                  </p>
+                )}
+                {job.status === "approved" && (
+                  <p className="text-muted-foreground">
+                    Hồ sơ doanh nghiệp chưa được xác minh nên tin đang tạm ẩn.
+                  </p>
+                )}
+                <p className="text-muted-foreground">
+                  Hạn nộp hồ sơ:{" "}
+                  {new Date(job.expiresAt).toLocaleDateString("vi-VN")}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </details>
     </div>
   );
 };

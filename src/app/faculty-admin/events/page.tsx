@@ -117,7 +117,16 @@ const FacultyEventsPage = async () => {
                 </div>
               </CardContent>
               <div className="p-3 bg-muted/20 border-t border-border flex justify-end gap-2">
-                <Button variant="outline" size="sm" render={<Link href={`/faculty-admin/events/${ev.id}/attendance`} />} nativeButton={false}>Điểm danh</Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  render={
+                    <Link href={`/faculty-admin/events/${ev.id}/attendance`} />
+                  }
+                  nativeButton={false}
+                >
+                  Điểm danh
+                </Button>
                 <Link
                   className={cn(
                     buttonVariants({ variant: "outline", size: "sm" }),

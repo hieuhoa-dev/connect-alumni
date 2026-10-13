@@ -30,7 +30,7 @@ const roleItems = [
   { value: "student", label: "Sinh viên" },
   { value: "alumni", label: "Cựu sinh viên" },
   { value: "employer", label: "Doanh nghiệp" },
-  { value: "faculty_staff", label: "Giáo vụ Khoa" },
+  { value: "faculty_staff", label: "Nhân sự quản trị" },
   { value: "admin", label: "Quản trị viên" },
 ] as const;
 
@@ -137,11 +137,11 @@ export const UserRowActions = ({
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-          <SelectItem value="student">Sinh viên</SelectItem>
-          <SelectItem value="alumni">Cựu sinh viên</SelectItem>
-          <SelectItem value="employer">Doanh nghiệp</SelectItem>
-          <SelectItem value="faculty_staff">Giáo vụ Khoa</SelectItem>
-          <SelectItem value="admin">Quản trị viên</SelectItem>
+            <SelectItem value="student">Sinh viên</SelectItem>
+            <SelectItem value="alumni">Cựu sinh viên</SelectItem>
+            <SelectItem value="employer">Doanh nghiệp</SelectItem>
+            <SelectItem value="faculty_staff">Nhân sự quản trị</SelectItem>
+            <SelectItem value="admin">Quản trị viên</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>

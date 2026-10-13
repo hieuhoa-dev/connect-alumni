@@ -1,14 +1,16 @@
 "use server";
 
-import { and, count, eq, ilike, sql } from "drizzle-orm";
+import { and, count, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { db } from "@/db";
 import { newsArticles } from "@/db/schema";
 import { logAuditEvent } from "@/lib/audit";
 import { getCurrentUser, requireRole } from "@/lib/permissions";
 import { getPagination, isEntityId } from "@/lib/query-input";
 import { sanitizeRichHtml } from "@/lib/sanitize";
-import { isNewsCategory, type NewsCategory } from "@/lib/text";
+import { getSearchableText, getSearchCondition } from "@/lib/search-query";
+import { isNewsCategory, type NewsCategory, stripHtml } from "@/lib/text";
 import { type NewsInput, newsSchema } from "@/validators/news-schema";
 
 /** Cột công khai của tác giả: chỉ tên hiển thị, không email/SĐT. */
@@ -20,8 +22,19 @@ const PUBLIC_AUTHOR = {
 const revalidateNewsPages = (id?: string) => {
   revalidatePath("/");
   revalidatePath("/news");
+  revalidatePath("/faculty-admin/news");
   if (id) revalidatePath(`/news/${id}`);
 };
+
+const getNewsContent = (content: string) => {
+  const sanitized = sanitizeRichHtml(content);
+  if (stripHtml(sanitized).length < 20)
+    throw new Error("Nội dung bài viết cần ít nhất 20 ký tự hiển thị");
+  return sanitized;
+};
+
+const getNewsId = (id: string) =>
+  z.string().uuid("Mã bài viết không hợp lệ").parse(id);
 
 /**
  * Public: danh sách tin đã đăng (không kèm nội dung đầy đủ).
@@ -37,17 +50,22 @@ export const getPublishedNews = async (params?: {
   const category: NewsCategory | undefined = isNewsCategory(params?.category)
     ? params.category
     : undefined;
-  const search = params?.search?.trim();
-
-  const where = {
-    status: "published" as const,
-    ...(category ? { category } : {}),
-    ...(search ? { title: { ilike: `%${search}%` } } : {}),
-  };
-
   const [items, totalRows] = await Promise.all([
     db.query.newsArticles.findMany({
-      where,
+      where: {
+        status: "published",
+        ...(category ? { category } : {}),
+        ...(params?.search?.trim()
+          ? {
+              RAW: (table) =>
+                getSearchCondition(params.search, [
+                  table.title,
+                  table.summary,
+                  getSearchableText(table.content),
+                ]) ?? sql`false`,
+            }
+          : {}),
+      },
       columns: {
         id: true,
         title: true,
@@ -70,7 +88,11 @@ export const getPublishedNews = async (params?: {
         and(
           eq(newsArticles.status, "published"),
           category ? eq(newsArticles.category, category) : undefined,
-          search ? ilike(newsArticles.title, `%${search}%`) : undefined,
+          getSearchCondition(params?.search, [
+            newsArticles.title,
+            newsArticles.summary,
+            getSearchableText(newsArticles.content),
+          ]),
         ),
       ),
   ]);
@@ -79,7 +101,7 @@ export const getPublishedNews = async (params?: {
 };
 
 /**
- * Public: chi tiết một tin. Tin nháp chỉ nhân viên Khoa xem được.
+ * Public: chi tiết một tin. Tin nháp chỉ nhân sự quản trị xem được.
  * Tăng lượt xem khi tin đã đăng.
  */
 export const getNewsById = async (id: string) => {
@@ -95,7 +117,8 @@ export const getNewsById = async (id: string) => {
   if (!article) return null;
 
   const isStaff =
-    current?.role === "faculty_staff" || current?.role === "admin";
+    current?.profile?.status === "active" &&
+    (current.role === "faculty_staff" || current.role === "admin");
   if (article.status !== "published" && !isStaff) return null;
 
   if (article.status === "published") {
@@ -162,6 +185,7 @@ export const getNewsByIdForStaff = async (id: string) => {
 export const createNews = async (input: NewsInput) => {
   const current = await requireRole(["faculty_staff", "admin"]);
   const validated = newsSchema.parse(input);
+  const content = getNewsContent(validated.content);
 
   const [article] = await db
     .insert(newsArticles)
@@ -169,7 +193,7 @@ export const createNews = async (input: NewsInput) => {
       authorId: current.user.id,
       title: validated.title,
       summary: validated.summary || null,
-      content: sanitizeRichHtml(validated.content),
+      content,
       coverImageUrl: validated.coverImageUrl || null,
       category: validated.category,
       isPinned: validated.isPinned,
@@ -193,7 +217,9 @@ export const createNews = async (input: NewsInput) => {
 /** Faculty/Admin: cập nhật tin. Giữ nguyên ngày đăng đầu tiên nếu đã đăng trước đó. */
 export const updateNews = async (id: string, input: NewsInput) => {
   const current = await requireRole(["faculty_staff", "admin"]);
+  getNewsId(id);
   const validated = newsSchema.parse(input);
+  const content = getNewsContent(validated.content);
 
   const existing = await db.query.newsArticles.findFirst({
     where: { id },
@@ -211,7 +237,7 @@ export const updateNews = async (id: string, input: NewsInput) => {
     .set({
       title: validated.title,
       summary: validated.summary || null,
-      content: sanitizeRichHtml(validated.content),
+      content,
       coverImageUrl: validated.coverImageUrl || null,
       category: validated.category,
       isPinned: validated.isPinned,
@@ -220,6 +246,8 @@ export const updateNews = async (id: string, input: NewsInput) => {
     })
     .where(eq(newsArticles.id, id))
     .returning();
+
+  if (!article) throw new Error("Không tìm thấy bài viết");
 
   await logAuditEvent({
     actorId: current.user.id,
@@ -239,13 +267,15 @@ export const setNewsStatus = async (
   status: "draft" | "published",
 ) => {
   const current = await requireRole(["faculty_staff", "admin"]);
+  getNewsId(id);
   const validatedStatus = newsSchema.shape.status.unwrap().parse(status);
 
   const existing = await db.query.newsArticles.findFirst({
     where: { id },
-    columns: { id: true, publishedAt: true },
+    columns: { id: true, publishedAt: true, content: true },
   });
   if (!existing) throw new Error("Không tìm thấy bài viết");
+  if (validatedStatus === "published") getNewsContent(existing.content);
 
   const [article] = await db
     .update(newsArticles)
@@ -258,6 +288,8 @@ export const setNewsStatus = async (
     })
     .where(eq(newsArticles.id, id))
     .returning();
+
+  if (!article) throw new Error("Không tìm thấy bài viết");
 
   await logAuditEvent({
     actorId: current.user.id,
@@ -273,15 +305,22 @@ export const setNewsStatus = async (
 /** Faculty/Admin: ghim hoặc bỏ ghim tin lên đầu trang chủ. */
 export const setNewsPinned = async (id: string, isPinned: boolean) => {
   const current = await requireRole(["faculty_staff", "admin"]);
+  getNewsId(id);
   const validatedPinned = newsSchema.shape.isPinned.unwrap().parse(isPinned);
 
   const [article] = await db
     .update(newsArticles)
     .set({ isPinned: validatedPinned })
-    .where(eq(newsArticles.id, id))
+    .where(
+      and(
+        eq(newsArticles.id, id),
+        validatedPinned ? eq(newsArticles.status, "published") : undefined,
+      ),
+    )
     .returning();
 
-  if (!article) throw new Error("Không tìm thấy bài viết");
+  if (!article)
+    throw new Error("Chỉ ghim được bài viết đã đăng và còn tồn tại");
 
   await logAuditEvent({
     actorId: current.user.id,
@@ -297,6 +336,7 @@ export const setNewsPinned = async (id: string, isPinned: boolean) => {
 /** Faculty/Admin: xóa tin. */
 export const deleteNews = async (id: string) => {
   const current = await requireRole(["faculty_staff", "admin"]);
+  getNewsId(id);
 
   const [removed] = await db
     .delete(newsArticles)

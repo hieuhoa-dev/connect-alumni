@@ -11,8 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SurveyFormRenderer } from "./form-renderer";
 import { getCurrentUser } from "@/lib/permissions";
+import { SurveyFormRenderer } from "./form-renderer";
 
 interface SurveyDetailPageProps {
   params: Promise<{ id: string }>;
@@ -20,7 +20,10 @@ interface SurveyDetailPageProps {
 
 const SurveyDetailPage = async ({ params }: SurveyDetailPageProps) => {
   const { id } = await params;
-  const [form, current] = await Promise.all([getFormById(id), getCurrentUser()]);
+  const [form, current] = await Promise.all([
+    getFormById(id),
+    getCurrentUser(),
+  ]);
 
   if (!form) {
     notFound();
@@ -107,7 +110,14 @@ const SurveyDetailPage = async ({ params }: SurveyDetailPageProps) => {
               })}
             </div>
           ) : (
-            <SurveyFormRenderer form={form} isExpired={isExpired} previewOnly={form.status !== "open" && (current?.role === "faculty_staff" || current?.role === "admin")} />
+            <SurveyFormRenderer
+              form={form}
+              isExpired={isExpired}
+              previewOnly={
+                form.status !== "open" &&
+                (current?.role === "faculty_staff" || current?.role === "admin")
+              }
+            />
           )}
         </CardContent>
       </Card>

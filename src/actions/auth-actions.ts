@@ -34,17 +34,17 @@ const registrationSchema = z
       error: "Vai trò đăng ký không hợp lệ",
     }),
     studentCode: profileUpdateSchema.shape.studentCode,
-    faculty: z.string().trim().max(150).optional(),
+    faculty: profileUpdateSchema.shape.faculty,
     batchYear: z
       .number()
       .int()
-      .min(1990)
+      .min(1958)
       .max(new Date().getFullYear() + 6)
       .optional(),
     graduationYear: z
       .number()
       .int()
-      .min(1990)
+      .min(1958)
       .max(new Date().getFullYear() + 6)
       .optional(),
     phone: profileUpdateSchema.shape.phone,
@@ -158,7 +158,7 @@ export const registerWithProfile = async (
         role: data.role,
         fullName: data.name,
         studentCode: data.role === "employer" ? null : data.studentCode,
-        faculty: data.faculty || "Công nghệ Thông tin",
+        faculty: data.role === "employer" ? null : (data.faculty ?? null),
         batchYear: data.role === "employer" ? null : (data.batchYear ?? null),
         graduationYear:
           data.role === "employer" ? null : (data.graduationYear ?? null),
@@ -231,6 +231,7 @@ export const updateCurrentUserProfile = async (input: ProfileUpdateInput) => {
         ...(showStudentFields
           ? {
               studentCode: data.studentCode,
+              faculty: data.faculty,
               batchYear: data.batchYear,
               graduationYear: data.graduationYear,
             }

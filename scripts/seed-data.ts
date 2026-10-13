@@ -22,41 +22,39 @@ import {
 import { auth } from "../src/lib/auth";
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SEED DATA CONFIGURATION (JSON ARRAYS)
+// DỮ LIỆU TRÌNH DIỄN. Không dùng để xác nhận cá nhân, đối tác hay thông báo của Trường.
+// Không chạy seed trên dữ liệu thật; bản ghi đã tồn tại được giữ nguyên.
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const SEED_USERS = [
-  // 1. Ban Lãnh đạo & Quản trị viên Khoa
+  // 1. Ban quản trị dự án
   {
     email: "admin@khoacntt.edu.vn",
     password: "Password123!",
-    name: "TS. Nguyễn Văn Quản Trị",
+    name: "Nguyễn Minh An (Quản trị mẫu)",
     role: "admin" as const,
-    faculty: "Công nghệ Thông tin",
     phone: "0901234567",
-    bio: "Trưởng Khoa kiêm Quản trị viên hệ thống Mạng lưới Cựu sinh viên Khoa CNTT",
+    bio: "Quản trị viên mẫu của dự án kết nối cộng đồng DLU Alumni",
     avatarUrl:
       "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200",
   },
   {
     email: "staff@khoacntt.edu.vn",
     password: "Password123!",
-    name: "ThS. Trần Thị Giáo Vụ",
+    name: "Trần Thanh Thảo (Vận hành mẫu)",
     role: "faculty_staff" as const,
-    faculty: "Công nghệ Thông tin",
     phone: "0902345678",
-    bio: "Phó Trưởng Bộ môn - Phụ trách Quan hệ Doanh nghiệp & Hoạt động Cựu sinh viên",
+    bio: "Nhân sự mẫu phụ trách quan hệ doanh nghiệp và hoạt động cựu sinh viên",
     avatarUrl:
       "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200",
   },
   {
     email: "staff.haidang@khoacntt.edu.vn",
     password: "Password123!",
-    name: "ThS. Lê Hải Đăng",
+    name: "Lê Hải Đăng (Vận hành mẫu)",
     role: "faculty_staff" as const,
-    faculty: "Công nghệ Thông tin",
     phone: "0902345699",
-    bio: "Giảng viên phụ trách Công tác Sinh viên & Quản lý Quỹ Học bổng Tài năng",
+    bio: "Nhân sự mẫu phụ trách hỗ trợ sinh viên và quản lý quỹ học bổng",
     avatarUrl:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200",
   },
@@ -80,11 +78,11 @@ export const SEED_USERS = [
     password: "Password123!",
     name: "Vũ Thị Thanh Mai",
     role: "alumni" as const,
-    faculty: "Công nghệ Thông tin",
+    faculty: "Quản trị kinh doanh",
     batchYear: 2017,
     graduationYear: 2021,
     phone: "0904567890",
-    bio: "Senior Product Manager tại VNG Corporation | Cựu sinh viên K17",
+    bio: "Quản lý sản phẩm | Cựu sinh viên ngành Quản trị kinh doanh",
     avatarUrl:
       "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200",
   },
@@ -119,11 +117,11 @@ export const SEED_USERS = [
     password: "Password123!",
     name: "Nguyễn Đình Khang",
     role: "alumni" as const,
-    faculty: "Công nghệ Thông tin",
+    faculty: "Kinh tế",
     batchYear: 2015,
     graduationYear: 2019,
     phone: "0906665555",
-    bio: "Co-Founder & CTO tại NextGen Solutions | Cựu sinh viên K15",
+    bio: "Đồng sáng lập doanh nghiệp | Cựu sinh viên ngành Kinh tế",
     avatarUrl:
       "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200",
   },
@@ -148,10 +146,10 @@ export const SEED_USERS = [
     name: "Phạm Minh Tuấn",
     role: "student" as const,
     studentCode: "22110112",
-    faculty: "Công nghệ Thông tin",
+    faculty: "Sinh học",
     batchYear: 2022,
     phone: "0905123456",
-    bio: "Sinh viên năm 3 ngành Khoa học Máy tính (K22), thành viên CLB Học thuật & Nghiên cứu Khoa học",
+    bio: "Sinh viên ngành Sinh học, tham gia hoạt động nghiên cứu và cộng đồng",
     avatarUrl:
       "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=200",
   },
@@ -161,15 +159,15 @@ export const SEED_USERS = [
     name: "Hoàng Khánh Linh",
     role: "student" as const,
     studentCode: "23110250",
-    faculty: "Công nghệ Thông tin",
+    faculty: "Ngôn ngữ Anh",
     batchYear: 2023,
     phone: "0905987654",
-    bio: "Sinh viên năm 2 ngành Hệ thống Thông tin (K23), Bí thư Chi đoàn, tích cực hoạt động tình nguyện",
+    bio: "Sinh viên ngành Ngôn ngữ Anh, tích cực tham gia hoạt động tình nguyện",
     avatarUrl:
       "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200",
   },
 
-  // 4. Doanh nghiệp Công nghệ Đối tác (Employers)
+  // 4. Đại diện doanh nghiệp nhiều lĩnh vực (Employers)
   {
     email: "hr@vng.com.vn",
     password: "Password123!",
@@ -209,6 +207,57 @@ export const SEED_USERS = [
     bio: "Giám đốc Tuyển dụng & Đào tạo Nhân tài Công nghệ - Viettel Telecom",
     avatarUrl:
       "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200",
+  },
+  {
+    email: "alumni.van@example.com",
+    password: "Password123!",
+    name: "Nguyễn Thu Vân",
+    role: "alumni" as const,
+    faculty: "Ngôn ngữ Anh",
+    batchYear: 2015,
+    graduationYear: 2019,
+    bio: "Hồ sơ mẫu: biên dịch viên, chia sẻ kinh nghiệm ngoại ngữ và làm việc với khách hàng quốc tế",
+  },
+  {
+    email: "alumni.an@example.com",
+    password: "Password123!",
+    name: "Trần Hoài An",
+    role: "alumni" as const,
+    faculty: "Du lịch",
+    batchYear: 2016,
+    graduationYear: 2020,
+    bio: "Hồ sơ mẫu: điều phối du lịch, quan tâm phát triển du lịch bền vững tại Đà Lạt",
+  },
+  {
+    email: "alumni.nhi@example.com",
+    password: "Password123!",
+    name: "Lê Bảo Nhi",
+    role: "alumni" as const,
+    faculty: "Sinh học",
+    batchYear: 2017,
+    graduationYear: 2021,
+    bio: "Hồ sơ mẫu: nghiên cứu ứng dụng sinh học và hỗ trợ sinh viên chuẩn bị đề tài",
+  },
+  {
+    email: "hr.tourism@example.com",
+    password: "Password123!",
+    name: "Đặng Minh Hương (Doanh nghiệp du lịch mẫu)",
+    role: "employer" as const,
+    bio: "Đại diện tuyển dụng mẫu trong lĩnh vực du lịch và dịch vụ",
+  },
+  {
+    email: "hr.education@example.com",
+    password: "Password123!",
+    name: "Phạm Thanh Tâm (Doanh nghiệp giáo dục mẫu)",
+    role: "employer" as const,
+    bio: "Đại diện tuyển dụng mẫu trong lĩnh vực giáo dục và ngoại ngữ",
+  },
+  {
+    email: "hr.agriculture@example.com",
+    password: "Password123!",
+    name: "Võ Ngọc Hà (Doanh nghiệp nông nghiệp mẫu)",
+    role: "employer" as const,
+    bio: "Đại diện tuyển dụng mẫu trong lĩnh vực nông nghiệp và sinh học ứng dụng",
   },
 ];
 
@@ -254,6 +303,36 @@ export const SEED_COMPANIES = [
       "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200",
     ownerEmail: "hr@viettel.vn",
     roleInCompany: "HR Director",
+  },
+  {
+    name: "Du lịch Lâm Viên (mẫu)",
+    description:
+      "Doanh nghiệp hư cấu phục vụ trình diễn các cơ hội du lịch, dịch vụ và kinh doanh. Không phải đối tác đã xác nhận của Trường.",
+    industry: "Du lịch & Dịch vụ",
+    website: null,
+    logoUrl: null,
+    ownerEmail: "hr.tourism@example.com",
+    roleInCompany: "Phụ trách tuyển dụng",
+  },
+  {
+    name: "Giáo dục Cao Nguyên (mẫu)",
+    description:
+      "Doanh nghiệp hư cấu phục vụ trình diễn cơ hội ngoại ngữ, biên dịch và hỗ trợ học tập.",
+    industry: "Giáo dục & Ngoại ngữ",
+    website: null,
+    logoUrl: null,
+    ownerEmail: "hr.education@example.com",
+    roleInCompany: "Phụ trách nhân sự",
+  },
+  {
+    name: "Nông nghiệp Xanh Đà Lạt (mẫu)",
+    description:
+      "Doanh nghiệp hư cấu phục vụ trình diễn cơ hội sinh học ứng dụng, nghiên cứu và nông nghiệp bền vững.",
+    industry: "Nông nghiệp & Sinh học ứng dụng",
+    website: null,
+    logoUrl: null,
+    ownerEmail: "hr.agriculture@example.com",
+    roleInCompany: "Đại diện tuyển dụng",
   },
 ];
 
@@ -330,17 +409,64 @@ export const SEED_JOBS = [
     salaryRange: "20.000.000 - 40.000.000 VNĐ",
     applyUrlOrEmail: "tuyendung@viettel.com.vn",
   },
+  {
+    companyName: "Du lịch Lâm Viên (mẫu)",
+    title: "Thực tập sinh điều phối du lịch (mẫu)",
+    description:
+      "Tin trình diễn: hỗ trợ xây dựng lịch trình, chăm sóc khách hàng và phối hợp tổ chức chương trình du lịch.",
+    requirements:
+      "Sinh viên Du lịch, Quản trị kinh doanh hoặc ngành phù hợp; giao tiếp tốt, có tinh thần làm việc nhóm và khả năng tổ chức.",
+    location: "Đà Lạt, Lâm Đồng",
+    jobType: "internship" as const,
+    salaryRange: "Theo thỏa thuận",
+    applyUrlOrEmail: "hr.tourism@example.com",
+  },
+  {
+    companyName: "Du lịch Lâm Viên (mẫu)",
+    title: "Nhân viên Marketing và truyền thông (mẫu)",
+    description:
+      "Tin trình diễn: lên kế hoạch nội dung, nghiên cứu khách hàng và theo dõi hiệu quả các hoạt động truyền thông.",
+    requirements:
+      "Ngành Kinh tế, Quản trị kinh doanh, Truyền thông hoặc ngành phù hợp; kỹ năng viết, phân tích dữ liệu và phối hợp nhóm.",
+    location: "Đà Lạt hoặc làm việc kết hợp",
+    jobType: "full_time" as const,
+    salaryRange: "Theo thỏa thuận",
+    applyUrlOrEmail: "hr.tourism@example.com",
+  },
+  {
+    companyName: "Giáo dục Cao Nguyên (mẫu)",
+    title: "Cộng tác viên biên dịch tiếng Anh (mẫu)",
+    description:
+      "Tin trình diễn: biên dịch tài liệu học tập, kiểm tra thuật ngữ và hỗ trợ đội ngũ biên tập nội dung.",
+    requirements:
+      "Ngành Ngôn ngữ Anh hoặc ngành phù hợp; đọc hiểu tốt, viết tiếng Việt rõ ràng và chú ý tính chính xác của tài liệu.",
+    location: "Đà Lạt hoặc từ xa",
+    jobType: "part_time" as const,
+    salaryRange: "Theo khối lượng công việc",
+    applyUrlOrEmail: "hr.education@example.com",
+  },
+  {
+    companyName: "Nông nghiệp Xanh Đà Lạt (mẫu)",
+    title: "Thực tập sinh nghiên cứu sinh học ứng dụng (mẫu)",
+    description:
+      "Tin trình diễn: hỗ trợ ghi chép thực nghiệm, tổng hợp dữ liệu và theo dõi thử nghiệm trong nghiên cứu ứng dụng sinh học.",
+    requirements:
+      "Sinh viên Sinh học hoặc ngành liên quan; cẩn thận, tuân thủ hướng dẫn thực nghiệm và có kỹ năng tổng hợp dữ liệu.",
+    location: "Đà Lạt, Lâm Đồng",
+    jobType: "internship" as const,
+    salaryRange: "Theo thỏa thuận",
+    applyUrlOrEmail: "hr.agriculture@example.com",
+  },
 ];
 
 export const SEED_EVENTS = [
   {
     type: "talkshow" as const,
-    title:
-      "Talkshow Cựu Sinh Viên: Hành trang phỏng vấn Big Tech & Bí quyết thăng tiến sự nghiệp 2026",
+    title: "Gặp gỡ cựu sinh viên: từ giảng đường đến công việc đầu tiên (mẫu)",
     description:
-      "Buổi chia sẻ thân mật cùng các cựu sinh viên tiêu biểu các khóa K16, K17, K18 đang giữ vai trò Tech Lead và Product Manager tại VNG, FPT Software, MoMo. Hướng dẫn chi tiết cách vượt qua vòng Coding Interview và System Design.",
+      "Sự kiện trình diễn cho sinh viên mọi khoa/ngành: chia sẻ cách chuẩn bị hồ sơ, lựa chọn kỳ thực tập và thích nghi với công việc đầu tiên từ góc nhìn kinh doanh, ngoại ngữ và công nghệ.",
     format: "offline" as const,
-    locationOrLink: "Hội trường A, Tòa nhà Điều hành Trung tâm, ĐHQG TP.HCM",
+    locationOrLink: "Đà Lạt — địa điểm mẫu, chưa phải lịch tổ chức thực tế",
     daysFromNow: 5,
     durationHours: 3,
     capacity: 250,
@@ -349,7 +475,7 @@ export const SEED_EVENTS = [
     speakerEmails: [
       "alumni.le@gmail.com",
       "alumni.mai@gmail.com",
-      "alumni.quoc@gmail.com",
+      "alumni.van@example.com",
     ],
   },
   {
@@ -369,12 +495,11 @@ export const SEED_EVENTS = [
   },
   {
     type: "job_fair" as const,
-    title:
-      "Ngày hội Việc làm & Kết nối Hợp tác Doanh nghiệp CNTT (IT Career Day 2026)",
+    title: "Ngày hội nghề nghiệp và kết nối doanh nghiệp đa ngành (mẫu)",
     description:
-      "Cơ hội phỏng vấn tuyển dụng trực tiếp tại gian hàng với hơn 30 tập đoàn công nghệ hàng đầu (VNG, FPT, MoMo, Viettel,...). Tiếp nhận hàng trăm suất thực tập sinh tiềm năng.",
+      "Sự kiện trình diễn kết nối sinh viên và cựu sinh viên với các lĩnh vực du lịch, kinh doanh, ngoại ngữ, sinh học ứng dụng và công nghệ. Các hoạt động gồm góp ý CV, định hướng nghề nghiệp và trao đổi cơ hội thực tập.",
     format: "offline" as const,
-    locationOrLink: "Sảnh lớn Tòa nhà Thư viện Trung tâm Khoa CNTT",
+    locationOrLink: "Sảnh lớn Tòa nhà Thư viện Trung tâm Đại học Đà Lạt",
     daysFromNow: 25,
     durationHours: 6,
     capacity: 1000,
@@ -397,6 +522,32 @@ export const SEED_EVENTS = [
       "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800",
     speakerEmails: ["alumni.quoc@gmail.com", "alumni.khang@techstartup.vn"],
   },
+  {
+    type: "workshop" as const,
+    title: "Ngoại ngữ và giao tiếp trong môi trường làm việc (mẫu)",
+    description:
+      "Sự kiện trình diễn dành cho các ngành: thực hành giới thiệu bản thân, viết email và giao tiếp với đồng nghiệp, khách hàng quốc tế.",
+    format: "offline" as const,
+    locationOrLink: "Đà Lạt — địa điểm mẫu, chưa phải lịch tổ chức thực tế",
+    daysFromNow: 8,
+    durationHours: 2,
+    capacity: 80,
+    coverImageUrl: null,
+    speakerEmails: ["alumni.van@example.com", "alumni.an@example.com"],
+  },
+  {
+    type: "talkshow" as const,
+    title: "Nghiên cứu và phát triển bền vững tại Đà Lạt (mẫu)",
+    description:
+      "Sự kiện trình diễn trao đổi về cách chuẩn bị đề tài, làm việc liên ngành và ứng dụng kiến thức sinh học, kinh tế, du lịch vào thực tiễn địa phương.",
+    format: "offline" as const,
+    locationOrLink: "Đà Lạt — địa điểm mẫu, chưa phải lịch tổ chức thực tế",
+    daysFromNow: 15,
+    durationHours: 2,
+    capacity: 100,
+    coverImageUrl: null,
+    speakerEmails: ["alumni.nhi@example.com", "alumni.khang@techstartup.vn"],
+  },
 ];
 
 export const SEED_EXPERIENCES = [
@@ -404,7 +555,7 @@ export const SEED_EXPERIENCES = [
     authorEmail: "alumni.le@gmail.com",
     title:
       "Lời khuyên từ cựu sinh viên K18: 4 điều sinh viên ngành CNTT cần làm trước khi tốt nghiệp",
-    content: `Chào các bạn sinh viên thân mến của Khoa CNTT,
+    content: `Chào các bạn sinh viên thân mến của Đại học Đà Lạt,
 
 Thấm thoát đã 4 năm kể từ ngày mình nhận bằng tốt nghiệp. Từ vị trí một bạn thực tập sinh bỡ ngỡ bước chân vào doanh nghiệp, đến nay đã làm Tech Lead phụ trách đội ngũ hơn 15 kỹ sư, mình muốn đúc kết 4 bài học quan trọng nhất:
 
@@ -428,15 +579,14 @@ Chúc các bạn sinh viên khóa dưới tự tin và gặt hái thật nhiều
   },
   {
     authorEmail: "alumni.mai@gmail.com",
-    title:
-      "Hành trình từ Kỹ sư Lập trình chuyển hướng sang Product Manager (PM) tại Big Tech",
-    content: `Xuất thân từ dân kỹ thuật Khoa CNTT, mình từng nghĩ cả đời sẽ gắn bó với IDE và những dòng code. Tuy nhiên sau 2 năm làm Software Engineer, mình nhận ra niềm đam mê lớn hơn với việc tìm hiểu hành vi người dùng và định hình sản phẩm.
+    title: "Từ ngành Quản trị kinh doanh đến công việc quản lý sản phẩm (mẫu)",
+    content: `Bài viết trình diễn của một cựu sinh viên ngành Quản trị kinh doanh Đại học Đà Lạt, minh họa cách tìm hiểu nhu cầu khách hàng và phối hợp với các nhóm để phát triển sản phẩm.
 
 Một số chia sẻ cho các bạn sinh viên muốn theo đuổi hướng đi Product Management:
-- **Lợi thế vượt trội của dân IT làm PM:** Bạn hiểu rõ tính khả thi kỹ thuật, nói chuyện cùng ngôn ngữ với Tech Team và đưa ra estimation chuẩn xác hơn.
+- **Dùng kiến thức chuyên ngành:** Rèn luyện cách nghiên cứu khách hàng, xác định vấn đề và lập kế hoạch kinh doanh. Chủ động học từ đồng nghiệp ở những ngành khác.
 - **Rèn luyện tư duy kinh doanh và dữ liệu:** Hãy học cách đọc dữ liệu, phân tích chỉ số người dùng (Retention, Churn rate, Conversion funnel) thay vì chỉ nhìn vào tính năng.
 - **Học cách nói "Không":** Một PM giỏi là người biết từ chối các ý tưởng không phù hợp với mục tiêu dài hạn của sản phẩm.`,
-    tags: ["Product Management", "Chuyển ngành", "VNG", "K17", "Kỹ năng mềm"],
+    tags: ["Quản trị kinh doanh", "Quản lý sản phẩm", "K17", "Kỹ năng mềm"],
     viewCount: 260,
   },
   {
@@ -471,15 +621,39 @@ Dưới đây là phương pháp mình đã áp dụng và hướng dẫn cho nh
     ],
     viewCount: 420,
   },
+  {
+    authorEmail: "alumni.van@example.com",
+    title: "Chuẩn bị hồ sơ và bài dịch đầu tiên khi tìm việc ngoại ngữ (mẫu)",
+    content:
+      "Bài viết trình diễn: chọn một số bài dịch để giới thiệu năng lực, ghi rõ bối cảnh và vai trò của mình. Kiểm tra thuật ngữ, giữ văn phong nhất quán và luyện giải thích lựa chọn dịch. Khi ứng tuyển, tìm hiểu lĩnh vực của đơn vị tuyển dụng để chuẩn bị ví dụ phù hợp.",
+    tags: ["Ngôn ngữ Anh", "Biên dịch", "Hồ sơ ứng tuyển"],
+    viewCount: 0,
+  },
+  {
+    authorEmail: "alumni.an@example.com",
+    title: "Những bài học từ kỳ thực tập trong ngành du lịch (mẫu)",
+    content:
+      "Bài viết trình diễn: ghi chép công việc hằng ngày, học cách phối hợp với các bộ phận và chuẩn bị phương án khi lịch trình thay đổi. Giao tiếp rõ ràng với khách hàng và lắng nghe phản hồi giúp rèn luyện nghiệp vụ. Sau kỳ thực tập, tổng hợp những việc đã làm và điều cần học thêm.",
+    tags: ["Du lịch", "Thực tập", "Giao tiếp"],
+    viewCount: 0,
+  },
+  {
+    authorEmail: "alumni.nhi@example.com",
+    title: "Từ ý tưởng đến đề tài nghiên cứu sinh học đầu tiên (mẫu)",
+    content:
+      "Bài viết trình diễn: bắt đầu từ một câu hỏi có phạm vi rõ ràng, đọc tài liệu và trao đổi với người hướng dẫn trước khi thiết kế nghiên cứu. Lập kế hoạch, ghi chép dữ liệu có hệ thống và tuân thủ quy định của phòng thực nghiệm. Trình bày cả kết quả chưa đạt kỳ vọng để cùng rút kinh nghiệm.",
+    tags: ["Sinh học", "Nghiên cứu", "Kỹ năng học tập"],
+    viewCount: 0,
+  },
 ];
 
 export const SEED_FORMS = [
   {
     type: "survey" as const,
     title:
-      "Khảo sát Tình hình Việc làm & Mức thu nhập Cựu sinh viên Khoa CNTT (K15 - K19)",
+      "Khảo sát Tình hình Việc làm & Mức thu nhập Cựu sinh viên Đại học Đà Lạt (2015 - 2019)",
     description:
-      "Khảo sát định kỳ nhằm thống kê tỷ lệ việc làm, mức thu nhập trung bình và mức độ phù hợp của chương trình đào tạo của Khoa CNTT so với thực tiễn doanh nghiệp.",
+      "Khảo sát định kỳ nhằm thống kê tỷ lệ việc làm, mức thu nhập trung bình và mức độ phù hợp của chương trình đào tạo của Đại học Đà Lạt so với thực tiễn doanh nghiệp.",
     targetBatches: [2015, 2016, 2017, 2018, 2019],
     targetRole: "alumni" as const,
     daysFromNow: 45,
@@ -490,7 +664,7 @@ export const SEED_FORMS = [
         label: "Tình trạng việc làm hiện tại của bạn:",
         options: [
           "Đang có việc làm đúng chuyên ngành đào tạo",
-          "Đang có việc làm liên quan đến CNTT",
+          "Đang có việc làm khác ngành đào tạo",
           "Đang tự khởi nghiệp / Chủ doanh nghiệp",
           "Đang học tập nâng cao (Thạc sĩ, Tiến sĩ)",
           "Đang tìm kiếm cơ hội việc làm mới",
@@ -513,7 +687,7 @@ export const SEED_FORMS = [
         orderIndex: 2,
         questionType: "scale" as const,
         label:
-          "Mức độ hài lòng đối với kiến thức nền tảng và chuyên ngành được Khoa đào tạo (1 - 5 sao):",
+          "Mức độ hài lòng đối với kiến thức nền tảng và chuyên ngành đã học (1 - 5 sao):",
         isRequired: true,
         config: {
           min: 1,
@@ -526,7 +700,7 @@ export const SEED_FORMS = [
         orderIndex: 3,
         questionType: "long_text" as const,
         label:
-          "Góp ý hoặc đề xuất của bạn giúp Khoa cải tiến học phần chuyên ngành và kỹ năng thực tế cho sinh viên khóa sau:",
+          "Góp ý của bạn về kỹ năng thực tế và nội dung chia sẻ cần thiết cho sinh viên các khóa sau:",
         isRequired: false,
       },
     ],
@@ -536,7 +710,7 @@ export const SEED_FORMS = [
     title:
       "Mẫu Đơn Đăng ký Xét duyệt Học bổng Cựu sinh viên & Doanh nghiệp Tài trợ 2026",
     description:
-      "Dành cho sinh viên Khoa CNTT có hoàn cảnh khó khăn hoặc có thành tích xuất sắc trong học tập, nghiên cứu khoa học và hoạt động phong trào.",
+      "Dành cho sinh viên Đại học Đà Lạt có hoàn cảnh khó khăn hoặc có thành tích xuất sắc trong học tập, nghiên cứu khoa học và hoạt động phong trào.",
     targetBatches: [2021, 2022, 2023, 2024],
     targetRole: "student" as const,
     daysFromNow: 60,
@@ -575,9 +749,10 @@ export const SEED_FORMS = [
 
 export const SEED_SCHOLARSHIPS = [
   {
-    title: "Quỹ Học bổng Thắp sáng Tài năng Trẻ Khoa CNTT - Học kỳ 1 (2026)",
+    title:
+      "Quỹ Học bổng Thắp sáng Tài năng Trẻ Đại học Đà Lạt - Học kỳ 1 (2026)",
     description:
-      "Quỹ học bổng thường niên do Mạng lưới Cựu sinh viên kết hợp cùng các Doanh nghiệp Công nghệ đồng hành tài trợ. Hỗ trợ toàn bộ hoặc một phần học phí cho sinh viên vượt khó hiếu học và nuôi dưỡng các tài năng công nghệ tương lai.",
+      "Chiến dịch trình diễn hỗ trợ sinh viên toàn trường có hoàn cảnh khó khăn hoặc thành tích học tập, nghiên cứu, hoạt động cộng đồng. Các số tiền và cam kết là dữ liệu mẫu, không phải khoản tài trợ thực tế.",
     targetAmount: "120000000",
     currentAmount: "70000000",
     daysFromNow: 45,
@@ -589,7 +764,7 @@ export const SEED_SCHOLARSHIPS = [
         amount: "25000000",
         isAnonymous: false,
         status: "fulfilled" as const,
-        note: "Tài trợ 5 suất học bổng toàn phần dành cho sinh viên xuất sắc đam mê Kỹ thuật Phần mềm",
+        note: "Cam kết mẫu hỗ trợ sinh viên các khoa/ngành đáp ứng điều kiện chiến dịch",
       },
       {
         donorEmail: "hr@fpt.com.vn",
@@ -597,7 +772,7 @@ export const SEED_SCHOLARSHIPS = [
         amount: "20000000",
         isAnonymous: false,
         status: "fulfilled" as const,
-        note: "Đồng hành cùng Khoa CNTT trong công tác ươm mầm tài năng trẻ",
+        note: "Đồng hành cùng Đại học Đà Lạt trong công tác ươm mầm tài năng trẻ",
       },
       {
         donorEmail: "alumni.le@gmail.com",
@@ -613,7 +788,7 @@ export const SEED_SCHOLARSHIPS = [
         amount: "10000000",
         isAnonymous: false,
         status: "fulfilled" as const,
-        note: "Ủng hộ quỹ khuyến học Khoa CNTT thân yêu",
+        note: "Ủng hộ quỹ khuyến học Đại học Đà Lạt thân yêu",
       },
       {
         donorEmail: "alumni.mai@gmail.com",
@@ -621,7 +796,7 @@ export const SEED_SCHOLARSHIPS = [
         amount: "10000000",
         isAnonymous: true,
         status: "pledged" as const,
-        note: "Cam kết chuyển khoản trực tiếp vào tài khoản ngân hàng của Khoa trong tháng tới",
+        note: "Cam kết mẫu đóng góp theo hướng dẫn thanh toán của chiến dịch",
       },
     ],
     applications: [
@@ -645,7 +820,7 @@ export const SEED_SCHOLARSHIPS = [
     title:
       "Học bổng Doanh nghiệp Đồng hành: Hỗ trợ Khóa luận & Đề tài Tốt nghiệp Xuất sắc 2026",
     description:
-      "Học bổng do MoMo và Viettel Telecom tài trợ nhằm khuyến khích sinh viên năm cuối thực hiện các đề tài tốt nghiệp có tính ứng dụng thực tiễn cao vào các bài toán lớn của xã hội.",
+      "Chiến dịch trình diễn hỗ trợ đề tài tốt nghiệp của sinh viên nhiều ngành có ứng dụng thực tiễn. Các nhà tài trợ và số tiền trong dữ liệu mẫu không phải xác nhận tài trợ thực tế.",
     targetAmount: "80000000",
     currentAmount: "35000000",
     daysFromNow: 60,
@@ -723,7 +898,7 @@ async function seed() {
           role: u.role,
           fullName: u.name,
           studentCode: (u as any).studentCode || null,
-          faculty: (u as any).faculty || "Công nghệ Thông tin",
+          faculty: (u as any).faculty || null,
           batchYear: (u as any).batchYear || null,
           graduationYear: (u as any).graduationYear || null,
           phone: u.phone || null,
@@ -741,7 +916,7 @@ async function seed() {
   const adminId = userMap["admin@khoacntt.edu.vn"];
 
   // 2. Tạo Doanh nghiệp Đối tác
-  console.log("🏢 Đang khởi tạo hồ sơ doanh nghiệp công nghệ đối tác...");
+  console.log("Đang khởi tạo hồ sơ doanh nghiệp mẫu nhiều lĩnh vực...");
   const companyMap: Record<string, string> = {};
 
   for (const c of SEED_COMPANIES) {
@@ -860,7 +1035,7 @@ async function seed() {
             eventId: newEvent.id,
             alumniUserId,
             invitationStatus: "accepted",
-            note: "Nhận lời chia sẻ cùng các bạn sinh viên Khoa CNTT",
+            note: "Nhận lời chia sẻ cùng các bạn sinh viên Đại học Đà Lạt",
           });
         }
       }
@@ -1045,7 +1220,7 @@ async function seed() {
           userId: studentId,
           type: "scholarship_update",
           title: "Hồ sơ học bổng đang được xét duyệt",
-          body: "Ban Xét duyệt Học bổng Khoa CNTT đã tiếp nhận và đang tiến hành thẩm định hồ sơ của bạn.",
+          body: "Ban Xét duyệt Học bổng Đại học Đà Lạt đã tiếp nhận và đang tiến hành thẩm định hồ sơ của bạn.",
           linkUrl: "/student/scholarships",
           isRead: false,
         },
@@ -1061,7 +1236,7 @@ async function seed() {
     "🔑 DANH SÁCH TÀI KHOẢN DEMO SẴN DÙNG (MẬT KHẨU CHUNG: Password123!):",
   );
   console.log("   1. Quản trị viên (Admin):    admin@khoacntt.edu.vn");
-  console.log("   2. Giáo vụ Khoa:             staff@khoacntt.edu.vn");
+  console.log("   2. Vận hành cộng đồng:       staff@khoacntt.edu.vn");
   console.log("   3. Cựu SV K18 (FPT Lead):    alumni.le@gmail.com");
   console.log("   4. Cựu SV K17 (VNG PM):      alumni.mai@gmail.com");
   console.log("   5. Cựu SV K16 (MoMo Lead):   alumni.quoc@gmail.com");

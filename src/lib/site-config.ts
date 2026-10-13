@@ -1,43 +1,57 @@
 /**
- * Thông tin tham chiếu công khai của Khoa CNTT, Trường Đại học Đà Lạt.
- * Đối chiếu nguồn chính thức ngày 12/10/2026; chi tiết tại docs/DLU_REFERENCE.md.
- * mission, vision và values là mục tiêu của Connect Alumni, không phải tuyên bố
- * chính thức của Khoa. board là danh sách Khoa công bố ngày 25/12/2023.
+ * DLU Alumni là dự án riêng dành cho sinh viên và cựu sinh viên toàn trường.
+ * Thông tin Trường được tổng hợp cho Giới thiệu và footer; hỗ trợ dự án dùng
+ * biểu mẫu riêng. Nguồn: docs/DLU_REFERENCE.md.
  */
-const facultyUrl = "https://cntt.dlu.edu.vn/";
-const alumniBoardUrl =
-  "https://cntt.dlu.edu.vn/ban-lien-lac-cuu-sinh-vien-khoa-cntt/";
-const anniversaryUrl =
-  "https://cntt.dlu.edu.vn/le-ky-niem-20-nam-thanh-lap-khoa-cong-nghe-thong-tin-truong-dai-hoc-da-lat-2003-2023/";
-const address =
-  "Tầng 2, Tòa nhà A7, 01 Phù Đổng Thiên Vương, Phường Lâm Viên – Đà Lạt, tỉnh Lâm Đồng";
-
 export const SITE = {
-  appName: "Connect Alumni",
-  facultyName: "Khoa Công nghệ Thông tin",
-  facultyShortName: "Khoa CNTT · Đại học Đà Lạt",
+  appName: "DLU Alumni",
+  tagline: "Cộng đồng sinh viên và cựu sinh viên Đại học Đà Lạt",
+  logoUrl: "/images/dlu-logo.png",
+  logoSourceUrl:
+    "https://dlu.edu.vn/wp-content/uploads/2025/07/00.-Newest_DLU-Logo.png",
+  logoWidth: 2106,
+  logoHeight: 2106,
+  logoAlt: "Logo Trường Đại học Đà Lạt",
   universityName: "Trường Đại học Đà Lạt",
-  facultyUrl,
-  universityUrl: "https://dlu.edu.vn/",
-  alumniUrl: "https://cntt.dlu.edu.vn/category/sinh-vien/cuu-sinh-vien/",
-  aboutUrl: "https://cntt.dlu.edu.vn/gioi-thieu-khoa-cong-nghe-thong-tin/",
-  alumniBoardUrl,
-  address,
-  email: "it@dlu.edu.vn",
-  phone: "0911 843 962",
-  phoneHref: "tel:+84911843962",
-  mapUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`,
-  founded: 2003,
-  lastVerified: "2026-10-12",
+  universityContact: {
+    address:
+      "Số 01 Phù Đổng Thiên Vương, phường Lâm Viên - Đà Lạt, tỉnh Lâm Đồng",
+    phone: "0263 3822 246",
+    phoneHref: "tel:+842633822246",
+    email: "info@dlu.edu.vn",
+    verifiedAt: "2026-10-13",
+    sourceUrl: "https://ksh.dlu.edu.vn/en/",
+  },
+  universityProfile: {
+    verifiedAt: "2026-10-13",
+    overview: [
+      "Trường Đại học Đà Lạt là cơ sở giáo dục đại học công lập, đào tạo đa ngành, đa lĩnh vực tại thành phố Đà Lạt. Hoạt động của Trường gắn với đào tạo, nghiên cứu khoa học, chuyển giao công nghệ và phục vụ cộng đồng.",
+      "Tiền thân của Trường là Viện Đại học Đà Lạt, được thành lập năm 1957 và bắt đầu tuyển sinh năm 1958. Ngày 27/10/1976, Trường Đại học Đà Lạt được thành lập trên cơ sở kế thừa Viện Đại học Đà Lạt.",
+    ],
+    milestones: [
+      {
+        year: "1957",
+        text: "Thành lập Viện Đại học Đà Lạt, tiền thân của Trường.",
+      },
+      {
+        year: "1958",
+        text: "Viện Đại học Đà Lạt bắt đầu tuyển sinh và đào tạo.",
+      },
+      {
+        year: "1976",
+        text: "Thành lập Trường Đại học Đà Lạt theo Quyết định 426/TTg ngày 27/10/1976.",
+      },
+    ],
+  },
   mission:
-    "Connect Alumni hướng đến kết nối sinh viên và cựu sinh viên Khoa Công nghệ Thông tin, Trường Đại học Đà Lạt với cơ hội nghề nghiệp, hoạt động cộng đồng và nguồn lực khuyến học.",
+    "DLU Alumni là dự án riêng kết nối sinh viên, cựu sinh viên của tất cả các khoa, ngành tại Trường Đại học Đà Lạt với doanh nghiệp, cơ hội nghề nghiệp, hoạt động cộng đồng và nguồn lực khuyến học.",
   vision:
-    "Xây dựng một không gian kết nối để các thế hệ sinh viên CNTT Đà Lạt cùng chia sẻ kinh nghiệm và đồng hành trên hành trình nghề nghiệp.",
+    "Xây dựng một không gian chung để các thế hệ sinh viên Đại học Đà Lạt, ở mọi khoa và ngành học, cùng chia sẻ kinh nghiệm và đồng hành trên hành trình nghề nghiệp.",
   values: [
     {
       title: "Kết nối",
       description:
-        "Giúp sinh viên, cựu sinh viên và doanh nghiệp tìm thấy những cơ hội đồng hành phù hợp.",
+        "Giúp sinh viên, cựu sinh viên và doanh nghiệp từ nhiều lĩnh vực tìm thấy cơ hội đồng hành phù hợp.",
     },
     {
       title: "Minh bạch",
@@ -50,120 +64,35 @@ export const SITE = {
         "Khuyến khích chia sẻ kinh nghiệm học tập, làm việc và hỗ trợ thế hệ sinh viên tiếp theo.",
     },
   ],
-  milestones: [
+  communityLinks: [
     {
-      year: "2003",
-      text: "Thành lập Khoa Công nghệ Thông tin, Trường Đại học Đà Lạt.",
-      sourceUrl: anniversaryUrl,
+      label: "Giới thiệu Trường & dự án",
+      description:
+        "Khám phá Đại học Đà Lạt và mục tiêu kết nối toàn trường của DLU Alumni.",
+      href: "/about",
     },
     {
-      year: "2023",
-      text: "Ra mắt Ban liên lạc Hội cựu sinh viên Khoa CNTT tại lễ kỷ niệm 20 năm thành lập Khoa, ngày 14/10/2023.",
-      sourceUrl: anniversaryUrl,
-    },
-  ],
-  boardPublishedAt: "25/12/2023",
-  board: [
-    {
-      name: "Đặng Đình Lành",
-      title: "Cựu sinh viên CTK31",
-      sourceUrl: alumniBoardUrl,
+      label: "Hoạt động & sự kiện",
+      description: "Theo dõi lịch gặp gỡ, talkshow và hoạt động của cộng đồng.",
+      href: "/events",
     },
     {
-      name: "Hoàng Văn Vinh",
-      title: "Cựu sinh viên CTK29",
-      sourceUrl: alumniBoardUrl,
+      label: "Góc chia sẻ",
+      description:
+        "Đọc câu chuyện và kinh nghiệm từ sinh viên, cựu sinh viên ở nhiều ngành học.",
+      href: "/experiences",
     },
     {
-      name: "Lê Phú Lộc",
-      title: "Cựu sinh viên CTK35",
-      sourceUrl: alumniBoardUrl,
-    },
-    {
-      name: "Lê Quang Hoàng",
-      title: "Cựu sinh viên CTK32",
-      sourceUrl: alumniBoardUrl,
-    },
-    {
-      name: "Lê Thị Thanh Hậu",
-      title: "Cựu sinh viên CTK35CD",
-      sourceUrl: alumniBoardUrl,
-    },
-    {
-      name: "Nguyễn Đoàn Quang Thái",
-      title: "Cựu sinh viên CTK33",
-      sourceUrl: alumniBoardUrl,
-    },
-    {
-      name: "Nguyễn Thị Thúy Anh",
-      title: "Cựu sinh viên CTK30CD",
-      sourceUrl: alumniBoardUrl,
-    },
-    {
-      name: "Nguyễn Trọng Vũ",
-      title: "Cựu sinh viên CTK28CD",
-      sourceUrl: alumniBoardUrl,
-    },
-    {
-      name: "Phạm Trung Anh Vũ",
-      title: "Cựu sinh viên CTK40",
-      sourceUrl: alumniBoardUrl,
-    },
-    {
-      name: "Phan Viện",
-      title: "Cựu sinh viên CTK27",
-      sourceUrl: alumniBoardUrl,
-    },
-    {
-      name: "Tôn Tất Tâm Nguyên",
-      title: "Cựu sinh viên CTK34",
-      sourceUrl: alumniBoardUrl,
-    },
-  ],
-  specializations: [
-    {
-      name: "Kỹ thuật phần mềm",
-      href: "https://cntt.dlu.edu.vn/chuyen-nganh-ky-thuat-phan-mem/",
-    },
-    {
-      name: "Khoa học dữ liệu",
-      href: "https://cntt.dlu.edu.vn/chuyen-nganh-khoa-hoc-du-lieu/",
-    },
-    {
-      name: "Mạng máy tính",
-      href: "https://cntt.dlu.edu.vn/chuyen-nganh-mang-may-tinh/",
-    },
-  ],
-  officialLinks: [
-    {
-      label: "Website Khoa CNTT",
-      description: "Tin tức, thông báo và thông tin đào tạo do Khoa công bố.",
-      href: facultyUrl,
-    },
-    {
-      label: "Cựu sinh viên Khoa CNTT",
-      description: "Hoạt động và thông tin dành cho cựu sinh viên của Khoa.",
-      href: "https://cntt.dlu.edu.vn/category/sinh-vien/cuu-sinh-vien/",
-    },
-    {
-      label: "Cổng cựu sinh viên Đại học Đà Lạt",
-      description: "Không gian kết nối cựu sinh viên trên phạm vi toàn Trường.",
-      href: "https://csv.dlu.edu.vn/",
-    },
-    {
-      label: "Trường Đại học Đà Lạt",
-      description: "Thông tin chung và các thông báo trên website của Trường.",
-      href: "https://dlu.edu.vn/",
+      label: "Hỗ trợ & góp ý",
+      description: "Gửi câu hỏi, báo lỗi hoặc đề xuất cải thiện DLU Alumni.",
+      href: "/contact",
     },
   ],
   sources: {
-    homepage: facultyUrl,
-    contact:
-      "https://cntt.dlu.edu.vn/en/cam-nang-danh-cho-sinh-vien-nganh-cntt-khoa-50/",
-    history: anniversaryUrl,
-    board: alumniBoardUrl,
-    address: "https://csv.dlu.edu.vn/gioi-thieu",
-    annualReport:
-      "https://dlu.edu.vn/wp-content/uploads/2025/10/1134-BC-DHDL-Bao-cao-thuong-nien-nam-2025.pdf",
+    university: "https://dlu.edu.vn/",
+    history: "https://50nam.dlu.edu.vn/lich-su/",
+    overview: "https://dlu.edu.vn/loi-ngo-cua-hieu-truong/",
+    logo: "https://dlu.edu.vn/logo-truong-dai-hoc-da-lat/",
+    campus: "https://csv.dlu.edu.vn/",
   },
 } as const;

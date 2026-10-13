@@ -16,7 +16,7 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [requirements, setRequirements] = React.useState("");
-  const [location, setLocation] = React.useState("TP. Hồ Chí Minh");
+  const [location, setLocation] = React.useState("");
   const [jobType, setJobType] = React.useState<
     "full_time" | "part_time" | "internship"
   >("internship");
@@ -69,8 +69,8 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
           Tin tuyển dụng đã được gửi phê duyệt thành công!
         </AlertDescription>
         <p className="text-xs text-muted-foreground">
-          Ban Chủ nhiệm Khoa sẽ xem xét và phản hồi trong thời gian sớm nhất.
-          Đang chuyển hướng...
+          Ban quản trị DLU Alumni sẽ xem xét và phản hồi trong thời gian sớm
+          nhất. Đang chuyển hướng...
         </p>
       </Alert>
     );
@@ -90,7 +90,7 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
         </Label>
         <Input
           id="title"
-          placeholder="Ví dụ: Thực tập sinh Lập trình Web Fullstack (Next.js / Node.js)"
+          placeholder="Ví dụ: Thực tập sinh Marketing, trợ lý nghiên cứu, biên dịch viên"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
@@ -155,7 +155,7 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
           </Label>
           <Input
             id="location"
-            placeholder="Khu Công nghệ Cao, TP. Thủ Đức (Hybrid)"
+            placeholder="Đà Lạt, TP. Hồ Chí Minh hoặc làm việc từ xa"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             required
@@ -204,7 +204,7 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
         <Textarea
           id="req"
           rows={5}
-          placeholder="Yêu cầu về kiến thức chuyên môn, ngôn ngữ lập trình, kỹ năng mềm..."
+          placeholder="Ngành học phù hợp, kiến thức chuyên môn, ngoại ngữ, kỹ năng và kinh nghiệm cần có..."
           value={requirements}
           onChange={(e) => setRequirements(e.target.value)}
           required
@@ -224,7 +224,7 @@ export const NewJobForm = ({ companyId }: { companyId: string }) => {
           ) : (
             <>
               <Send data-icon="inline-start" />
-              Gửi tin chờ Khoa duyệt
+              Gửi tin chờ duyệt
             </>
           )}
         </Button>

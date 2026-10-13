@@ -8,16 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { requireRole } from "@/lib/permissions";
+import { requireRoleOrRedirect } from "@/lib/permissions";
 import { UserRowActions } from "./user-row-actions";
 
 export const metadata = {
-  title: "Quản lý Người dùng Hệ thống | Quản trị viên Khoa",
+  title: "Quản lý Người dùng Hệ thống | Quản trị DLU Alumni",
 };
 
 const AdminUsersPage = async () => {
   // Hard security guard Layer 2
-  const current = await requireRole("admin");
+  const current = await requireRoleOrRedirect("admin");
   const usersList = await adminGetUsers();
 
   const getRoleBadge = (role: string) => {
@@ -31,7 +31,7 @@ const AdminUsersPage = async () => {
       case "faculty_staff":
         return (
           <Badge className="bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20">
-            Giáo vụ Khoa
+            Nhân sự quản trị
           </Badge>
         );
       case "employer":
@@ -46,7 +46,6 @@ const AdminUsersPage = async () => {
             Cựu sinh viên
           </Badge>
         );
-      case "student":
       default:
         return (
           <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
@@ -67,7 +66,7 @@ const AdminUsersPage = async () => {
         </div>
         <p className="text-sm text-muted-foreground mt-1">
           Khu vực bảo mật cấp cao: Phân quyền vai trò hệ thống, khóa/mở khóa tài
-          khoản người dùng theo chính sách Khoa.
+          khoản người dùng theo chính sách cộng đồng.
         </p>
       </div>
 
@@ -117,7 +116,7 @@ const AdminUsersPage = async () => {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-semibold text-muted-foreground uppercase">
-              Cán bộ / Giáo vụ Khoa
+              Cán bộ / Nhân sự quản trị
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -151,7 +150,7 @@ const AdminUsersPage = async () => {
                 <tr>
                   <th className="px-4 py-3">Người dùng</th>
                   <th className="px-4 py-3">Vai trò hiện tại</th>
-                  <th className="px-4 py-3">Khoa / Khóa</th>
+                  <th className="px-4 py-3">Khoa, ngành / Khóa</th>
                   <th className="px-4 py-3">Trạng thái</th>
                   <th className="px-4 py-3">Ngày tạo</th>
                   <th className="px-4 py-3 text-right">Hành động</th>
@@ -182,14 +181,20 @@ const AdminUsersPage = async () => {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        {getRoleBadge(prof?.role || "student")}
+                        {prof ? (
+                          getRoleBadge(prof.role)
+                        ) : (
+                          <Badge variant="outline">Chưa có hồ sơ</Badge>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-xs text-muted-foreground">
                         {prof?.batchYear ? `K${prof.batchYear}` : "—"}{" "}
                         {prof?.faculty ? `• ${prof.faculty}` : ""}
                       </td>
                       <td className="px-4 py-3">
-                        {isLocked ? (
+                        {!prof ? (
+                          <Badge variant="outline">Cần hoàn thiện hồ sơ</Badge>
+                        ) : isLocked ? (
                           <Badge
                             variant="outline"
                             className="text-rose-600 border-rose-500/20 text-xs gap-1"
@@ -209,12 +214,18 @@ const AdminUsersPage = async () => {
                         {new Date(u.createdAt).toLocaleDateString("vi-VN")}
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <UserRowActions
-                          userId={u.id}
-                          currentRole={(prof?.role as any) || "student"}
-                          currentStatus={prof?.status || "active"}
-                          isSelf={isSelf}
-                        />
+                        {prof ? (
+                          <UserRowActions
+                            userId={u.id}
+                            currentRole={prof.role}
+                            currentStatus={prof.status}
+                            isSelf={isSelf}
+                          />
+                        ) : (
+                          <span className="text-xs text-muted-foreground">
+                            Chưa thể phân quyền
+                          </span>
+                        )}
                       </td>
                     </tr>
                   );

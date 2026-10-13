@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getActiveJobPosts } from "@/actions/job-actions";
+import { PublicPageTitle } from "@/components/shared/public-page-title";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -47,12 +48,10 @@ const JobsPage = async ({ searchParams }: JobsPageProps) => {
     <div className="container mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
       {/* Header */}
       <div className="space-y-1.5">
-        <h1 className="font-serif text-3xl font-medium tracking-tight text-foreground">
-          Cơ hội nghề nghiệp & Thực tập
-        </h1>
+        <PublicPageTitle>Cơ hội nghề nghiệp & Thực tập</PublicPageTitle>
         <p className="text-sm text-muted-foreground">
-          Khám phá các vị trí tuyển dụng được xác thực bởi Khoa Công nghệ Thông
-          tin từ các đối tác uy tín
+          Khám phá cơ hội việc làm và thực tập ở nhiều lĩnh vực, từ các doanh
+          nghiệp được xác minh trên DLU Alumni.
         </p>
       </div>
 

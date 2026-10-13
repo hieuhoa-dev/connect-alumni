@@ -21,14 +21,10 @@ const CompanyOnboardingPage = () => {
   const router = useRouter();
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [industry, setIndustry] = React.useState(
-    "Công nghệ Thông tin / Phần mềm",
-  );
+  const [industry, setIndustry] = React.useState("");
   const [website, setWebsite] = React.useState("");
   const [logoUrl, setLogoUrl] = React.useState("");
-  const [roleInCompany, setRoleInCompany] = React.useState(
-    "Lead HR / Talent Acquisition",
-  );
+  const [roleInCompany, setRoleInCompany] = React.useState("");
 
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState(false);
@@ -36,6 +32,7 @@ const CompanyOnboardingPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return;
     setIsLoading(true);
     setError(null);
 
@@ -71,8 +68,8 @@ const CompanyOnboardingPage = () => {
             Đăng ký thông tin Doanh nghiệp
           </CardTitle>
           <CardDescription className="text-xs">
-            Hồ sơ doanh nghiệp sẽ được Khoa xác minh để đảm bảo uy tín và bảo vệ
-            quyền lợi của sinh viên trước khi đăng tin tuyển dụng.
+            Hồ sơ doanh nghiệp sẽ được Ban quản trị xác minh để đảm bảo uy tín
+            và bảo vệ quyền lợi của sinh viên trước khi đăng tin tuyển dụng.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -83,8 +80,8 @@ const CompanyOnboardingPage = () => {
                 Đăng ký hồ sơ doanh nghiệp thành công!
               </AlertDescription>
               <p className="text-xs text-muted-foreground">
-                Khoa CNTT sẽ kiểm duyệt và xác minh hồ sơ của bạn sớm nhất. Đang
-                chuyển hướng về Dashboard...
+                Ban quản trị sẽ kiểm duyệt và xác minh hồ sơ của bạn sớm nhất.
+                Đang chuyển hướng về Dashboard...
               </p>
             </Alert>
           ) : (
@@ -101,26 +98,28 @@ const CompanyOnboardingPage = () => {
                 </Label>
                 <Input
                   id="cName"
-                  placeholder="Ví dụ: Công ty Cổ phần Công nghệ ABC"
+                  placeholder="Nhập tên đầy đủ của doanh nghiệp"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
+                  minLength={2}
                   disabled={isLoading}
                   className="text-xs"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label htmlFor="industry" className="text-xs font-medium">
                     Lĩnh vực hoạt động
                   </Label>
                   <Input
                     id="industry"
-                    placeholder="Phần mềm, Fintech, Game..."
+                    placeholder="Du lịch, giáo dục, nông nghiệp, công nghệ..."
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
                     required
+                    minLength={2}
                     disabled={isLoading}
                     className="text-xs"
                   />
@@ -131,17 +130,18 @@ const CompanyOnboardingPage = () => {
                   </Label>
                   <Input
                     id="role"
-                    placeholder="HR Manager, Talent Lead..."
+                    placeholder="Nhân sự, quản lý, đại diện tuyển dụng..."
                     value={roleInCompany}
                     onChange={(e) => setRoleInCompany(e.target.value)}
                     required
+                    minLength={2}
                     disabled={isLoading}
                     className="text-xs"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label htmlFor="website" className="text-xs font-medium">
                     Website chính thức
@@ -182,6 +182,7 @@ const CompanyOnboardingPage = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   required
+                  minLength={10}
                   disabled={isLoading}
                   className="text-xs leading-relaxed"
                 />

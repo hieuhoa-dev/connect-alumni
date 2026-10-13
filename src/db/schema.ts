@@ -416,7 +416,7 @@ export const contactMessages = pgTable(
   ],
 );
 
-// ─── NEWS (tin tức do Khoa đăng) ────────────────────────────────────────────
+// ─── NEWS (bản tin cộng đồng) ───────────────────────────────────────────────
 export const newsCategoryEnum = pgEnum("news_category", [
   "announcement",
   "connect",

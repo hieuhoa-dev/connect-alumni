@@ -7,6 +7,7 @@ import {
   profiles,
   scholarshipCampaigns,
 } from "@/db/schema";
+import { getSearchableText, getSearchCondition } from "@/lib/search-query";
 import { makeExcerpt, NEWS_CATEGORY_LABEL } from "@/lib/text";
 
 /**
@@ -20,7 +21,7 @@ import { makeExcerpt, NEWS_CATEGORY_LABEL } from "@/lib/text";
 
 export interface LandingPost {
   id: string;
-  /** Đường dẫn đến bài (tin của Khoa hoặc bài chia sẻ của cựu sinh viên). */
+  /** Đường dẫn đến bài (bản tin cộng đồng hoặc bài chia sẻ của cựu sinh viên). */
   href: string;
   kind: "news" | "experience";
   isPinned: boolean;
@@ -88,6 +89,7 @@ export interface LandingStats {
 }
 
 export interface LandingData {
+  searchUnavailable?: boolean;
   posts: LandingPost[];
   popular: LandingPopularPost[];
   events: LandingEvent[];
@@ -107,9 +109,24 @@ const safe = async <T>(label: string, task: () => Promise<T>, fallback: T) => {
   }
 };
 
-const fetchExperiencePosts = async (limit: number): Promise<LandingPost[]> => {
+const fetchExperiencePosts = async (
+  limit: number,
+  search?: string,
+): Promise<LandingPost[]> => {
   const rows = await db.query.experiencePosts.findMany({
-    where: { status: "published" },
+    where: {
+      status: "published",
+      ...(search?.trim()
+        ? {
+            RAW: (table) =>
+              getSearchCondition(search, [
+                table.title,
+                getSearchableText(table.content),
+                sql`(select string_agg(tag, ' ') from jsonb_array_elements_text(coalesce(${table.tags}, '[]'::jsonb)) as search_tags(tag))`,
+              ]) ?? sql`false`,
+          }
+        : {}),
+    },
     orderBy: { publishedAt: "desc" },
     limit,
     columns: {
@@ -150,10 +167,25 @@ const fetchExperiencePosts = async (limit: number): Promise<LandingPost[]> => {
   }));
 };
 
-/** Tin do Khoa đăng (module Tin tức). Tin được ghim luôn xếp trước. */
-const fetchNewsPosts = async (limit: number): Promise<LandingPost[]> => {
+/** Bản tin cộng đồng (module Tin tức). Tin được ghim luôn xếp trước. */
+const fetchNewsPosts = async (
+  limit: number,
+  search?: string,
+): Promise<LandingPost[]> => {
   const rows = await db.query.newsArticles.findMany({
-    where: { status: "published" },
+    where: {
+      status: "published",
+      ...(search?.trim()
+        ? {
+            RAW: (table) =>
+              getSearchCondition(search, [
+                table.title,
+                table.summary,
+                getSearchableText(table.content),
+              ]) ?? sql`false`,
+          }
+        : {}),
+    },
     orderBy: { isPinned: "desc", publishedAt: "desc" },
     limit,
     columns: {
@@ -193,24 +225,27 @@ const fetchNewsPosts = async (limit: number): Promise<LandingPost[]> => {
 };
 
 /**
- * Gộp tin của Khoa và bài chia sẻ của cựu sinh viên:
+ * Gộp bản tin cộng đồng và bài chia sẻ của cựu sinh viên:
  * tin ghim trước, còn lại xếp theo ngày đăng mới nhất.
  */
-const fetchPosts = async (limit: number): Promise<LandingPost[]> => {
-  const [news, experiences] = await Promise.all([
-    safe("news", () => fetchNewsPosts(limit), [] as LandingPost[]),
-    safe("experiences", () => fetchExperiencePosts(limit), [] as LandingPost[]),
-  ]);
-
+const sortPosts = (posts: LandingPost[], limit: number): LandingPost[] => {
   const time = (post: LandingPost) =>
     post.publishedAt ? new Date(post.publishedAt).getTime() : 0;
 
-  return [...news, ...experiences]
+  return posts
     .sort((a, b) => {
       if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
       return time(b) - time(a);
     })
     .slice(0, limit);
+};
+
+const fetchPosts = async (limit: number): Promise<LandingPost[]> => {
+  const [news, experiences] = await Promise.all([
+    safe("news", () => fetchNewsPosts(limit), [] as LandingPost[]),
+    safe("experiences", () => fetchExperiencePosts(limit), [] as LandingPost[]),
+  ]);
+  return sortPosts([...news, ...experiences], limit);
 };
 
 const fetchPopular = async (): Promise<LandingPopularPost[]> => {
@@ -367,7 +402,25 @@ const fetchStats = async (): Promise<LandingStats> => {
   };
 };
 
-export const getLandingData = async (): Promise<LandingData> => {
+export const getLandingData = async (search?: string): Promise<LandingData> => {
+  // Khi tìm kiếm chỉ truy vấn bài đã công bố, không tải lại thống kê và các
+  // chuyên mục khác cho mỗi từ khóa. Xóa từ khóa trả về trang chủ đầy đủ.
+  if (search?.trim()) {
+    const [news, experiences] = await Promise.all([
+      safe("search-news", () => fetchNewsPosts(30, search), null),
+      safe("search-experiences", () => fetchExperiencePosts(30, search), null),
+    ]);
+    return {
+      posts: sortPosts([...(news ?? []), ...(experiences ?? [])], 30),
+      searchUnavailable: news === null || experiences === null,
+      popular: [],
+      events: [],
+      jobs: [],
+      campaign: null,
+      partners: [],
+      stats: { alumni: 0, partners: 0, events: 0, fundReceived: 0 },
+    };
+  }
   const [posts, popular, eventList, jobs, campaign, partners, stats] =
     await Promise.all([
       safe("posts", () => fetchPosts(9), []),

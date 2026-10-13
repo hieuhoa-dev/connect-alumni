@@ -134,8 +134,8 @@ const EventSpeakersPage = async ({ params }: SpeakersPageProps) => {
                 Mời Cựu sinh viên
               </CardTitle>
               <CardDescription className="text-xs">
-                Hệ thống sẽ gửi thông báo in-app và email mời cựu SV làm diễn
-                giả.
+                Cựu sinh viên nhận lời mời làm diễn giả qua thông báo trên hệ
+                thống.
               </CardDescription>
             </CardHeader>
             <CardContent>

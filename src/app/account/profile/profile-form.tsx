@@ -21,6 +21,7 @@ export interface ProfileFormValues {
   bio: string;
   avatarUrl: string;
   studentCode: string;
+  faculty: string;
   batchYear: string;
   graduationYear: string;
 }
@@ -56,6 +57,7 @@ export const ProfileForm = ({ initial, role }: ProfileFormProps) => {
         avatarUrl: values.avatarUrl,
         // Vai trò không có các trường này thì giữ nguyên giá trị trống
         studentCode: showStudentFields ? values.studentCode : "",
+        faculty: showStudentFields ? values.faculty : "",
         batchYear: showStudentFields ? toYear(values.batchYear) : null,
         graduationYear: showStudentFields
           ? toYear(values.graduationYear)
@@ -71,6 +73,7 @@ export const ProfileForm = ({ initial, role }: ProfileFormProps) => {
         bio: updated.bio ?? "",
         avatarUrl: updated.avatarUrl ?? "",
         studentCode: updated.studentCode ?? "",
+        faculty: updated.faculty ?? "",
         batchYear: updated.batchYear ? String(updated.batchYear) : "",
         graduationYear: updated.graduationYear
           ? String(updated.graduationYear)
@@ -91,6 +94,22 @@ export const ProfileForm = ({ initial, role }: ProfileFormProps) => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <FieldGroup>
+        {showStudentFields && (
+          <Field>
+            <FieldLabel htmlFor="faculty">Khoa / ngành học</FieldLabel>
+            <Input
+              id="faculty"
+              value={values.faculty}
+              onChange={(e) => setField("faculty", e.target.value)}
+              maxLength={150}
+              placeholder="Nhập khoa hoặc ngành học của bạn"
+              disabled={saving}
+            />
+            <FieldDescription>
+              Dành cho sinh viên và cựu sinh viên ở tất cả các khoa, ngành.
+            </FieldDescription>
+          </Field>
+        )}
         <Field>
           <FieldLabel htmlFor="profile-name">Họ và tên</FieldLabel>
           <Input
@@ -118,7 +137,7 @@ export const ProfileForm = ({ initial, role }: ProfileFormProps) => {
               disabled={saving}
             />
             <FieldDescription>
-              Chỉ Ban Chủ nhiệm Khoa nhìn thấy số điện thoại.
+              Chỉ Ban quản trị DLU Alumni nhìn thấy số điện thoại.
             </FieldDescription>
           </Field>
           <Field>
@@ -155,7 +174,7 @@ export const ProfileForm = ({ initial, role }: ProfileFormProps) => {
                 id="profile-batch"
                 type="number"
                 inputMode="numeric"
-                min={1990}
+                min={1958}
                 max={new Date().getFullYear() + 6}
                 step={1}
                 value={values.batchYear}
@@ -170,7 +189,7 @@ export const ProfileForm = ({ initial, role }: ProfileFormProps) => {
                 id="profile-grad"
                 type="number"
                 inputMode="numeric"
-                min={values.batchYear ? Number(values.batchYear) : 1990}
+                min={values.batchYear ? Number(values.batchYear) : 1958}
                 max={new Date().getFullYear() + 6}
                 step={1}
                 value={values.graduationYear}

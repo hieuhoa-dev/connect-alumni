@@ -2,6 +2,7 @@ import { ArrowLeft, GraduationCap, HeartHandshake, Lock } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCampaignById } from "@/actions/scholarship-actions";
+import { PublicPageTitle } from "@/components/shared/public-page-title";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +29,22 @@ const ScholarshipDetailPage = async ({
   const target = Number(campaign.targetAmount);
   const current = Number(campaign.currentAmount);
   const percent = Math.min(100, Math.round((current / (target || 1)) * 100));
-  const isExpired = new Date(campaign.applicationDeadline) < new Date();
+  const isOpen = campaign.status === "open";
+  const isExpired = new Date(campaign.applicationDeadline) <= new Date();
+  const isReceivingApplications = isOpen && !isExpired;
+  const isAnonymous = !currentUser;
+  const isActive = currentUser?.profile?.status === "active";
+  const canApply =
+    isActive &&
+    (currentUser.role === "student" || currentUser.role === "admin");
+  const applicationHref = `/student/scholarships/${campaign.id}/apply`;
+  const pledgeHref = `/account/scholarships/pledge?${new URLSearchParams({ campaignId: campaign.id })}`;
+  const applicationLink = isAnonymous
+    ? `/login?${new URLSearchParams({ callbackUrl: applicationHref })}`
+    : applicationHref;
+  const pledgeLink = isAnonymous
+    ? `/login?${new URLSearchParams({ callbackUrl: pledgeHref })}`
+    : pledgeHref;
 
   const fulfilledPledges = campaign.pledges.filter(
     (p) => p.status === "fulfilled",
@@ -56,9 +72,15 @@ const ScholarshipDetailPage = async ({
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Badge className="bg-primary text-primary-foreground text-xs">
-                Quỹ Khuyến học Khoa CNTT
+                Quỹ Khuyến học DLU Alumni
               </Badge>
-              {isExpired ? (
+              {!isOpen ? (
+                <Badge variant="outline" className="text-xs">
+                  {campaign.status === "closed"
+                    ? "Chiến dịch đã đóng"
+                    : "Chiến dịch chưa mở"}
+                </Badge>
+              ) : isExpired ? (
                 <Badge variant="destructive" className="text-xs">
                   Đã hết hạn nộp hồ sơ
                 </Badge>
@@ -69,9 +91,7 @@ const ScholarshipDetailPage = async ({
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-              {campaign.title}
-            </h1>
+            <PublicPageTitle>{campaign.title}</PublicPageTitle>
           </div>
 
           {/* Description */}
@@ -176,36 +196,48 @@ const ScholarshipDetailPage = async ({
               </div>
 
               <div className="pt-2 space-y-2">
-                {!isExpired && (
+                {isReceivingApplications && (isAnonymous || canApply) ? (
                   <Link
-                    href={`/student/scholarships/${campaign.id}/apply`}
+                    href={applicationLink}
                     className={buttonVariants({
                       className: "w-full font-medium",
                     })}
                   >
                     <GraduationCap className="h-4 w-4 mr-2" />
-                    Nộp hồ sơ xin xét duyệt
+                    {isAnonymous
+                      ? "Đăng nhập để nộp hồ sơ"
+                      : "Nộp hồ sơ xin xét duyệt"}
                   </Link>
+                ) : (
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    {!isOpen
+                      ? "Chiến dịch hiện không nhận hồ sơ học bổng."
+                      : isExpired
+                        ? "Đã hết hạn nộp hồ sơ học bổng của chiến dịch này."
+                        : "Hồ sơ học bổng dành cho sinh viên đang học đáp ứng điều kiện của chiến dịch."}
+                  </p>
                 )}
 
-                <Link
-                  href="/employer/scholarships/pledge"
-                  className={buttonVariants({
-                    variant: "outline",
-                    className: "w-full text-xs",
-                  })}
-                >
-                  <HeartHandshake className="h-4 w-4 mr-2" />
-                  Đăng ký cam kết tài trợ
-                </Link>
+                {isOpen && (isAnonymous || isActive) && (
+                  <Link
+                    href={pledgeLink}
+                    className={buttonVariants({
+                      variant: "outline",
+                      className: "w-full text-xs",
+                    })}
+                  >
+                    <HeartHandshake className="h-4 w-4 mr-2" />
+                    Đăng ký cam kết tài trợ
+                  </Link>
+                )}
               </div>
 
               <div className="rounded-lg bg-muted/40 p-2.5 text-[11px] text-muted-foreground flex items-start gap-2 border">
                 <Lock className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
                 <span>
                   Bảo mật: Hồ sơ xin học bổng chứa thông tin hoàn cảnh và bảng
-                  điểm cá nhân chỉ được xem bởi Ban Chủ nhiệm Khoa và được ghi
-                  nhận Audit Log đầy đủ.
+                  điểm cá nhân chỉ được xem bởi Ban quản trị DLU Alumni và được
+                  ghi nhận Audit Log đầy đủ.
                 </span>
               </div>
             </CardContent>

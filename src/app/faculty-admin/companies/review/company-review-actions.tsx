@@ -43,7 +43,7 @@ export const CompanyReviewActions = ({ companyId }: { companyId: string }) => {
         companyId,
         status: "rejected",
         rejectedReason:
-          rejectReason || "Hồ sơ chưa đạt tiêu chuẩn liên kết của Khoa",
+          rejectReason || "Hồ sơ chưa đạt tiêu chuẩn liên kết của dự án",
       },
       {
         onSuccess: () => {
@@ -78,7 +78,9 @@ export const CompanyReviewActions = ({ companyId }: { companyId: string }) => {
               size="sm"
               disabled={isPending}
               className="text-destructive text-xs h-8"
-            />
+            >
+              Từ chối
+            </Button>
           }
         />
         <DialogContent>

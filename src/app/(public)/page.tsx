@@ -3,14 +3,23 @@ import { LandingView } from "@/components/landing/landing-view";
 import { getLandingData } from "@/lib/public-data";
 
 export const metadata: Metadata = {
-  title: "Connect Alumni · Cựu sinh viên CNTT Đại học Đà Lạt",
+  title: "DLU Alumni · Sinh viên và cựu sinh viên Đại học Đà Lạt",
   description:
-    "Kết nối sinh viên, cựu sinh viên và doanh nghiệp cùng Khoa Công nghệ Thông tin, Trường Đại học Đà Lạt. Khám phá chuyện nghề, sự kiện, việc làm và Quỹ Khuyến học.",
+    "Tin tức và hoạt động của cộng đồng sinh viên và cựu sinh viên Đại học Đà Lạt. Cùng DLU Alumni cập nhật sự kiện, chia sẻ chuyện nghề, tìm cơ hội việc làm và đồng hành cùng Quỹ Khuyến học.",
 };
 
-const HomePage = async () => {
-  const data = await getLandingData();
-  return <LandingView data={data} />;
+const HomePage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string | string[] }>;
+}) => {
+  const params = await searchParams;
+  const keyword = Array.isArray(params.search)
+    ? params.search[0]
+    : params.search;
+  const search = keyword?.trim().slice(0, 160) || undefined;
+  const data = await getLandingData(search);
+  return <LandingView data={data} search={search} />;
 };
 
 export default HomePage;

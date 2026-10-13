@@ -49,7 +49,7 @@ const NewExperiencePage = () => {
       .filter((t) => t.length > 0);
 
     try {
-      await createExperiencePost({
+      const post = await createExperiencePost({
         title,
         content,
         coverImageUrl: coverImageUrl || null,
@@ -57,11 +57,12 @@ const NewExperiencePage = () => {
       });
 
       setSuccess(true);
-      setTimeout(() => {
-        router.push("/experiences");
-      }, 2000);
-    } catch (err: any) {
-      setError(err?.message || "Có lỗi xảy ra khi tạo bài viết.");
+      router.push(`/experiences/${post.id}`);
+      router.refresh();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Có lỗi xảy ra khi tạo bài viết.",
+      );
       setIsLoading(false);
     }
   };
@@ -92,20 +93,20 @@ const NewExperiencePage = () => {
             Chia sẻ kinh nghiệm & Bài học thực tế
           </CardTitle>
           <CardDescription className="text-xs">
-            Mọi bài viết sẽ được Ban Chủ nhiệm Khoa duyệt trước khi hiển thị
-            công khai tới sinh viên nhằm đảm bảo tính định hướng và chất lượng
-            thông tin.
+            Mọi bài viết sẽ được Ban quản trị DLU Alumni duyệt trước khi hiển
+            thị công khai tới sinh viên nhằm đảm bảo tính định hướng và chất
+            lượng thông tin.
           </CardDescription>
         </CardHeader>
         <CardContent>
           {success ? (
             <Alert className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 py-4 text-center space-y-2">
               <AlertDescription className="font-semibold text-sm">
-                🎉 Bài viết của bạn đã được gửi thành công!
+                Bài viết của bạn đã được gửi thành công!
               </AlertDescription>
               <p className="text-xs text-muted-foreground">
-                Khoa sẽ duyệt và thông báo lại cho bạn sớm nhất. Đang chuyển
-                hướng...
+                Ban quản trị sẽ duyệt và thông báo lại cho bạn sớm nhất. Đang mở
+                bản xem trước của bài viết...
               </p>
             </Alert>
           ) : (
@@ -122,7 +123,7 @@ const NewExperiencePage = () => {
                 </Label>
                 <Input
                   id="title"
-                  placeholder="Ví dụ: Lộ trình từ thực tập sinh đến kỹ sư chính tại các tập đoàn công nghệ"
+                  placeholder="Ví dụ: Những điều tôi học được từ kỳ thực tập đầu tiên"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
@@ -137,7 +138,7 @@ const NewExperiencePage = () => {
                 </Label>
                 <Input
                   id="tags"
-                  placeholder="Kinh nghiệm, Phỏng vấn, Frontend, Cloud"
+                  placeholder="Nghề nghiệp, Ngoại ngữ, Nghiên cứu, Khởi nghiệp"
                   value={tagsInput}
                   onChange={(e) => setTagsInput(e.target.value)}
                   disabled={isLoading}

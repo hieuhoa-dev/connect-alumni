@@ -80,7 +80,7 @@ export const getScholarshipCampaigns = async () => {
 
 /**
  * Get campaign by ID (dữ liệu công khai)
- * - Chiến dịch nháp chỉ nhân viên Khoa xem được.
+ * - Chiến dịch nháp chỉ nhân sự quản trị xem được.
  * - Chỉ trả các khoản đã nhận tiền, nhà tài trợ ẩn danh bị che tên ngay trên server.
  * - Không trả hồ sơ của sinh viên.
  */
@@ -124,7 +124,8 @@ export const getCampaignById = async (id: string) => {
   if (!campaign) return null;
 
   const isStaff =
-    current?.role === "faculty_staff" || current?.role === "admin";
+    current?.profile?.status === "active" &&
+    (current.role === "faculty_staff" || current.role === "admin");
   if (campaign.status === "draft" && !isStaff) return null;
 
   const [applicationTotal] = await db
@@ -255,6 +256,11 @@ export const createDonationPledge = async (input: DonationPledgeInput) => {
  */
 export const confirmFulfillPledge = async (pledgeId: string) => {
   const current = await requireRole(["faculty_staff", "admin"]);
+  if (!isEntityId(pledgeId)) {
+    throw new Error(
+      "Mã cam kết không hợp lệ. Vui lòng tải lại trang và chọn cam kết cần xác nhận.",
+    );
+  }
 
   // Trạng thái được kiểm tra ngay trong câu UPDATE (pledged -> fulfilled) và nằm
   // trong cùng transaction với việc cộng tiền, nên bấm hai lần cũng chỉ cộng một lần.
@@ -301,7 +307,7 @@ export const confirmFulfillPledge = async (pledgeId: string) => {
       userId: pledge.donorId,
       type: "donation_fulfilled",
       title: "Xác nhận nhận tiền tài trợ Quỹ Khuyến học",
-      body: `Khoa đã nhận được số tiền ${Number(pledge.amount).toLocaleString("vi-VN")} VNĐ từ bạn. Trân trọng cảm ơn tấm lòng hảo tâm!`,
+      body: `Ban quản trị đã nhận được số tiền ${Number(pledge.amount).toLocaleString("vi-VN")} VNĐ từ bạn. Trân trọng cảm ơn tấm lòng hảo tâm!`,
       linkUrl: "/scholarships",
       sendEmail: true,
     });
@@ -315,6 +321,11 @@ export const confirmFulfillPledge = async (pledgeId: string) => {
  */
 export const cancelPledge = async (pledgeId: string) => {
   const current = await requireRole(["faculty_staff", "admin"]);
+  if (!isEntityId(pledgeId)) {
+    throw new Error(
+      "Mã cam kết không hợp lệ. Vui lòng tải lại trang và chọn cam kết cần hủy.",
+    );
+  }
 
   const [updated] = await db
     .update(donationPledges)
@@ -442,6 +453,11 @@ export const reviewScholarshipApplication = async (
   input: ScholarshipApplicationReviewInput,
 ) => {
   const current = await requireRole(["faculty_staff", "admin"]);
+  if (!isEntityId(applicationId)) {
+    throw new Error(
+      "Mã hồ sơ học bổng không hợp lệ. Vui lòng tải lại trang và chọn hồ sơ cần xét duyệt.",
+    );
+  }
   const validated = scholarshipApplicationReviewSchema.parse(input);
 
   const [updated] = await db
@@ -497,7 +513,7 @@ export const reviewScholarshipApplication = async (
  */
 export const getMyScholarshipApplications = async () => {
   const current = await getCurrentUser();
-  if (!current?.user) return [];
+  if (!current?.user || current.profile?.status !== "active") return [];
 
   return await db.query.scholarshipApplications.findMany({
     where: {
@@ -585,6 +601,7 @@ export const getCampaignDetailsForFaculty = async (campaignId: string) => {
  */
 export const getAllApplicationsForReview = async (campaignId?: string) => {
   await requireRole(["faculty_staff", "admin"]);
+  if (campaignId !== undefined && !isEntityId(campaignId)) return [];
 
   return await db.query.scholarshipApplications.findMany({
     where: campaignId ? { campaignId: campaignId } : undefined,

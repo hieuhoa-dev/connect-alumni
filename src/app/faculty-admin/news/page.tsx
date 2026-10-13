@@ -44,7 +44,7 @@ const FacultyNewsPage = async () => {
         <EmptyBlock
           icon={Newspaper}
           title="Chưa có bài tin tức nào"
-          description="Bấm Viết tin mới để đăng thông báo đầu tiên của Khoa."
+          description="Bấm Viết tin mới để đăng thông báo đầu tiên của cộng đồng."
         />
       ) : (
         <div className="rounded-xl border border-border-strong">

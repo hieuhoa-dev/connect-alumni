@@ -1,14 +1,16 @@
-import { ArrowRight, GraduationCap } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SectionHeading, Tag } from "@/components/landing/landing-parts";
+import { JoinBand, Tag } from "@/components/landing/landing-parts";
+import { PublicPageTitle } from "@/components/shared/public-page-title";
+import { UniversityIntroduction } from "@/components/shared/university-introduction";
 import { Button } from "@/components/ui/button";
 import { SITE } from "@/lib/site-config";
-import { getInitials } from "@/lib/text";
 
 export const metadata: Metadata = {
-  title: "Giới thiệu · Cộng đồng CNTT Đại học Đà Lạt",
-  description: `Kết nối các thế hệ ${SITE.facultyName}, ${SITE.universityName}. Thông tin Khoa, các cột mốc và Ban Liên lạc Cựu sinh viên.`,
+  title: "Giới thiệu · DLU Alumni",
+  description:
+    "Tìm hiểu Trường Đại học Đà Lạt và DLU Alumni, dự án kết nối sinh viên, cựu sinh viên của tất cả các khoa, ngành trong trường.",
 };
 
 const AboutPage = () => {
@@ -16,29 +18,42 @@ const AboutPage = () => {
     <div className="container mx-auto max-w-7xl px-4 pb-20 pt-10 sm:px-6 lg:px-8">
       <header className="flex max-w-3xl flex-col gap-4 pb-12">
         <Tag tone="blue">Giới thiệu</Tag>
-        <h1 className="font-serif text-4xl font-normal leading-[1.1] tracking-tight text-foreground sm:text-5xl">
-          Mạng lưới Cựu sinh viên{" "}
-          <span className="font-light italic text-foreground/80">
-            {SITE.facultyName}
-          </span>
-        </h1>
+        <PublicPageTitle>DLU Alumni, nơi cộng đồng kết nối.</PublicPageTitle>
         <p className="text-lg leading-relaxed text-muted-foreground">
           {SITE.mission}
         </p>
-        <a
-          href={SITE.universityUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-fit text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+        <nav
+          aria-label="Nội dung giới thiệu"
+          className="flex flex-wrap gap-x-6 gap-y-3 pt-2 text-sm"
         >
-          {SITE.universityName} <span aria-hidden="true">↗</span>
-        </a>
+          <a
+            href="#ve-truong"
+            className="underline decoration-primary underline-offset-4 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+          >
+            Về Đại học Đà Lạt
+          </a>
+          <a
+            href="#ve-du-an"
+            className="underline decoration-primary underline-offset-4 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+          >
+            Về DLU Alumni
+          </a>
+        </nav>
       </header>
 
-      <section className="grid grid-cols-1 gap-8 border-t-2 border-foreground pt-6 md:grid-cols-2">
+      <UniversityIntroduction />
+
+      <section
+        id="ve-du-an"
+        aria-labelledby="project-heading"
+        className="grid scroll-mt-28 grid-cols-1 gap-8 border-t-2 border-primary pt-6 md:grid-cols-2 lg:scroll-mt-40"
+      >
         <div className="flex flex-col gap-2">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Mục tiêu của Connect Alumni
+          <h2
+            id="project-heading"
+            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+          >
+            Mục tiêu của DLU Alumni
           </h2>
           <p className="font-serif text-2xl leading-snug text-foreground">
             {SITE.vision}
@@ -58,115 +73,64 @@ const AboutPage = () => {
         </ul>
       </section>
 
-      <section className="flex flex-col gap-6 pt-14">
-        <SectionHeading
-          icon={GraduationCap}
-          eyebrow="Chặng đường"
-          title="Các cột mốc"
-        />
-        <ol className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-border-strong bg-border-strong sm:grid-cols-2">
-          {SITE.milestones.map((item) => (
-            <li key={item.year} className="flex flex-col gap-2 bg-card p-5">
-              <span className="font-mono text-2xl text-foreground">
-                {item.year}
-              </span>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {item.text}
-              </p>
-              <a
-                href={item.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 w-fit text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
-              >
-                Xem thông tin từ Khoa <span aria-hidden="true">↗</span>
-              </a>
-            </li>
-          ))}
-        </ol>
-      </section>
-
       <section
-        aria-labelledby="specializations-heading"
-        className="flex flex-col gap-5 pt-14"
-      >
-        <div className="flex flex-col gap-2 border-t border-border pt-5">
-          <p className="text-xs uppercase tracking-wider text-muted-foreground">
-            Tìm hiểu về Khoa
-          </p>
-          <h2
-            id="specializations-heading"
-            className="font-serif text-2xl sm:text-3xl"
-          >
-            Các chuyên ngành đào tạo
-          </h2>
-        </div>
-        <ul className="grid gap-3 sm:grid-cols-3">
-          {SITE.specializations.map((specialization) => (
-            <li key={specialization.href}>
-              <a
-                href={specialization.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex h-full items-center justify-between gap-4 rounded-lg border border-border bg-card p-5 text-sm font-medium transition-colors hover:bg-muted"
-              >
-                {specialization.name}
-                <span aria-hidden="true">↗</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section
-        aria-label="Ban Liên lạc Cựu sinh viên"
+        aria-labelledby="audience-heading"
         className="flex flex-col gap-6 pt-14"
       >
-        <SectionHeading
-          icon={GraduationCap}
-          eyebrow="Cựu sinh viên"
-          title="Ban Liên lạc Cựu sinh viên Khoa CNTT"
-        />
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Danh sách được Khoa công bố ngày {SITE.boardPublishedAt}.{" "}
-          <a
-            href={SITE.alumniBoardUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-4 hover:text-foreground"
+        <div className="flex flex-col gap-2">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">
+            Dành cho ai?
+          </p>
+          <h2
+            id="audience-heading"
+            className="font-heading text-2xl font-semibold sm:text-3xl"
           >
-            Xem thông tin trên website Khoa <span aria-hidden="true">↗</span>
-          </a>
-        </p>
-        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {SITE.board.map((member) => (
-            <li
-              key={member.name}
-              className="flex items-start gap-4 rounded-xl border border-border-strong bg-card p-5"
-            >
-              <span
-                aria-hidden
-                className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-muted font-serif text-lg text-foreground"
-              >
-                {getInitials(member.name.replace(/^(TS|ThS|PGS|GS)\.\s*/i, ""))}
-              </span>
-              <div className="flex flex-col gap-0.5">
-                <h3 className="font-serif text-lg font-medium leading-snug text-foreground">
-                  {member.name}
-                </h3>
-                <span className="text-sm text-foreground/80">
-                  {member.title}
-                </span>
-              </div>
-            </li>
-          ))}
+            Một cộng đồng, nhiều cách đồng hành.
+          </h2>
+        </div>
+        <JoinBand />
+      </section>
+
+      <section
+        aria-labelledby="explore-heading"
+        className="flex flex-col gap-5 pt-14"
+      >
+        <h2
+          id="explore-heading"
+          className="font-heading text-2xl font-semibold sm:text-3xl"
+        >
+          Cùng kết nối mỗi ngày.
+        </h2>
+        <ul className="flex flex-col divide-y divide-border border-y border-border">
+          {SITE.communityLinks
+            .filter((link) => link.href !== "/about")
+            .map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className="group flex items-start justify-between gap-6 py-5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+                >
+                  <div className="flex flex-col gap-2">
+                    <h3 className="font-semibold transition-colors group-hover:text-primary">
+                      {link.label}
+                    </h3>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {link.description}
+                    </p>
+                  </div>
+                  <span aria-hidden="true" className="text-primary">
+                    →
+                  </span>
+                </Link>
+              </li>
+            ))}
         </ul>
       </section>
 
       <section className="mt-16 flex flex-col items-start justify-between gap-6 rounded-xl border border-border-strong bg-card p-8 md:flex-row md:items-center">
         <div className="flex max-w-xl flex-col gap-2">
           <h2 className="font-serif text-2xl text-foreground">
-            Bạn muốn đồng hành cùng Khoa?
+            Bạn muốn tham gia cộng đồng?
           </h2>
           <p className="text-sm leading-relaxed text-muted-foreground">
             Cựu sinh viên, doanh nghiệp hay nhà hảo tâm đều có thể tham gia chia
@@ -183,7 +147,7 @@ const AboutPage = () => {
             nativeButton={false}
             variant="outline"
           >
-            Liên hệ Khoa
+            Liên hệ dự án
           </Button>
         </div>
       </section>

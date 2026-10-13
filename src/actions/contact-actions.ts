@@ -1,6 +1,8 @@
 "use server";
 
 import { and, count, desc, eq, gte, sql } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { db } from "@/db";
 import { contactMessages } from "@/db/schema";
 import { logAuditEvent } from "@/lib/audit";
@@ -11,7 +13,7 @@ const MAX_PER_EMAIL_PER_HOUR = 3;
 const MAX_TOTAL_PER_HOUR = 60;
 
 /**
- * Public: gửi tin nhắn liên hệ tới Khoa.
+ * Public: gửi tin nhắn liên hệ tới bộ phận quản trị dự án.
  * Đây là endpoint công khai nên có ba lớp chống spam:
  * ô ẩn (honeypot), giới hạn 3 tin/giờ cho mỗi email và 60 tin/giờ toàn hệ thống.
  */
@@ -98,22 +100,26 @@ export const getUnreadContactCount = async () => {
 
 export const setContactMessageRead = async (id: string, isRead: boolean) => {
   await requireRole(["faculty_staff", "admin"]);
+  const messageId = z.string().uuid("Mã tin nhắn không hợp lệ").parse(id);
+  const validatedIsRead = z.boolean().parse(isRead);
 
   const [updated] = await db
     .update(contactMessages)
-    .set({ isRead })
-    .where(eq(contactMessages.id, id))
+    .set({ isRead: validatedIsRead })
+    .where(eq(contactMessages.id, messageId))
     .returning();
   if (!updated) throw new Error("Không tìm thấy tin nhắn");
+  revalidatePath("/faculty-admin/contact");
   return updated;
 };
 
 export const deleteContactMessage = async (id: string) => {
   const current = await requireRole(["faculty_staff", "admin"]);
+  const messageId = z.string().uuid("Mã tin nhắn không hợp lệ").parse(id);
 
   const [removed] = await db
     .delete(contactMessages)
-    .where(eq(contactMessages.id, id))
+    .where(eq(contactMessages.id, messageId))
     .returning({ id: contactMessages.id });
   if (!removed) throw new Error("Không tìm thấy tin nhắn");
 
@@ -123,5 +129,6 @@ export const deleteContactMessage = async (id: string) => {
     entityType: "contact_message",
     entityId: id,
   });
+  revalidatePath("/faculty-admin/contact");
   return { success: true };
 };

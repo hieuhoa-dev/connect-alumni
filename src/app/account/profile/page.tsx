@@ -67,7 +67,7 @@ const ProfilePage = async () => {
       {!profile ? (
         <SectionCard
           title="Chưa có hồ sơ"
-          description="Tài khoản của bạn chưa có hồ sơ chi tiết. Vui lòng liên hệ Ban Chủ nhiệm Khoa để được hỗ trợ."
+          description="Tài khoản của bạn chưa có hồ sơ chi tiết. Vui lòng liên hệ Ban quản trị DLU Alumni để được hỗ trợ."
         >
           <p className="text-sm text-muted-foreground">
             Bạn vẫn có thể đổi mật khẩu ở phần bên dưới.
@@ -86,6 +86,7 @@ const ProfilePage = async () => {
               bio: profile.bio ?? "",
               avatarUrl: profile.avatarUrl ?? "",
               studentCode: profile.studentCode ?? "",
+              faculty: profile.faculty ?? "",
               batchYear: profile.batchYear ? String(profile.batchYear) : "",
               graduationYear: profile.graduationYear
                 ? String(profile.graduationYear)

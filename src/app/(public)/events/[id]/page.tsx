@@ -2,6 +2,7 @@ import { ArrowLeft, MapPin, Sparkles, Video } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getEventById } from "@/actions/event-actions";
+import { PublicPageTitle } from "@/components/shared/public-page-title";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -71,9 +72,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
               )}
             </div>
 
-            <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-foreground leading-snug">
-              {event.title}
-            </h1>
+            <PublicPageTitle>{event.title}</PublicPageTitle>
           </div>
 
           {/* Description */}

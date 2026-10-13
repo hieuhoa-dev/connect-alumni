@@ -1,15 +1,15 @@
 import { ShieldCheck } from "lucide-react";
 import { getAuditLogs } from "@/actions/audit-actions";
-import { requireRole } from "@/lib/permissions";
+import { requireRoleOrRedirect } from "@/lib/permissions";
 import { AuditLogsTable } from "./audit-logs-table";
 
 export const metadata = {
-  title: "Nhật ký Hệ thống (Audit Logs) | Quản trị viên Khoa",
+  title: "Nhật ký Hệ thống (Audit Logs) | Quản trị DLU Alumni",
 };
 
 const AuditLogsPage = async () => {
   // Hard security guard Layer 2
-  await requireRole("admin");
+  await requireRoleOrRedirect("admin");
   const logs = await getAuditLogs(150);
 
   return (
@@ -22,8 +22,8 @@ const AuditLogsPage = async () => {
           </h1>
         </div>
         <p className="text-sm text-muted-foreground mt-1">
-          Hệ thống ghi nhận bất biến mọi thao tác nhạy cảm: duyệt bài tuyển
-          dụng, phê duyệt hồ sơ, xác nhận tiền tài trợ và cập nhật quyền hạn.
+          Theo dõi các thao tác quản trị: duyệt tin tuyển dụng, phê duyệt hồ sơ,
+          xác nhận tài trợ và cập nhật quyền hạn.
         </p>
       </div>
 

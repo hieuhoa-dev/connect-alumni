@@ -1,6 +1,6 @@
 "use server";
 
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import {
   eventRegistrations,
@@ -93,7 +93,7 @@ export const getManagedEvents = async () => {
 
 /**
  * Get event details by ID (dữ liệu công khai)
- * - Sự kiện nháp chỉ nhân viên Khoa xem được.
+ * - Sự kiện nháp chỉ nhân sự quản trị xem được.
  * - Không trả thông tin người đăng ký; trả isRegistered cho riêng người đang xem.
  */
 export const getEventById = async (id: string) => {
@@ -126,7 +126,8 @@ export const getEventById = async (id: string) => {
   if (!event) return null;
 
   const isStaff =
-    current?.role === "faculty_staff" || current?.role === "admin";
+    current?.profile?.status === "active" &&
+    (current.role === "faculty_staff" || current.role === "admin");
   if (event.status === "draft" && !isStaff) return null;
 
   const isRegistered = current?.user
@@ -270,8 +271,8 @@ export const inviteSpeaker = async (input: SpeakerInviteInput) => {
   await sendNotification({
     userId: validated.alumniUserId,
     type: "speaker_invitation",
-    title: `Lời mời diễn giả: "${eventItem?.title || "Sự kiện Khoa"}"`,
-    body: `Khoa trân trọng kính mời bạn tham gia làm diễn giả/khách mời sự kiện. Lời nhắn: ${validated.note || "Không có ghi chú"}.`,
+    title: `Lời mời diễn giả: "${eventItem?.title || "Sự kiện cộng đồng"}"`,
+    body: `Ban quản trị trân trọng kính mời bạn tham gia làm diễn giả/khách mời sự kiện. Lời nhắn: ${validated.note || "Không có ghi chú"}.`,
     linkUrl: "/student/events/my-registrations",
     sendEmail: true,
   });
@@ -301,6 +302,7 @@ export const respondSpeakerInvitation = async (
   // Chỉ alumni (và admin do bypass) mới có thể phản hồi lời mời diễn giả
   const current = await requireRole(["alumni"]);
   const validated = speakerResponseSchema.parse({ status, note });
+  if (!isEntityId(speakerId)) throw new Error("Lời mời không hợp lệ");
 
   const [updated] = await db
     .update(eventSpeakers)
@@ -314,12 +316,21 @@ export const respondSpeakerInvitation = async (
         eq(eventSpeakers.id, speakerId),
         eq(eventSpeakers.alumniUserId, current.user.id),
         eq(eventSpeakers.invitationStatus, "pending"),
+        // Kiểm tra cùng câu UPDATE để lời mời cũ không thể nhận lời sau khi đóng sự kiện.
+        sql`exists (
+          select 1 from ${events}
+          where ${events.id} = ${eventSpeakers.eventId}
+            and ${events.status} not in (${"cancelled"}, ${"completed"})
+            and ${events.endTime} > ${new Date()}
+        )`,
       ),
     )
     .returning();
 
   if (!updated) {
-    throw new Error("Lời mời không tồn tại hoặc đã được phản hồi");
+    throw new Error(
+      "Lời mời không tồn tại, đã được phản hồi hoặc sự kiện không còn nhận phản hồi",
+    );
   }
 
   return updated;
@@ -331,6 +342,7 @@ export const respondSpeakerInvitation = async (
 export const registerForEvent = async (eventId: string) => {
   // Người dùng bị khóa không được đăng ký
   const current = await requireRole(["student", "alumni"]);
+  if (!isEntityId(eventId)) throw new Error("Sự kiện không hợp lệ");
 
   // Khóa cùng một hàng sự kiện để các lượt đăng ký đồng thời kiểm tra số chỗ tuần tự.
   return await db.transaction(async (tx) => {
@@ -400,7 +412,8 @@ export const markAttendance = async (
  */
 export const getMyEventsAndInvites = async () => {
   const current = await getCurrentUser();
-  if (!current?.user) return { registrations: [], speakerInvites: [] };
+  if (!current?.user || current.profile?.status !== "active")
+    return { registrations: [], speakerInvites: [] };
 
   const registrations = await db.query.eventRegistrations.findMany({
     where: {

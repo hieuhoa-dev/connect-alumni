@@ -16,7 +16,6 @@ import {
   PanelLeft,
   PlusCircle,
   ScrollText,
-  ShieldCheck,
   UserRound,
   Users,
   X,
@@ -39,14 +38,15 @@ import {
   AnimatedSidebarProvider,
   AnimatedSidebarRail,
   AnimatedSidebarTrigger,
-  useAnimatedSidebar,
 } from "@/components/motion/animated-sidebar";
 import { CompanySwitcher } from "@/components/shared/company-switcher";
+import { DluLogo } from "@/components/shared/dlu-logo";
 import {
   type NotificationItem,
   NotificationsPopover,
 } from "@/components/shared/notifications-popover";
 import { authClient } from "@/lib/auth-client";
+import { SITE } from "@/lib/site-config";
 
 export interface NavItem {
   label: string;
@@ -81,7 +81,7 @@ const getRoleBadge = (role: SidebarProps["role"]) => {
     case "faculty_staff":
       return (
         <span className="inline-flex items-center rounded-full border border-[#BFDFFA]/60 bg-[#E1F3FE] px-2 py-0.5 text-[10px] font-medium tracking-wide text-[#1F6C9F] dark:border-sky-900/40 dark:bg-sky-950/40 dark:text-sky-300">
-          Nhân sự Khoa
+          Ban quản trị
         </span>
       );
     case "employer":
@@ -114,7 +114,6 @@ const SidebarInner = ({
 }: SidebarProps) => {
   const pathname = usePathname();
   const router = useRouter();
-  const { toggleSidebar } = useAnimatedSidebar();
 
   const handleSignOut = async () => {
     await authClient.signOut();
@@ -306,7 +305,7 @@ const SidebarInner = ({
   return (
     <>
       <AnimatedSidebar
-        ariaLabel="Bảng điều khiển Connect Alumni"
+        ariaLabel="Bảng điều khiển DLU Alumni"
         collapsible="icon"
         className="h-screen shrink-0"
         panelClassName="h-screen border-r border-border/80 bg-card/95 backdrop-blur-sm flex flex-col justify-between"
@@ -314,30 +313,24 @@ const SidebarInner = ({
         {/* Header with App Branding and Rail/Close Trigger */}
         <AnimatedSidebarHeader className="p-3 pb-2 border-b border-border/40">
           <div className="flex min-h-11 items-center gap-3 overflow-hidden px-1">
-            <button
-              type="button"
-              onClick={toggleSidebar}
-              className="grid size-8 shrink-0 place-items-center rounded-lg bg-foreground text-background outline-none transition-transform hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring"
-              title="Đổi chế độ thu gọn / mở rộng (⌘B)"
+            <a
+              href="/"
+              className="grid size-9 shrink-0 place-items-center rounded-md bg-background outline-none transition-transform hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring"
+              title="Về trang chủ DLU Alumni"
+              aria-label="Tải lại trang chủ DLU Alumni"
             >
-              {role === "admin" || role === "faculty_staff" ? (
-                <ShieldCheck aria-hidden="true" className="size-4" />
-              ) : role === "employer" ? (
-                <Building2 aria-hidden="true" className="size-4" />
-              ) : (
-                <GraduationCap aria-hidden="true" className="size-4" />
-              )}
-            </button>
+              <DluLogo className="size-9" alt="" />
+            </a>
 
             <div className="flex min-w-0 flex-1 flex-col group-data-[state=collapsed]/sidebar:hidden">
               <span className="truncate text-xs font-bold tracking-tight text-foreground uppercase">
-                Connect Alumni
+                {SITE.appName}
               </span>
               <span className="truncate text-[10px] text-muted-foreground font-mono">
                 {role === "admin"
-                  ? "Quản trị Khoa CNTT"
+                  ? "Quản trị DLU Alumni"
                   : role === "faculty_staff"
-                    ? "Vận hành Khoa CNTT"
+                    ? "Vận hành cộng đồng"
                     : role === "employer"
                       ? "Cổng Doanh nghiệp"
                       : "Cổng Sinh viên & Cựu SV"}

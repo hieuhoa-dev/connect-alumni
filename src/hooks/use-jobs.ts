@@ -58,7 +58,7 @@ export const useCreateJobPost = () => {
     onSuccess: () => {
       toast.add({
         type: "success",
-        description: "Đăng tin tuyển dụng thành công! Vui lòng chờ Khoa duyệt.",
+        description: "Đăng tin tuyển dụng thành công! Vui lòng chờ duyệt.",
       });
       queryClient.invalidateQueries({ queryKey: jobKeys.all });
     },

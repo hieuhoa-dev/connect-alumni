@@ -1,7 +1,7 @@
 import { FormBuilder } from "./form-builder";
 
 export const metadata = {
-  title: "Tạo biểu mẫu mới | Khoa CNTT",
+  title: "Tạo biểu mẫu mới | DLU Alumni",
 };
 
 const NewFormPage = () => {

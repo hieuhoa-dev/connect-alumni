@@ -43,8 +43,8 @@ const PledgePage = async () => {
           </CardTitle>
           <CardDescription className="text-xs">
             Hệ thống ghi nhận danh dự cam kết tài trợ (Pledge). Tiền thật được
-            chuyển trực tiếp qua tài khoản ngân hàng của Nhà trường/Khoa ngoài
-            hệ thống. Khoa sẽ xác nhận trạng thái Đã nhận tiền sau khi đối soát.
+            chuyển ngoài hệ thống theo hướng dẫn của từng chiến dịch. Ban quản
+            trị sẽ xác nhận trạng thái Đã nhận tiền sau khi đối soát.
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -47,10 +47,29 @@ interface QuestionItem {
   options: string[];
 }
 
-const formTypeItems = [{ value: "survey", label: "Khảo sát ý kiến" }, { value: "scholarship_application", label: "Hồ sơ xét học bổng" }, { value: "event_feedback", label: "Đánh giá sự kiện / Talkshow" }, { value: "other", label: "Khác / Biểu mẫu chung" }];
-const targetRoleItems = [{ value: "all", label: "Tất cả mọi người" }, { value: "student", label: "Chỉ Sinh viên" }, { value: "alumni", label: "Chỉ Cựu sinh viên" }];
-const formStatusItems = [{ value: "open", label: "Mở ngay (Công khai)" }, { value: "draft", label: "Bản nháp (Lưu tạm)" }];
-const questionTypeItems = [{ value: "short_text", label: "Văn bản ngắn (1 dòng)" }, { value: "long_text", label: "Văn bản dài (Đoạn văn)" }, { value: "single_choice", label: "Trắc nghiệm (1 lựa chọn)" }, { value: "multi_choice", label: "Hộp kiểm (Nhiều lựa chọn)" }, { value: "scale", label: "Thang điểm (1 - 5)" }, { value: "file_upload", label: "Tải file đính kèm" }];
+const formTypeItems = [
+  { value: "survey", label: "Khảo sát ý kiến" },
+  { value: "scholarship_application", label: "Hồ sơ xét học bổng" },
+  { value: "event_feedback", label: "Đánh giá sự kiện / Talkshow" },
+  { value: "other", label: "Khác / Biểu mẫu chung" },
+];
+const targetRoleItems = [
+  { value: "all", label: "Tất cả mọi người" },
+  { value: "student", label: "Chỉ Sinh viên" },
+  { value: "alumni", label: "Chỉ Cựu sinh viên" },
+];
+const formStatusItems = [
+  { value: "open", label: "Mở ngay (Công khai)" },
+  { value: "draft", label: "Bản nháp (Lưu tạm)" },
+];
+const questionTypeItems = [
+  { value: "short_text", label: "Văn bản ngắn (1 dòng)" },
+  { value: "long_text", label: "Văn bản dài (Đoạn văn)" },
+  { value: "single_choice", label: "Trắc nghiệm (1 lựa chọn)" },
+  { value: "multi_choice", label: "Hộp kiểm (Nhiều lựa chọn)" },
+  { value: "scale", label: "Thang điểm (1 - 5)" },
+  { value: "file_upload", label: "Tải file đính kèm" },
+];
 
 export const FormBuilder = () => {
   const router = useRouter();
@@ -486,7 +505,7 @@ export const FormBuilder = () => {
                 <div className="md:col-span-3 space-y-1.5">
                   <Label>Nội dung câu hỏi</Label>
                   <Input
-                    placeholder="VD: Bạn đánh giá chương trình đào tạo của khoa như thế nào?"
+                    placeholder="VD: Bạn đánh giá chương trình đào tạo của trường như thế nào?"
                     value={q.label}
                     onChange={(e) =>
                       updateQuestion(idx, "label", e.target.value)

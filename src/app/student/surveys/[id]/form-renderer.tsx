@@ -51,7 +51,8 @@ export const SurveyFormRenderer = ({
   const [success, setSuccess] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const submittedResponseId = React.useRef<string | null>(null);
-  const inputsDisabled = previewOnly || isLoading || !!submittedResponseId.current;
+  const inputsDisabled =
+    previewOnly || isLoading || !!submittedResponseId.current;
 
   const handleTextChange = (qId: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [qId]: value }));
@@ -154,7 +155,14 @@ export const SurveyFormRenderer = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {previewOnly && <Alert><AlertDescription>Bản xem trước dành cho cán bộ Khoa. Mở biểu mẫu để bắt đầu nhận phản hồi.</AlertDescription></Alert>}
+      {previewOnly && (
+        <Alert>
+          <AlertDescription>
+            Bản xem trước dành cho nhân sự quản trị. Mở biểu mẫu để bắt đầu nhận
+            phản hồi.
+          </AlertDescription>
+        </Alert>
+      )}
       {error && (
         <Alert variant="destructive" className="py-2 text-xs">
           <AlertDescription>{error}</AlertDescription>
@@ -318,21 +326,23 @@ export const SurveyFormRenderer = ({
         </div>
       ))}
 
-      {!previewOnly && <div className="pt-2 flex justify-end">
-        <Button type="submit" disabled={isLoading} className="font-medium">
-          {isLoading ? (
-            <>
-              <Loader2 data-icon="inline-start" className="animate-spin" />
-              Đang gửi phản hồi...
-            </>
-          ) : (
-            <>
-              <Send data-icon="inline-start" />
-              {submitLabel}
-            </>
-          )}
-        </Button>
-      </div>}
+      {!previewOnly && (
+        <div className="pt-2 flex justify-end">
+          <Button type="submit" disabled={isLoading} className="font-medium">
+            {isLoading ? (
+              <>
+                <Loader2 data-icon="inline-start" className="animate-spin" />
+                Đang gửi phản hồi...
+              </>
+            ) : (
+              <>
+                <Send data-icon="inline-start" />
+                {submitLabel}
+              </>
+            )}
+          </Button>
+        </div>
+      )}
     </form>
   );
 };

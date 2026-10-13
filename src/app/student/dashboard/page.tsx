@@ -28,12 +28,12 @@ const StudentDashboardPage = async () => {
   return (
     <div className="space-y-8">
       {/* Welcome Banner */}
-      <div className="rounded-xl border border-border bg-gradient-to-r from-card via-card to-primary/5 p-6 shadow-sm">
+      <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                Xin chào, {profile?.fullName || current?.user.name} 👋
+                Xin chào, {profile?.fullName || current?.user.name}
               </h1>
               <Badge
                 variant={isAlumni ? "default" : "secondary"}
@@ -44,7 +44,7 @@ const StudentDashboardPage = async () => {
             </div>
             <p className="text-xs text-muted-foreground">
               {profile?.studentCode && `MSSV: ${profile.studentCode} · `}
-              {profile?.faculty || "Khoa Công nghệ Thông tin"}
+              {profile?.faculty || "Trường Đại học Đà Lạt"}
               {profile?.batchYear && ` · Khóa ${profile.batchYear}`}
             </p>
           </div>
@@ -215,7 +215,7 @@ const StudentDashboardPage = async () => {
                 Khảo sát & Biểu mẫu
               </CardTitle>
               <CardDescription className="text-xs">
-                Đóng góp ý kiến để cải tiến chương trình đào tạo của Khoa
+                Đóng góp ý kiến để cải tiến chương trình đào tạo của trường
               </CardDescription>
             </div>
             <Link

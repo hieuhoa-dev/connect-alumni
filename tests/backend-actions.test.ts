@@ -7,7 +7,9 @@ import { runInNewContext } from "node:vm";
 import type { SQL } from "drizzle-orm";
 import { PgDialect } from "drizzle-orm/pg-core";
 import ts from "typescript";
+import { experiencePosts, newsArticles } from "../src/db/schema";
 import { getPagination } from "../src/lib/query-input";
+import { getSearchCondition, getSearchTerms } from "../src/lib/search-query";
 import { jobPostSchema } from "../src/validators/job-schema";
 import {
   campaignCreateSchema,
@@ -23,10 +25,16 @@ const requireModule = createRequire(path.join(process.cwd(), "package.json"));
 const campaignId = "11111111-1111-4111-8111-111111111111";
 const formId = "22222222-2222-4222-8222-222222222222";
 const responseId = "33333333-3333-4333-8333-333333333333";
+const wordStart = String.raw`(^|[^[:alnum:]_À-ÖØ-öø-ÿĀ-žƠ-ưẠ-ỹ\u0300-\u036f])`;
 
 // Load the production actions with isolated dependencies so these checks never
 // connect to PostgreSQL, Redis, authentication providers, or email services.
-function loadActions<T>(file: string, db: unknown, userId = "student-1"): T {
+function loadActions<T>(
+  file: string,
+  db: unknown,
+  userId = "student-1",
+  overrides: Record<string, unknown> = {},
+): T {
   const current = { user: { id: userId }, role: "student" };
   const dependencies: Record<string, unknown> = {
     "next/cache": { revalidatePath: () => undefined },
@@ -39,6 +47,7 @@ function loadActions<T>(file: string, db: unknown, userId = "student-1"): T {
     },
     "@/lib/audit": { logAuditEvent: async () => null },
     "@/lib/notifications": { sendNotification: async () => null },
+    ...overrides,
   };
   const output = ts.transpileModule(readFileSync(path.resolve(file), "utf8"), {
     compilerOptions: {
@@ -65,6 +74,133 @@ function loadActions<T>(file: string, db: unknown, userId = "student-1"): T {
   return actionModule.exports as T;
 }
 
+test("homepage search queries published news and experiences without fetching unrelated community data", async () => {
+  const queries: { kind: string; options: Record<string, unknown> }[] = [];
+  const row = {
+    id: "news-search-result",
+    title: "Cơ hội học bổng cho sinh viên toàn trường",
+    summary: "Hỗ trợ học tập",
+    content: "Nội dung đã công bố",
+    category: "announcement",
+    isPinned: true,
+    coverImageUrl: null,
+    tags: [],
+    viewCount: 0,
+    publishedAt: new Date(),
+    author: { name: "Ban biên tập", profile: null },
+  };
+  const { getLandingData } = loadActions<
+    typeof import("../src/lib/public-data")
+  >("src/lib/public-data.ts", {
+    query: {
+      newsArticles: {
+        findMany: async (options: Record<string, unknown>) => {
+          queries.push({ kind: "news", options });
+          return [row];
+        },
+      },
+      experiencePosts: {
+        findMany: async (options: Record<string, unknown>) => {
+          queries.push({ kind: "experience", options });
+          return [{ ...row, id: "experience-search-result", isPinned: false }];
+        },
+      },
+    },
+  });
+  const data = await getLandingData("  học bổng  ");
+  assert.deepEqual(
+    queries.map((query) => query.kind),
+    ["news", "experience"],
+  );
+  for (const query of queries) {
+    const where = query.options.where as {
+      status: string;
+      RAW: (table: typeof newsArticles | typeof experiencePosts) => SQL;
+    };
+    assert.equal(where.status, "published");
+    const condition = new PgDialect().sqlToQuery(
+      where.RAW(query.kind === "news" ? newsArticles : experiencePosts),
+    );
+    for (const word of ["học", "bổng"])
+      assert.ok(condition.params.includes(`${wordStart}${word}`));
+    assert.ok(condition.sql.includes(" and "));
+    assert.ok(condition.sql.includes("regexp_replace"));
+    if (query.kind === "experience")
+      assert.ok(condition.sql.includes("jsonb_array_elements_text"));
+    assert.equal(query.options.limit, 30);
+    const author = (
+      query.options.with as { author: { columns: Record<string, boolean> } }
+    ).author;
+    assert.deepEqual(Object.keys(author.columns), ["name"]);
+  }
+  assert.equal(data.posts.length, 2);
+  assert.equal(data.posts[0].href, "/news/news-search-result");
+  assert.equal(data.posts[1].href, "/experiences/experience-search-result");
+  assert.equal(data.events.length, 0);
+  assert.equal(data.jobs.length, 0);
+  assert.equal(data.searchUnavailable, false);
+});
+
+test("homepage search distinguishes an unavailable database from no matching posts", async () => {
+  const { getLandingData } = loadActions<
+    typeof import("../src/lib/public-data")
+  >("src/lib/public-data.ts", {
+    query: {
+      newsArticles: {
+        findMany: async () => {
+          throw new Error("Search unavailable fixture");
+        },
+      },
+      experiencePosts: { findMany: async () => [] },
+    },
+  });
+  const data = await getLandingData("học bổng");
+  assert.equal(data.posts.length, 0);
+  assert.equal(data.searchUnavailable, true);
+});
+
+test("experience review notifications link to the author's existing detail page", async () => {
+  const notifications: { linkUrl: string }[] = [];
+  let updatedStatus = "pending";
+  const { reviewExperiencePost } = loadActions<ExperienceActions>(
+    "src/actions/experience-actions.ts",
+    {
+      update: () => ({
+        set: (data: { status: string }) => {
+          updatedStatus = data.status;
+          return {
+            where: () => ({
+              returning: async () => [
+                {
+                  id: campaignId,
+                  authorId: "alumni-1",
+                  title: "Kinh nghiệm thực tập",
+                  status: updatedStatus,
+                },
+              ],
+            }),
+          };
+        },
+      }),
+    },
+    "staff-1",
+    {
+      "@/lib/notifications": {
+        sendNotification: async (notification: { linkUrl: string }) => {
+          notifications.push(notification);
+        },
+      },
+    },
+  );
+  for (const status of ["published", "rejected"] as const) {
+    await reviewExperiencePost(campaignId, status);
+  }
+  assert.equal(notifications.length, 2);
+  for (const notification of notifications) {
+    assert.equal(notification.linkUrl, `/experiences/${campaignId}`);
+  }
+});
+
 test("campaign deadlines and amounts reject values PostgreSQL cannot store", () => {
   const campaign = {
     title: "Quỹ học bổng",
@@ -83,6 +219,146 @@ test("campaign deadlines and amounts reject values PostgreSQL cannot store", () 
   assert.equal(
     donationPledgeSchema.safeParse({ ...pledge, amount: 1234.56 }).success,
     true,
+  );
+});
+
+test("news search applies the same word-prefix predicate to listed posts and their published count", async () => {
+  let filter:
+    | {
+        status: string;
+        category?: string;
+        RAW?: (table: typeof newsArticles) => SQL;
+      }
+    | undefined;
+  let countFilter: SQL | undefined;
+  const db = {
+    query: {
+      newsArticles: {
+        findMany: async (params: { where: typeof filter }) => {
+          filter = params.where;
+          return [];
+        },
+      },
+    },
+    select: () => ({
+      from: () => ({
+        where: async (condition: SQL) => {
+          countFilter = condition;
+          return [{ total: 0 }];
+        },
+      }),
+    }),
+  };
+  const actions = loadActions<NewsActions>("src/actions/news-actions.ts", db);
+  await actions.getPublishedNews({
+    search: "  học bổng  ",
+    category: "announcement",
+    limit: 12,
+  });
+  assert.equal(filter?.status, "published");
+  assert.equal(filter?.category, "announcement");
+  assert.ok(filter?.RAW);
+  const listPredicate = new PgDialect().sqlToQuery(filter.RAW(newsArticles));
+  const query = new PgDialect().sqlToQuery(countFilter as SQL);
+  for (const column of ["title", "summary", "content"])
+    assert.ok(query.sql.includes(`"${column}"`));
+  assert.deepEqual(query.params, [
+    "published",
+    "announcement",
+    ...listPredicate.params,
+  ]);
+  assert.ok(
+    query.sql
+      .replace(/\$\d+/g, "?")
+      .includes(listPredicate.sql.replace(/\$\d+/g, "?")),
+  );
+  assert.ok(listPredicate.sql.includes(" and "));
+  for (const word of ["học", "bổng"])
+    assert.ok(listPredicate.params.includes(`${wordStart}${word}`));
+  await actions.getPublishedNews({ search: "  " });
+  assert.equal(filter?.status, "published");
+  assert.equal(filter?.RAW, undefined);
+  assert.deepEqual(new PgDialect().sqlToQuery(countFilter as SQL).params, [
+    "published",
+  ]);
+  await actions.getPublishedNews({ search: "100%_" });
+  const literal = new PgDialect().sqlToQuery(countFilter as SQL);
+  assert.ok(literal.params.includes(`${wordStart}100%_`));
+});
+
+test("experience search keeps its tag filter while searching visible content and individual tags", async () => {
+  let filter:
+    | {
+        status: string;
+        RAW: (table: typeof experiencePosts) => SQL;
+      }
+    | undefined;
+  const actions = loadActions<ExperienceActions>(
+    "src/actions/experience-actions.ts",
+    {
+      query: {
+        experiencePosts: {
+          findMany: async (params: { where: typeof filter }) => {
+            filter = params.where;
+            return [];
+          },
+        },
+      },
+    },
+  );
+  await actions.getPublishedExperiencePosts({
+    search: "bí quyết",
+    tag: "Quản trị kinh doanh",
+  });
+  assert.equal(filter?.status, "published");
+  assert.ok(filter?.RAW);
+  const query = new PgDialect().sqlToQuery(filter.RAW(experiencePosts));
+  assert.ok(query.sql.includes("regexp_replace"));
+  assert.ok(query.sql.includes("jsonb_array_elements_text"));
+  assert.ok(query.sql.includes("@>"));
+  assert.ok(query.sql.includes(" and "));
+  assert.ok(query.params.includes(JSON.stringify(["Quản trị kinh doanh"])));
+  for (const word of ["bí", "quyết"])
+    assert.ok(query.params.includes(`${wordStart}${word}`));
+});
+
+test("prefix search treats punctuation literally and does not broaden empty queries into all posts", () => {
+  assert.equal(getSearchCondition(" \t ", [newsArticles.title]), undefined);
+  assert.deepEqual(getSearchTerms("  học   bổng  "), ["học", "bổng"]);
+  assert.deepEqual(getSearchTerms(" BÍ bi\u0301 bí "), ["bí"]);
+  const punctuation = getSearchCondition("!@()", [newsArticles.title]);
+  assert.ok(punctuation);
+  assert.match(new PgDialect().sqlToQuery(punctuation).sql, /false/);
+
+  const condition = getSearchCondition(" bí C++ ", [newsArticles.title]);
+  assert.ok(condition);
+  const query = new PgDialect().sqlToQuery(condition);
+  assert.ok(!query.sql.includes("bí"));
+  assert.ok(query.sql.includes("~*"));
+  assert.ok(query.sql.includes(" and "));
+  assert.ok(query.params.includes(`${wordStart}bí`));
+  assert.ok(query.params.includes(`${wordStart}c\\+\\+`));
+});
+
+test("word-prefix search accepts one letter and incomplete Vietnamese words while preserving a left word boundary", () => {
+  for (const letter of ["b", "đ"]) {
+    assert.deepEqual(getSearchTerms(` ${letter.toUpperCase()} `), [letter]);
+    const condition = getSearchCondition(letter, [newsArticles.title]);
+    assert.ok(condition);
+    const query = new PgDialect().sqlToQuery(condition);
+    assert.ok(query.sql.includes("~*"));
+    assert.deepEqual(query.params.slice(-1), [`${wordStart}${letter}`]);
+  }
+
+  const condition = getSearchCondition(" HỌC b ", [newsArticles.title]);
+  assert.ok(condition);
+  const query = new PgDialect().sqlToQuery(condition);
+  assert.ok(query.sql.includes(" and "));
+  assert.deepEqual(
+    query.params.filter(
+      (value) => typeof value === "string" && value.startsWith(wordStart),
+    ),
+    [`${wordStart}học`, `${wordStart}b`],
   );
 });
 

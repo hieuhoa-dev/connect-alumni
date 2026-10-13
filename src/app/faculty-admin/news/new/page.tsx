@@ -8,8 +8,8 @@ const NewNewsPage = () => {
           Viết tin mới
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Tin của Khoa hiển thị ở trang chủ và mục Tin tức. Bạn có thể lưu nháp
-          trước khi đăng.
+          Bản tin cộng đồng hiển thị ở trang chủ và mục Tin tức. Bạn có thể lưu
+          nháp trước khi đăng.
         </p>
       </div>
       <NewsForm />

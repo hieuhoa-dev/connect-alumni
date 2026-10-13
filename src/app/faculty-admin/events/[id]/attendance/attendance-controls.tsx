@@ -1,7 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useMarkAttendance } from "@/hooks/use-events";
 
 const attendanceItems = [
@@ -16,7 +23,11 @@ interface AttendanceControlsProps {
   participantName: string;
 }
 
-export const AttendanceControls = ({ registrationId, status, participantName }: AttendanceControlsProps) => {
+export const AttendanceControls = ({
+  registrationId,
+  status,
+  participantName,
+}: AttendanceControlsProps) => {
   const router = useRouter();
   const { mutateAsync: markAttendance, isPending } = useMarkAttendance();
   const handleChange = async (value: string | null) => {
@@ -30,8 +41,30 @@ export const AttendanceControls = ({ registrationId, status, participantName }: 
     }
   };
 
-  return <Select items={attendanceItems} value={status} onValueChange={(value) => { void handleChange(value); }} disabled={isPending}>
-    <SelectTrigger aria-label={`Điểm danh ${participantName}`} className="w-40"><SelectValue /></SelectTrigger>
-    <SelectContent><SelectGroup>{attendanceItems.map((item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>)}</SelectGroup></SelectContent>
-  </Select>;
+  return (
+    <Select
+      items={attendanceItems}
+      value={status}
+      onValueChange={(value) => {
+        void handleChange(value);
+      }}
+      disabled={isPending}
+    >
+      <SelectTrigger
+        aria-label={`Điểm danh ${participantName}`}
+        className="w-40"
+      >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {attendanceItems.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
 };

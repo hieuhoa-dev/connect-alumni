@@ -10,7 +10,7 @@ import Link from "next/link";
 import { getMyCompanies } from "@/actions/company-actions";
 import { getEmployerJobs } from "@/actions/job-actions";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -25,10 +25,14 @@ const EmployerJobsPage = async () => {
     companies.find((c) => c.isActiveContext) || companies[0];
 
   const jobs = activeCompany ? await getEmployerJobs(activeCompany.id) : [];
+  const isVerified = activeCompany?.verificationStatus === "verified";
 
-  const getStatusBadge = (status: string, reason?: string | null) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case "approved":
+        if (!isVerified) {
+          return <Badge variant="secondary">Đã duyệt · Tạm ẩn</Badge>;
+        }
         return (
           <Badge className="bg-emerald-600 text-white gap-1">
             <CheckCircle2 className="h-3 w-3" /> Đang hiển thị
@@ -49,7 +53,7 @@ const EmployerJobsPage = async () => {
       default:
         return (
           <Badge className="bg-amber-600 text-white gap-1">
-            <Clock className="h-3 w-3" /> Chờ Khoa duyệt
+            <Clock className="h-3 w-3" /> Chờ duyệt
           </Badge>
         );
     }
@@ -70,14 +74,41 @@ const EmployerJobsPage = async () => {
           </p>
         </div>
 
-        <Link
-          href="/employer/jobs/new"
-          className={buttonVariants({ size: "sm" })}
-        >
-          <PlusCircle className="h-4 w-4 mr-2" />
-          Đăng tin mới
-        </Link>
+        {!activeCompany ? (
+          <Link
+            href="/employer/onboarding"
+            className={buttonVariants({ size: "sm" })}
+          >
+            Đăng ký doanh nghiệp
+          </Link>
+        ) : isVerified ? (
+          <Link
+            href="/employer/jobs/new"
+            className={buttonVariants({ size: "sm" })}
+          >
+            <PlusCircle className="h-4 w-4 mr-2" />
+            Đăng tin mới
+          </Link>
+        ) : (
+          <Button size="sm" disabled>
+            Đăng tin mới
+          </Button>
+        )}
       </div>
+
+      {activeCompany && !isVerified && (
+        <p className="text-sm text-muted-foreground">
+          Tin tuyển dụng chỉ hiển thị công khai khi hồ sơ doanh nghiệp đã được
+          xác minh. Bạn có thể xem trạng thái và lý do tại{" "}
+          <Link
+            href="/employer/dashboard"
+            className="underline underline-offset-4"
+          >
+            Tổng quan doanh nghiệp
+          </Link>
+          .
+        </p>
+      )}
 
       <div className="space-y-4">
         {jobs.length === 0 ? (
@@ -88,15 +119,26 @@ const EmployerJobsPage = async () => {
                 Chưa có tin tuyển dụng nào
               </p>
               <p>
-                Hãy bắt đầu tạo tin tuyển dụng đầu tiên để kết nối với các bạn
-                sinh viên tài năng của Khoa.
+                {isVerified
+                  ? "Tạo tin tuyển dụng đầu tiên để kết nối với sinh viên và cựu sinh viên Đại học Đà Lạt."
+                  : "Hoàn tất đăng ký và xác minh hồ sơ doanh nghiệp trước khi đăng tin tuyển dụng."}
               </p>
 
               <Link
                 className={buttonVariants({ size: "sm" })}
-                href="/employer/jobs/new"
+                href={
+                  !activeCompany
+                    ? "/employer/onboarding"
+                    : isVerified
+                      ? "/employer/jobs/new"
+                      : "/employer/dashboard"
+                }
               >
-                Đăng tin tuyển dụng ngay
+                {!activeCompany
+                  ? "Đăng ký doanh nghiệp"
+                  : isVerified
+                    ? "Đăng tin tuyển dụng ngay"
+                    : "Xem hồ sơ doanh nghiệp"}
               </Link>
             </CardContent>
           </Card>
@@ -129,7 +171,7 @@ const EmployerJobsPage = async () => {
                         )}
                       </CardDescription>
                     </div>
-                    <div>{getStatusBadge(job.status, job.rejectedReason)}</div>
+                    <div>{getStatusBadge(job.status)}</div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-2 text-xs text-muted-foreground">
@@ -137,7 +179,7 @@ const EmployerJobsPage = async () => {
 
                   {job.status === "rejected" && job.rejectedReason && (
                     <div className="p-2.5 rounded bg-destructive/10 text-destructive text-xs border border-destructive/20">
-                      <strong>Lý do từ chối từ Khoa: </strong>
+                      <strong>Lý do từ chối: </strong>
                       {job.rejectedReason}
                     </div>
                   )}

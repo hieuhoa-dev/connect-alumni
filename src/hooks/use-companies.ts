@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import {
   getCompaniesForFaculty,
   getMyCompanies,
@@ -9,6 +10,7 @@ import {
   switchActiveCompany,
 } from "@/actions/company-actions";
 import { toast } from "@/components/ui/toast";
+import { jobKeys } from "@/hooks/use-jobs";
 import type { CompanyCreateInput } from "@/validators/company-schema";
 
 export const companyKeys = {
@@ -43,9 +45,10 @@ export const useRegisterCompany = () => {
       toast.add({
         type: "success",
         description:
-          "Đăng ký hồ sơ doanh nghiệp thành công! Vui lòng chờ Khoa duyệt.",
+          "Đăng ký hồ sơ doanh nghiệp thành công! Vui lòng chờ duyệt.",
       });
       queryClient.invalidateQueries({ queryKey: companyKeys.all });
+      queryClient.invalidateQueries({ queryKey: jobKeys.all });
     },
     onError: (err: any) => {
       toast.add({
@@ -74,6 +77,7 @@ export const useReviewCompany = () => {
             : "Đã từ chối hồ sơ doanh nghiệp",
       });
       queryClient.invalidateQueries({ queryKey: companyKeys.all });
+      queryClient.invalidateQueries({ queryKey: jobKeys.all });
     },
     onError: (err: any) => {
       toast.add({
@@ -86,6 +90,7 @@ export const useReviewCompany = () => {
 
 export const useSwitchCompany = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: (companyId: string) => switchActiveCompany(companyId),
@@ -95,6 +100,8 @@ export const useSwitchCompany = () => {
         description: "Đã chuyển đổi doanh nghiệp làm việc",
       });
       queryClient.invalidateQueries({ queryKey: companyKeys.myCompanies() });
+      queryClient.invalidateQueries({ queryKey: jobKeys.all });
+      router.refresh();
     },
     onError: (err: any) => {
       toast.add({

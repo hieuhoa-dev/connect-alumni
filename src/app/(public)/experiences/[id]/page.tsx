@@ -2,7 +2,9 @@ import { ArrowLeft, Calendar, Eye } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getExperiencePostById } from "@/actions/experience-actions";
+import { PublicPageTitle } from "@/components/shared/public-page-title";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { RichTextContent } from "@/components/ui/rich-text-content";
@@ -20,6 +22,7 @@ const ExperienceDetailPage = async ({ params }: ExperienceDetailPageProps) => {
   }
 
   const author = post.author?.profile;
+  const isPublished = post.status === "published";
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
@@ -39,6 +42,18 @@ const ExperienceDetailPage = async ({ params }: ExperienceDetailPageProps) => {
       <article className="space-y-6">
         {/* Header */}
         <div className="space-y-4">
+          {!isPublished && (
+            <div className="space-y-2">
+              <Badge variant="outline">
+                {post.status === "pending"
+                  ? "Chờ duyệt"
+                  : "Chưa được phê duyệt"}
+              </Badge>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Bài viết chưa xuất hiện trong Góc chia sẻ công khai.
+              </p>
+            </div>
+          )}
           <div className="flex flex-wrap gap-1.5">
             {post.tags.map((t) => (
               <span
@@ -50,14 +65,12 @@ const ExperienceDetailPage = async ({ params }: ExperienceDetailPageProps) => {
             ))}
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl font-normal tracking-tight text-foreground leading-[1.15]">
-            {post.title}
-          </h1>
+          <PublicPageTitle>{post.title}</PublicPageTitle>
 
-          <div className="flex items-center gap-4 text-xs text-muted-foreground pt-1 border-b border-border/70 pb-4 font-mono">
+          <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground pt-1 border-b border-border/70 pb-4 font-mono">
             <span className="flex items-center gap-1.5">
               <Calendar className="size-3.5" />
-              Xuất bản:{" "}
+              {isPublished ? "Xuất bản:" : "Ngày gửi:"}{" "}
               {new Date(post.publishedAt || post.createdAt).toLocaleDateString(
                 "vi-VN",
                 { dateStyle: "long" },

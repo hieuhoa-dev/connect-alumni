@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const experiencePostSchema = z.object({
-  title: z.string().min(5, "Tiêu đề bài viết ít nhất 5 ký tự"),
+  title: z.string().trim().min(5, "Tiêu đề bài viết ít nhất 5 ký tự"),
   content: z.string().min(20, "Nội dung chia sẻ ít nhất 20 ký tự"),
   coverImageUrl: z.string().optional().nullable(),
   tags: z.array(z.string()).default([]),

@@ -1,6 +1,7 @@
 import { Calendar, CalendarDays, Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 import { getPublishedEvents } from "@/actions/event-actions";
+import { PublicPageTitle } from "@/components/shared/public-page-title";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -12,12 +13,10 @@ const EventsPage = async () => {
     <div className="container mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-          Talkshow, Hội thảo & Sự kiện
-        </h1>
+        <PublicPageTitle>Talkshow, Hội thảo & Sự kiện</PublicPageTitle>
         <p className="text-sm text-muted-foreground">
-          Các chương trình kết nối định kỳ giữa Cựu sinh viên, Khoa và Sinh viên
-          nhằm chia sẻ kinh nghiệm thực tế
+          Các chương trình kết nối định kỳ giữa sinh viên và cựu sinh viên toàn
+          trường nhằm chia sẻ kinh nghiệm thực tế
         </p>
       </div>
 
@@ -30,7 +29,7 @@ const EventsPage = async () => {
               Hiện chưa có sự kiện nào sắp diễn ra
             </h3>
             <p className="text-xs text-muted-foreground mt-1">
-              Khoa sẽ sớm cập nhật lịch talkshow và hội thảo mới nhất.
+              Ban quản trị sẽ sớm cập nhật lịch talkshow và hội thảo mới nhất.
             </p>
           </div>
         ) : (

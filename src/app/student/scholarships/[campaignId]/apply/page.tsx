@@ -2,7 +2,10 @@ import { ArrowLeft, Lock } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getFormById } from "@/actions/form-actions";
-import { getCampaignById, getMyScholarshipApplications } from "@/actions/scholarship-actions";
+import {
+  getCampaignById,
+  getMyScholarshipApplications,
+} from "@/actions/scholarship-actions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -36,7 +39,9 @@ const ScholarshipApplyPage = async ({ params }: ApplyPageProps) => {
   const applicationForm = campaign.applicationFormId
     ? await getFormById(campaign.applicationFormId)
     : null;
-  const existingApplication = applications.find((application) => application.campaignId === campaignId);
+  const existingApplication = applications.find(
+    (application) => application.campaignId === campaignId,
+  );
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -68,19 +73,36 @@ const ScholarshipApplyPage = async ({ params }: ApplyPageProps) => {
             <Lock className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <span>
               Cam kết bảo mật: Thông tin tài chính, hoàn cảnh gia đình và bảng
-              điểm chỉ dùng cho mục đích xét duyệt nội bộ bởi Hội đồng Khoa và
-              được kiểm toán bảo mật (Audit Log).
+              điểm chỉ dùng cho mục đích xét duyệt nội bộ bởi Hội đồng xét duyệt
+              và được kiểm toán bảo mật (Audit Log).
             </span>
           </div>
 
-          {existingApplication ? <div className="flex flex-col gap-3"><p className="text-sm">Bạn đã nộp hồ sơ cho chiến dịch này. Theo dõi kết quả xét duyệt trong danh sách học bổng.</p><Button render={<Link href="/student/scholarships#my-applications" />} nativeButton={false}>Xem hồ sơ đã nộp</Button></div> : <ScholarshipApplyForm
-            campaignId={campaign.id}
-            isExpired={isExpired}
-            studentName={current?.profile?.fullName || current?.user.name || ""}
-            studentCode={current?.profile?.studentCode || ""}
-            applicationForm={applicationForm}
-            requiresApplicationForm={!!campaign.applicationFormId}
-          />}
+          {existingApplication ? (
+            <div className="flex flex-col gap-3">
+              <p className="text-sm">
+                Bạn đã nộp hồ sơ cho chiến dịch này. Theo dõi kết quả xét duyệt
+                trong danh sách học bổng.
+              </p>
+              <Button
+                render={<Link href="/student/scholarships#my-applications" />}
+                nativeButton={false}
+              >
+                Xem hồ sơ đã nộp
+              </Button>
+            </div>
+          ) : (
+            <ScholarshipApplyForm
+              campaignId={campaign.id}
+              isExpired={isExpired}
+              studentName={
+                current?.profile?.fullName || current?.user.name || ""
+              }
+              studentCode={current?.profile?.studentCode || ""}
+              applicationForm={applicationForm}
+              requiresApplicationForm={!!campaign.applicationFormId}
+            />
+          )}
         </CardContent>
       </Card>
     </div>

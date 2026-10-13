@@ -4,11 +4,11 @@ import { getAllApplicationsForReview } from "@/actions/scholarship-actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ReviewDialog } from "./review-dialog";
 import { ScholarshipResponseDetails } from "./response-details";
+import { ReviewDialog } from "./review-dialog";
 
 export const metadata = {
-  title: "Xét duyệt hồ sơ học bổng | Khoa CNTT",
+  title: "Xét duyệt hồ sơ học bổng | DLU Alumni",
 };
 
 const ScholarshipApplicationsReviewPage = async () => {
@@ -140,7 +140,11 @@ const ScholarshipApplicationsReviewPage = async () => {
                         <strong>Ghi chú nhận xét:</strong> {app.reviewNote}
                       </div>
                     )}
-                    {app.formResponse && <ScholarshipResponseDetails answers={app.formResponse.answers} />}
+                    {app.formResponse && (
+                      <ScholarshipResponseDetails
+                        answers={app.formResponse.answers}
+                      />
+                    )}
                   </div>
 
                   <div className="flex items-center gap-3">

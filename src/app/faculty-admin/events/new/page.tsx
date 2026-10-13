@@ -17,8 +17,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
-import { cn } from "@/lib/utils";
 import { formatLocalDateTimeInput } from "@/lib/date-time";
+import { cn } from "@/lib/utils";
 
 const NewEventPage = () => {
   const router = useRouter();
@@ -97,7 +97,7 @@ const NewEventPage = () => {
         <CardHeader>
           <div className="flex items-center gap-2 text-xs font-semibold text-indigo-600">
             <Calendar className="h-4 w-4" />
-            <span>Ban Chủ nhiệm Khoa</span>
+            <span>Ban quản trị DLU Alumni</span>
           </div>
           <CardTitle className="text-xl font-bold">
             Tạo Sự kiện / Talkshow mới

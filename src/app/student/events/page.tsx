@@ -26,7 +26,7 @@ import {
 import { getCurrentUser } from "@/lib/permissions";
 
 export const metadata = {
-  title: "Sự kiện & Hội thảo | Khoa CNTT",
+  title: "Sự kiện & Hội thảo | DLU Alumni",
 };
 
 const StudentEventsPage = async () => {
@@ -40,11 +40,15 @@ const StudentEventsPage = async () => {
   const registeredEventIds = new Set(
     myData.registrations.map((r) => r.event?.id),
   );
-  const pendingInvitesCount = myData.speakerInvites.filter(
-    (i) => i.invitationStatus === "pending",
-  ).length;
-
   const now = new Date();
+  const pendingInvitesCount = myData.speakerInvites.filter(
+    (invite) =>
+      invite.invitationStatus === "pending" &&
+      !!invite.event &&
+      invite.event.status !== "cancelled" &&
+      invite.event.status !== "completed" &&
+      invite.event.endTime > now,
+  ).length;
 
   return (
     <div className="space-y-8">
@@ -94,7 +98,8 @@ const StudentEventsPage = async () => {
               </div>
               <div>
                 <p className="text-sm font-semibold text-foreground">
-                  Bạn có {pendingInvitesCount} lời mời làm diễn giả từ Khoa
+                  Bạn có {pendingInvitesCount} lời mời làm diễn giả từ Ban quản
+                  trị
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Vui lòng phản hồi lời mời để Ban tổ chức chuẩn bị chương trình
@@ -131,8 +136,8 @@ const StudentEventsPage = async () => {
                 Hiện chưa có sự kiện nào sắp diễn ra
               </h3>
               <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-                Khoa sẽ sớm cập nhật lịch talkshow, workshop và ngày hội kết nối
-                việc làm mới nhất.
+                Ban quản trị sẽ sớm cập nhật lịch talkshow, workshop và ngày hội
+                kết nối việc làm mới nhất.
               </p>
             </CardContent>
           </Card>

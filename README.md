@@ -1,8 +1,12 @@
 # Connect Alumni
 
-Nền tảng kết nối sinh viên, cựu sinh viên, Khoa và doanh nghiệp.
+DLU Alumni là dự án riêng kết nối sinh viên, cựu sinh viên của tất cả các khoa, ngành tại Trường Đại học Đà Lạt và doanh nghiệp.
 
-Thông tin Khoa Công nghệ Thông tin, Trường Đại học Đà Lạt được quản lý tại `src/lib/site-config.ts`. Xem [nguồn thông tin đã đối chiếu](docs/DLU_REFERENCE.md) trước khi cập nhật nội dung công khai.
+Thông tin Trường Đại học Đà Lạt và nhận diện dự án được quản lý tại `src/lib/site-config.ts`. Xem [nguồn thông tin đã đối chiếu](docs/DLU_REFERENCE.md) trước khi cập nhật nội dung công khai. Sinh viên/cựu sinh viên nhập khoa hoặc ngành học khi đăng ký và có thể cập nhật trong hồ sơ; không tự gán người dùng vào Khoa CNTT.
+
+Xem [báo cáo rà soát và lộ trình hoàn thiện](docs/PROJECT_REVIEW.md) để biết các phần đã kiểm tra, thiếu hụt vận hành và đề xuất danh bạ, kết nối, cố vấn cho cộng đồng toàn trường. Script seed chứa dữ liệu trình diễn đa ngành, không phải thông báo hay quan hệ đối tác chính thức.
+
+Xem [kiểm tra theo 5 vai trò và danh sách nội dung cần cập nhật](docs/ROLE_AUDIT.md) để biết lỗi đã sửa, kết quả hồi quy/tích hợp/trình duyệt và các việc cần hoàn thiện trước khi triển khai.
 
 ## Chạy local
 

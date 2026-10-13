@@ -1,11 +1,12 @@
-import { Newspaper, Search } from "lucide-react";
+import { Newspaper } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedNews } from "@/actions/news-actions";
 import { EmptyBlock } from "@/components/landing/landing-parts";
 import { NewsCard } from "@/components/news/news-card";
+import { LiveSearch } from "@/components/shared/live-search";
+import { PublicPageTitle } from "@/components/shared/public-page-title";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   isNewsCategory,
   NEWS_CATEGORIES,
@@ -14,9 +15,9 @@ import {
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Tin tức - Cựu sinh viên Khoa CNTT",
+  title: "Tin tức · DLU Alumni",
   description:
-    "Thông báo, hoạt động kết nối, hợp tác và những câu chuyện thành công của cựu sinh viên Khoa Công nghệ Thông tin.",
+    "Thông báo, hoạt động kết nối, hợp tác và những câu chuyện thành công của cựu sinh viên Trường Đại học Đà Lạt.",
 };
 
 const PAGE_SIZE = 12;
@@ -46,26 +47,30 @@ const NewsPage = async ({ searchParams }: NewsPageProps) => {
   const search = params.search?.trim() || undefined;
   const page = Math.max(Number.parseInt(params.page ?? "1", 10) || 1, 1);
 
-  const { items, total } = await getPublishedNews({
-    category,
-    search,
-    limit: PAGE_SIZE,
-    offset: (page - 1) * PAGE_SIZE,
-  });
+  let result: Awaited<ReturnType<typeof getPublishedNews>> | null = null;
+  try {
+    result = await getPublishedNews({
+      category,
+      search,
+      limit: PAGE_SIZE,
+      offset: (page - 1) * PAGE_SIZE,
+    });
+  } catch (error) {
+    console.error(
+      "[news] Unable to load published news:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
+  }
+  const { items, total } = result ?? { items: [], total: 0 };
   const totalPages = Math.max(Math.ceil(total / PAGE_SIZE), 1);
 
   return (
     <div className="container mx-auto max-w-7xl px-4 pb-20 pt-10 sm:px-6 lg:px-8">
       <header className="flex flex-col gap-3 pb-8">
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Bản tin Khoa Công nghệ Thông tin
+        <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+          Bản tin cộng đồng DLU Alumni
         </span>
-        <h1 className="font-serif text-4xl font-normal leading-[1.1] tracking-tight text-foreground sm:text-5xl">
-          Tin tức{" "}
-          <span className="font-light italic text-foreground/80">
-            và hoạt động
-          </span>
-        </h1>
+        <PublicPageTitle>Tin tức và hoạt động</PublicPageTitle>
       </header>
 
       <div className="flex flex-col gap-4 border-y border-border-strong py-4 md:flex-row md:items-center md:justify-between">
@@ -80,8 +85,8 @@ const NewsPage = async ({ searchParams }: NewsPageProps) => {
                 className={cn(
                   "rounded-md border px-3 py-1.5 text-sm transition-colors",
                   active
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border-strong text-muted-foreground hover:text-foreground",
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border-strong text-muted-foreground hover:border-primary hover:text-primary",
                 )}
               >
                 {item ? NEWS_CATEGORY_LABEL[item] : "Tất cả"}
@@ -90,32 +95,25 @@ const NewsPage = async ({ searchParams }: NewsPageProps) => {
           })}
         </nav>
 
-        <form action="/news" method="get" className="flex gap-2">
-          {category && <input type="hidden" name="category" value={category} />}
-          <Input
-            type="search"
-            name="search"
-            defaultValue={search}
-            placeholder="Tìm theo tiêu đề"
-            aria-label="Tìm tin tức"
-            className="w-full md:w-64"
-          />
-          <Button type="submit" variant="outline">
-            <Search data-icon="inline-start" />
-            Tìm
-          </Button>
-        </form>
+        <LiveSearch
+          initialValue={search}
+          label="Tìm tin tức"
+          placeholder="Tìm tiêu đề hoặc nội dung..."
+          className="md:max-w-xs"
+        />
       </div>
 
       <section aria-label="Danh sách tin" className="pt-8">
         {items.length === 0 ? (
           <EmptyBlock
             icon={Newspaper}
-            title="Chưa có tin nào"
+            title={result ? "Chưa có tin nào" : "Chưa thể tải bản tin"}
             description={
-              search || category
-                ? "Không tìm thấy tin phù hợp. Thử bỏ bộ lọc hoặc đổi từ khóa."
-                : "Khoa sẽ đăng thông báo và hoạt động tại đây."
+              !result
+                ? "Vui lòng thử lại sau hoặc khám phá các câu chuyện trong Góc chia sẻ."
+                : search || category
+                  ? "Không tìm thấy tin phù hợp. Thử bỏ bộ lọc hoặc đổi từ khóa."
+                  : "Thông báo và hoạt động của cộng đồng sẽ được cập nhật tại đây."
             }
           />
         ) : (

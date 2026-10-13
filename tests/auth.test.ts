@@ -237,7 +237,7 @@ test("profile years reject fractions, NaN, and graduation before admission", () 
     2021.5,
     Number.NaN,
     Number.POSITIVE_INFINITY,
-    1989,
+    1957,
   ]) {
     assert.equal(
       profileUpdateSchema.safeParse({ ...input, batchYear }).success,
@@ -251,6 +251,10 @@ test("profile years reject fractions, NaN, and graduation before admission", () 
   assert.equal(
     profileUpdateSchema.parse({ fullName: "Nguyễn Thị Mai" }).batchYear,
     null,
+  );
+  assert.equal(
+    profileUpdateSchema.safeParse({ ...input, batchYear: 1958 }).success,
+    true,
   );
 });
 
@@ -379,6 +383,32 @@ test("registration validates privileged roles and invalid academic data before c
   }
   assert.equal(fixture.signups(), 0);
   assert.equal(fixture.calls.length, 0);
+});
+
+test("registration supports all fields of study and does not assign an IT faculty by default", async () => {
+  for (const faculty of [
+    "Quản trị kinh doanh",
+    "Ngữ văn",
+    "Sinh học",
+    undefined,
+  ]) {
+    const fixture = actionFixture();
+    const result = await fixture.actions.registerWithProfile({
+      name: "Nguyễn Thị Mai",
+      email: "mai@example.edu.vn",
+      password: "Password123!",
+      role: "alumni",
+      faculty,
+      batchYear: 1985,
+      graduationYear: 1989,
+    });
+    assert.ok(!("error" in result));
+    assert.equal(
+      fixture.calls.find((call) => call.table === schema.profiles)?.values
+        ?.faculty,
+      faculty ?? null,
+    );
+  }
 });
 
 test("registration removes a created auth user when storing its profile fails", async () => {

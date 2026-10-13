@@ -39,7 +39,10 @@ export const CampaignForm = ({ availableForms }: CampaignFormProps) => {
   const [applicationDeadline, setApplicationDeadline] = useState("");
   const [applicationFormId, setApplicationFormId] = useState<string>("none");
   const [status, setStatus] = useState<"open" | "draft">("open");
-  const formItems = [{ value: "none", label: "Không gắn biểu mẫu riêng" }, ...availableForms.map((form) => ({ value: form.id, label: form.title }))];
+  const formItems = [
+    { value: "none", label: "Không gắn biểu mẫu riêng" },
+    ...availableForms.map((form) => ({ value: form.id, label: form.title })),
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,7 +121,7 @@ export const CampaignForm = ({ availableForms }: CampaignFormProps) => {
             </Label>
             <Input
               id="title"
-              placeholder="VD: Quỹ Học bổng Tài năng CNTT & Cựu sinh viên Khóa 2026"
+              placeholder="VD: Quỹ Học bổng Đồng hành cùng sinh viên DLU 2026"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
@@ -185,12 +188,14 @@ export const CampaignForm = ({ availableForms }: CampaignFormProps) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                  <SelectItem value="none">Không gắn biểu mẫu riêng</SelectItem>
-                  {availableForms.map((f) => (
-                    <SelectItem key={f.id} value={f.id}>
-                      {f.title}
+                    <SelectItem value="none">
+                      Không gắn biểu mẫu riêng
                     </SelectItem>
-                  ))}
+                    {availableForms.map((f) => (
+                      <SelectItem key={f.id} value={f.id}>
+                        {f.title}
+                      </SelectItem>
+                    ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -199,7 +204,13 @@ export const CampaignForm = ({ availableForms }: CampaignFormProps) => {
             <div className="space-y-2">
               <Label>Trạng thái chiến dịch</Label>
               <Select
-                items={[{ value: "open", label: "Công khai (Mở nhận tài trợ & hồ sơ)" }, { value: "draft", label: "Bản nháp" }]}
+                items={[
+                  {
+                    value: "open",
+                    label: "Công khai (Mở nhận tài trợ & hồ sơ)",
+                  },
+                  { value: "draft", label: "Bản nháp" },
+                ]}
                 value={status}
                 onValueChange={(val) => {
                   if (val === "open" || val === "draft") {
@@ -212,10 +223,10 @@ export const CampaignForm = ({ availableForms }: CampaignFormProps) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                  <SelectItem value="open">
-                    Công khai (Mở nhận tài trợ & hồ sơ)
-                  </SelectItem>
-                  <SelectItem value="draft">Bản nháp</SelectItem>
+                    <SelectItem value="open">
+                      Công khai (Mở nhận tài trợ & hồ sơ)
+                    </SelectItem>
+                    <SelectItem value="draft">Bản nháp</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>

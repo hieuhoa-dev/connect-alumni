@@ -16,7 +16,7 @@ import { requireRole } from "@/lib/permissions";
 import { getPagination } from "@/lib/query-input";
 
 export const getFacultyDashboardAnalytics = async () => {
-  await requireRole(["faculty_staff", "admin"]);
+  const current = await requireRole(["faculty_staff", "admin"]);
   const now = new Date();
 
   // 1. Overview Counts
@@ -38,7 +38,14 @@ export const getFacultyDashboardAnalytics = async () => {
   const [approvedJobs] = await db
     .select({ val: count() })
     .from(jobPosts)
-    .where(and(eq(jobPosts.status, "approved"), gt(jobPosts.expiresAt, now)));
+    .innerJoin(companies, eq(jobPosts.companyId, companies.id))
+    .where(
+      and(
+        eq(jobPosts.status, "approved"),
+        gt(jobPosts.expiresAt, now),
+        eq(companies.verificationStatus, "verified"),
+      ),
+    );
 
   const [expiredJobs] = await db
     .select({ val: count() })
@@ -105,19 +112,19 @@ export const getFacultyDashboardAnalytics = async () => {
     .groupBy(scholarshipApplications.status);
 
   // 6. Recent Audit Logs
-  const recentLogs = await db.query.auditLogs.findMany({
-    with: {
-      actor: {
+  const canViewAuditLogs = current.role === "admin";
+  const recentLogs = canViewAuditLogs
+    ? await db.query.auditLogs.findMany({
         with: {
-          profile: true,
+          actor: {
+            columns: { id: true, name: true },
+            with: { profile: { columns: { fullName: true } } },
+          },
         },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    limit: 15,
-  });
+        orderBy: { createdAt: "desc" },
+        limit: 15,
+      })
+    : [];
 
   // 7. Employment Rate by Graduation Batch (Aggregated from Alumni Profiles)
   const batchAlumniStats = await db
@@ -156,6 +163,7 @@ export const getFacultyDashboardAnalytics = async () => {
     jobsByIndustry,
     applicationsByStatus,
     batchAlumniStats,
+    canViewAuditLogs,
     recentLogs,
   };
 };

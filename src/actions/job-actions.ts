@@ -1,6 +1,7 @@
 "use server";
 
 import { and, eq, gt, sql } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { companies, jobPosts } from "@/db/schema";
 import { logAuditEvent } from "@/lib/audit";
@@ -23,11 +24,32 @@ const PUBLIC_COMPANY_COLUMNS = {
   verificationStatus: true,
 } as const;
 
+const PUBLIC_JOB_COLUMNS = {
+  id: true,
+  companyId: true,
+  title: true,
+  description: true,
+  requirements: true,
+  location: true,
+  jobType: true,
+  salaryRange: true,
+  applyUrlOrEmail: true,
+  status: true,
+  expiresAt: true,
+  createdAt: true,
+  updatedAt: true,
+} as const;
+
 const effectiveJobStatus = (
   post: { status: typeof jobPosts.$inferSelect.status; expiresAt: Date },
   now: Date,
 ) =>
   post.status === "approved" && post.expiresAt <= now ? "expired" : post.status;
+
+const literalSearchPattern = (value?: string) => {
+  const keyword = value?.trim().slice(0, 160);
+  return keyword ? `%${keyword.replace(/[\\%_]/g, "\\$&")}%` : undefined;
+};
 
 /**
  * Public & Student: Get active approved job posts with filtering
@@ -43,29 +65,30 @@ export const getActiveJobPosts = async (params?: {
   const now = new Date();
   const { limit, offset } = getPagination(params);
   const jobType = jobPostSchema.shape.jobType.safeParse(params?.jobType);
-  const search = params?.search?.trim();
-  const industry = params?.industry?.trim();
-  const location = params?.location?.trim();
+  const search = literalSearchPattern(params?.search);
+  const industry = literalSearchPattern(params?.industry);
+  const location = literalSearchPattern(params?.location);
 
   return await db.query.jobPosts.findMany({
+    columns: PUBLIC_JOB_COLUMNS,
     where: {
       status: "approved",
       expiresAt: { gt: now },
       ...(jobType.success ? { jobType: jobType.data } : {}),
-      ...(location ? { location: { ilike: `%${location}%` } } : {}),
+      ...(location ? { location: { ilike: location } } : {}),
       ...(search
         ? {
             OR: [
-              { title: { ilike: `%${search}%` } },
-              { description: { ilike: `%${search}%` } },
-              { requirements: { ilike: `%${search}%` } },
-              { company: { name: { ilike: `%${search}%` } } },
+              { title: { ilike: search } },
+              { description: { ilike: search } },
+              { requirements: { ilike: search } },
+              { company: { name: { ilike: search } } },
             ],
           }
         : {}),
       company: {
         verificationStatus: "verified",
-        ...(industry ? { industry: { ilike: `%${industry}%` } } : {}),
+        ...(industry ? { industry: { ilike: industry } } : {}),
       },
     },
     with: {
@@ -85,6 +108,7 @@ export const getActiveJobPosts = async (params?: {
 export const getJobPostById = async (id: string) => {
   if (!isEntityId(id)) return undefined;
   const post = await db.query.jobPosts.findFirst({
+    columns: PUBLIC_JOB_COLUMNS,
     where: {
       id,
       status: { in: ["approved", "expired"] },
@@ -117,7 +141,7 @@ export const createJobPost = async (input: JobPostInput) => {
 
   if (!company || company.verificationStatus !== "verified") {
     throw new Error(
-      "Doanh nghiệp của bạn đang chờ Khoa phê duyệt hoặc chưa được xác minh. Chưa thể đăng tin.",
+      "Doanh nghiệp của bạn đang chờ Ban quản trị phê duyệt hoặc chưa được xác minh. Chưa thể đăng tin.",
     );
   }
 
@@ -145,6 +169,9 @@ export const createJobPost = async (input: JobPostInput) => {
     metadata: { title: newPost.title, companyId: validated.companyId },
   });
 
+  revalidatePath("/employer/dashboard");
+  revalidatePath("/employer/jobs");
+  revalidatePath("/faculty-admin/jobs/review");
   return newPost;
 };
 
@@ -152,6 +179,9 @@ export const createJobPost = async (input: JobPostInput) => {
  * Employer: Get all job posts for current active company
  */
 export const getEmployerJobs = async (companyId?: string) => {
+  if (companyId !== undefined && !isEntityId(companyId)) {
+    throw new Error("ID doanh nghiệp không hợp lệ");
+  }
   const context = await requireCompanyContext(companyId);
   if (!context.companyId) return [];
 
@@ -182,6 +212,8 @@ export const reviewJobPost = async (data: {
   rejectedReason?: string;
 }) => {
   const current = await requireRole(["faculty_staff", "admin"]);
+  if (!isEntityId(data.jobId))
+    throw new Error("ID tin tuyển dụng không hợp lệ");
   const validated = jobReviewSchema.parse({
     status: data.status,
     rejectedReason: data.rejectedReason,
@@ -248,6 +280,12 @@ export const reviewJobPost = async (data: {
     metadata: { status: validated.status, reason: validated.rejectedReason },
   });
 
+  revalidatePath("/employer/dashboard");
+  revalidatePath("/employer/jobs");
+  revalidatePath("/faculty-admin/jobs/review");
+  revalidatePath("/jobs");
+  revalidatePath("/jobs/[id]", "page");
+  revalidatePath("/");
   return updated;
 };
 

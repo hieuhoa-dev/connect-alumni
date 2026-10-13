@@ -12,10 +12,12 @@ import {
   TrendingUp,
   Video,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import type * as React from "react";
 import { LandingHero } from "@/components/landing/landing-hero";
 import { LandingImage } from "@/components/landing/landing-image";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -34,6 +36,7 @@ import type {
   LandingPost,
   LandingStats,
 } from "@/lib/public-data";
+import { SITE } from "@/lib/site-config";
 import {
   EVENT_TYPE_LABEL,
   formatDateVi,
@@ -45,20 +48,9 @@ import {
 } from "@/lib/text";
 import { cn } from "@/lib/utils";
 
-/* ─── Nhãn pastel (đúng bảng màu trong DESIGN.md) ───────────────────────── */
+/* Nhãn chuyên mục dùng màu ngữ nghĩa của giao diện. */
 
 type TagTone = "blue" | "green" | "yellow" | "red" | "slate";
-
-const TAG_TONE: Record<TagTone, string> = {
-  blue: "border-[#BFDFFA]/60 bg-[#E1F3FE] text-[#1F6C9F] dark:border-sky-900/40 dark:bg-sky-950/40 dark:text-sky-300",
-  green:
-    "border-[#CDE3CB]/60 bg-[#EDF3EC] text-[#346538] dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-300",
-  yellow:
-    "border-[#EBD9A0]/60 bg-[#FBF3DB] text-[#956400] dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-300",
-  red: "border-[#F5C2C4]/60 bg-[#FDEBEC] text-[#9F2F2D] dark:border-rose-900/40 dark:bg-rose-950/40 dark:text-rose-300",
-  slate:
-    "border-border bg-[#F1F1EF] text-[#444441] dark:bg-muted dark:text-muted-foreground",
-};
 
 export const Tag = ({
   tone = "slate",
@@ -70,15 +62,18 @@ export const Tag = ({
   children: React.ReactNode;
 }) => {
   return (
-    <span
-      className={cn(
-        "inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[11px] font-medium uppercase tracking-wider",
-        TAG_TONE[tone],
-        className,
-      )}
+    <Badge
+      variant={
+        tone === "red"
+          ? "destructive"
+          : tone === "slate"
+            ? "outline"
+            : "secondary"
+      }
+      className={className}
     >
       {children}
-    </span>
+    </Badge>
   );
 };
 
@@ -132,13 +127,13 @@ export const SectionHeading = ({
   hrefLabel?: string;
 }) => {
   return (
-    <div className="flex items-end justify-between gap-4 border-t-2 border-foreground pt-3">
+    <div className="flex items-end justify-between gap-3 border-t-2 border-primary pt-3">
       <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          <Icon className="size-3.5" />
+        <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+          <Icon className="size-3.5" strokeWidth={2.5} />
           <span>{eyebrow}</span>
         </div>
-        <h2 className="font-serif text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
+        <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
           {title}
         </h2>
       </div>
@@ -204,7 +199,7 @@ const PostMeta = ({
         {post.authorBatch ? (
           <span className="font-normal text-muted-foreground">
             {" "}
-            · K{post.authorBatch}
+            · Nhập học {post.authorBatch}
           </span>
         ) : null}
       </span>
@@ -226,38 +221,79 @@ const PostMeta = ({
 
 /* ─── Mở đầu trang: tên báo + chuyên mục ────────────────────────────────── */
 
-export const Masthead = () => <LandingHero />;
+export const Masthead = ({ search }: { search?: string }) => (
+  <LandingHero search={search} />
+);
+
+const CampusCover = () => (
+  <figure className="flex flex-col gap-2">
+    <div className="relative aspect-[16/9] overflow-hidden rounded-lg bg-accent">
+      <Image
+        src="/images/dlu-campus.jpg"
+        alt="Khuôn viên xanh của Trường Đại học Đà Lạt"
+        fill
+        sizes="(max-width: 1023px) 100vw, 750px"
+        preload
+        className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+      />
+    </div>
+    <figcaption className="text-[10px] leading-relaxed text-muted-foreground">
+      Khuôn viên Đại học Đà Lạt · Ảnh từ cổng cựu sinh viên DLU
+    </figcaption>
+  </figure>
+);
 
 export const LeadStory = ({ post }: { post: LandingPost | undefined }) => {
   if (!post) {
     return (
-      <EmptyBlock
-        icon={BookOpen}
-        title="Chưa có tin nào được đăng"
-        description="Thông báo của Khoa và bài chia sẻ của cựu sinh viên sẽ hiển thị tại đây sau khi được đăng."
-      />
+      <article className="group flex flex-col gap-4">
+        <CampusCover />
+        <div className="flex flex-col gap-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">
+            Kết nối từ mái trường
+          </p>
+          <h2 className="max-w-[28ch] text-2xl font-semibold leading-[1.25] tracking-tight sm:text-3xl">
+            Đà Lạt vẫn luôn là nơi để trở về.
+          </h2>
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Một nơi để tìm lại những người bạn, chia sẻ chặng đường đã đi và
+            cùng mở ra cơ hội cho những người đến sau. DLU Alumni giữ kết nối
+            giữa sinh viên, cựu sinh viên và mái trường.
+          </p>
+          <Link
+            href="/about"
+            className="w-fit text-sm font-semibold text-primary underline-offset-4 hover:underline"
+          >
+            Khám phá cộng đồng <span aria-hidden="true">↗</span>
+          </Link>
+        </div>
+      </article>
     );
   }
 
   return (
     <article className="group relative flex flex-col gap-4">
-      <CoverImage
-        src={post.coverImageUrl}
-        alt={post.title}
-        icon={BookOpen}
-        className={post.coverImageUrl ? "aspect-[16/9]" : "aspect-[21/8]"}
-      />
+      {post.coverImageUrl ? (
+        <CoverImage
+          src={post.coverImageUrl}
+          alt={post.title}
+          icon={BookOpen}
+          className="aspect-[16/9]"
+        />
+      ) : (
+        <CampusCover />
+      )}
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center gap-1.5">
-          <Tag tone="blue">{post.isPinned ? "Tin nổi bật" : "Mới nhất"}</Tag>
+          <Tag tone="green">{post.isPinned ? "Tin nổi bật" : "Mới nhất"}</Tag>
           {post.tags.slice(0, 2).map((tag) => (
             <Tag key={tag}>{tag}</Tag>
           ))}
         </div>
-        <h2 className="font-serif text-3xl font-medium leading-[1.15] tracking-tight text-foreground sm:text-4xl">
+        <h2 className="text-2xl font-semibold leading-[1.25] tracking-tight text-foreground sm:text-3xl">
           <Link
             href={post.href}
-            className="underline-offset-4 decoration-1 group-hover:underline after:absolute after:inset-0"
+            className="underline-offset-4 decoration-1 group-hover:text-primary group-hover:underline after:absolute after:inset-0"
           >
             {post.title}
           </Link>
@@ -276,9 +312,9 @@ export const LeadStory = ({ post }: { post: LandingPost | undefined }) => {
 export const LatestHeadlines = ({ posts }: { posts: LandingPost[] }) => {
   return (
     <aside aria-label="Tin mới" className="flex flex-col gap-1">
-      <div className="flex items-center justify-between border-b border-border-strong pb-2">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
-          Tin mới đăng
+      <div className="flex items-center justify-between border-b-2 border-primary pb-3">
+        <h3 className="text-sm font-semibold text-primary">
+          {posts.length > 0 ? "Tin mới & thông báo" : "Khám phá cộng đồng"}
         </h3>
         <Link
           href="/news"
@@ -288,9 +324,31 @@ export const LatestHeadlines = ({ posts }: { posts: LandingPost[] }) => {
         </Link>
       </div>
       {posts.length === 0 ? (
-        <p className="py-6 text-sm text-muted-foreground">
-          Chưa có thêm bài viết nào.
-        </p>
+        <ul className="flex flex-col">
+          {SITE.communityLinks.map((link) => (
+            <li
+              key={link.href}
+              className="border-b border-border py-4 last:border-b-0"
+            >
+              <Link
+                href={link.href}
+                className="group flex items-start justify-between gap-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+              >
+                <span className="flex flex-col gap-1.5">
+                  <span className="text-base font-semibold leading-snug transition-colors group-hover:text-primary">
+                    {link.label}
+                  </span>
+                  <span className="text-xs leading-relaxed text-muted-foreground">
+                    {link.description}
+                  </span>
+                </span>
+                <span aria-hidden="true" className="text-primary">
+                  →
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       ) : (
         <ul className="flex flex-col">
           {posts.map((post) => (
@@ -303,10 +361,10 @@ export const LatestHeadlines = ({ posts }: { posts: LandingPost[] }) => {
                   {post.tags[0]}
                 </span>
               )}
-              <h4 className="font-serif text-lg font-medium leading-snug tracking-tight text-foreground">
+              <h4 className="text-base font-semibold leading-snug tracking-tight text-foreground">
                 <Link
                   href={post.href}
-                  className="underline-offset-4 group-hover:underline after:absolute after:inset-0"
+                  className="underline-offset-4 group-hover:text-primary group-hover:underline after:absolute after:inset-0"
                 >
                   {post.title}
                 </Link>
@@ -352,7 +410,7 @@ export const StatsStrip = ({ stats }: { stats: LandingStats }) => {
           key={item.label}
           className="flex flex-col gap-2 bg-card p-5 sm:p-6"
         >
-          <span className="font-serif text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
+          <span className="text-3xl font-semibold tracking-tight text-primary sm:text-4xl">
             {item.value}
           </span>
           <span className="max-w-[24ch] text-xs leading-relaxed text-muted-foreground">
@@ -383,10 +441,10 @@ export const StoryGrid = ({ posts }: { posts: LandingPost[] }) => {
             ) : (
               <Tag tone="slate">Chia sẻ</Tag>
             )}
-            <h3 className="line-clamp-3 font-serif text-xl font-medium leading-snug tracking-tight text-foreground">
+            <h3 className="line-clamp-3 text-lg font-semibold leading-snug tracking-tight text-foreground">
               <Link
                 href={post.href}
-                className="underline-offset-4 group-hover:underline after:absolute after:inset-0"
+                className="underline-offset-4 group-hover:text-primary group-hover:underline after:absolute after:inset-0"
               >
                 {post.title}
               </Link>
@@ -425,7 +483,7 @@ export const EventList = ({ events }: { events: LandingEvent[] }) => {
             key={event.id}
             className="group relative flex gap-4 border-b border-border-strong py-5 first:pt-4 last:border-b-0"
           >
-            <div className="flex size-14 shrink-0 flex-col items-center justify-center rounded-lg border border-[#D5E7F0] bg-[#E1F3FE] text-[#1F6C9F] dark:border-[#354A54] dark:bg-[#233540] dark:text-[#B7E4FB]">
+            <div className="flex size-14 shrink-0 flex-col items-center justify-center rounded-lg border border-border bg-accent text-accent-foreground">
               <span className="font-mono text-xl font-semibold leading-none">
                 {formatDateVi(event.startTime, { day: "2-digit" })}
               </span>
@@ -436,7 +494,7 @@ export const EventList = ({ events }: { events: LandingEvent[] }) => {
 
             <div className="flex min-w-0 flex-1 flex-col gap-2">
               <div className="flex flex-wrap items-center gap-1.5">
-                <Tag tone="blue">
+                <Tag tone="green">
                   {EVENT_TYPE_LABEL[event.type] ?? "Sự kiện"}
                 </Tag>
                 <Tag tone={isOnline ? "slate" : "green"}>
@@ -444,7 +502,7 @@ export const EventList = ({ events }: { events: LandingEvent[] }) => {
                 </Tag>
                 {isFull && <Tag tone="red">Đã đủ chỗ</Tag>}
               </div>
-              <h3 className="font-serif text-xl font-medium leading-snug tracking-tight text-foreground">
+              <h3 className="text-lg font-semibold leading-snug tracking-tight text-foreground">
                 <Link
                   href={`/events/${event.id}`}
                   className="underline-offset-4 group-hover:underline after:absolute after:inset-0"
@@ -484,7 +542,7 @@ export const JobList = ({ jobs }: { jobs: LandingJob[] }) => {
       <EmptyBlock
         icon={Briefcase}
         title="Chưa có tin tuyển dụng đang mở"
-        description="Tin mới của doanh nghiệp sẽ xuất hiện sau khi Khoa duyệt."
+        description="Tin mới của doanh nghiệp sẽ xuất hiện sau khi được duyệt."
       />
     );
   }
@@ -552,7 +610,7 @@ export const FundCard = ({
       <EmptyBlock
         icon={HeartHandshake}
         title="Chưa có chiến dịch đang mở"
-        description="Khi Khoa mở chiến dịch học bổng mới, tiến độ gây quỹ sẽ hiển thị tại đây."
+        description="Khi có chiến dịch học bổng mới, tiến độ gây quỹ sẽ hiển thị tại đây."
       />
     );
   }
@@ -563,10 +621,10 @@ export const FundCard = ({
   );
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-[#DCE8D8] bg-[#F1F6EE] p-5 dark:border-emerald-900/40 dark:bg-[#20291F]">
-      <Tag tone="green">Quỹ Khuyến học Khoa CNTT</Tag>
+    <div className="flex flex-col gap-4 rounded-lg border border-border bg-accent p-5">
+      <Tag tone="green">Quỹ Khuyến học DLU Alumni</Tag>
       <div className="flex flex-col gap-2">
-        <h3 className="font-serif text-xl font-medium leading-snug tracking-tight text-foreground">
+        <h3 className="text-lg font-semibold leading-snug tracking-tight text-foreground">
           {campaign.title}
         </h3>
         <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
@@ -605,7 +663,11 @@ export const FundCard = ({
           <ArrowRight data-icon="inline-end" />
         </Button>
         <Button
-          render={<Link href="/employer/scholarships/pledge" />}
+          render={
+            <Link
+              href={`/account/scholarships/pledge?${new URLSearchParams({ campaignId: campaign.id })}`}
+            />
+          }
           nativeButton={false}
           variant="outline"
         >
@@ -626,7 +688,7 @@ export const PopularList = ({ posts }: { posts: LandingPopularPost[] }) => {
           key={post.id}
           className="group relative flex items-start gap-4 border-b border-border-strong py-3.5 first:pt-3 last:border-b-0"
         >
-          <span className="w-6 shrink-0 font-serif text-3xl leading-none text-muted-foreground/50">
+          <span className="w-6 shrink-0 text-3xl font-semibold leading-none text-primary/40">
             {index + 1}
           </span>
           <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -701,7 +763,7 @@ const JOIN_ROLES = [
     number: "03",
     title: "Doanh nghiệp",
     description:
-      "Tạo hồ sơ công ty, đăng tin tuyển dụng và tài trợ học bổng. Tin được Khoa duyệt trước khi hiển thị.",
+      "Tạo hồ sơ công ty, đăng tin tuyển dụng và tài trợ học bổng. Tin được kiểm duyệt trước khi hiển thị.",
     href: "/register?role=employer",
     cta: "Đăng ký doanh nghiệp",
   },
@@ -717,7 +779,7 @@ export const JoinBand = () => {
           className="group flex flex-col gap-5 rounded-xl border border-border bg-card p-6 transition-colors hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:p-7"
         >
           <div className="flex items-center justify-between">
-            <span className="font-mono text-xs text-muted-foreground">
+            <span className="font-mono text-xs text-primary">
               {role.number} / THAM GIA
             </span>
             <span
@@ -728,14 +790,14 @@ export const JoinBand = () => {
             </span>
           </div>
           <div className="flex flex-col gap-1.5">
-            <h3 className="font-serif text-2xl font-medium tracking-tight text-foreground">
+            <h3 className="text-xl font-semibold tracking-tight text-foreground">
               {role.title}
             </h3>
             <p className="text-sm leading-relaxed text-muted-foreground">
               {role.description}
             </p>
           </div>
-          <span className="mt-auto border-t border-border pt-4 text-sm font-medium text-foreground">
+          <span className="mt-auto border-t border-border pt-4 text-sm font-semibold text-primary">
             {role.cta}
           </span>
         </Link>

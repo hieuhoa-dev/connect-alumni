@@ -28,7 +28,7 @@ const FacultyDashboardPage = async () => {
       {/* Page Title */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Bảng điều khiển Quản trị & Thống kê Khoa
+          Bảng điều khiển Quản trị & Thống kê cộng đồng
         </h1>
         <p className="text-xs text-muted-foreground mt-1">
           Báo cáo thời gian thực về việc làm, hoạt động cựu sinh viên, mạng lưới
@@ -145,52 +145,54 @@ const FacultyDashboardPage = async () => {
         />
       </div>
 
-      {/* Audit Log Stream Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <ScrollText className="h-4 w-4 text-muted-foreground" />
-            Nhật ký kiểm toán hệ thống gần đây (Audit Log)
-          </h2>
+      {/* Audit logs follow the same admin-only policy as their full history. */}
+      {data.canViewAuditLogs && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <ScrollText className="h-4 w-4 text-muted-foreground" />
+              Nhật ký kiểm toán hệ thống gần đây (Audit Log)
+            </h2>
 
-          <Link
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-            href="/faculty-admin/audit-logs"
-          >
-            Xem toàn bộ lịch sử
-          </Link>
-        </div>
+            <Link
+              className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+              href="/faculty-admin/audit-logs"
+            >
+              Xem toàn bộ lịch sử
+            </Link>
+          </div>
 
-        <Card className="shadow-sm">
-          <div className="divide-y divide-border text-xs">
-            {data.recentLogs.slice(0, 8).map((log) => (
-              <div
-                key={log.id}
-                className="p-3 flex items-center justify-between gap-4"
-              >
-                <div className="flex items-center gap-3">
-                  <Badge
-                    variant="outline"
-                    className="font-mono text-[10px] uppercase"
-                  >
-                    {log.action}
-                  </Badge>
-                  <span className="font-medium text-foreground">
-                    {log.actor?.profile?.fullName || log.actor?.name}
-                  </span>
-                  <span className="text-muted-foreground text-[11px]">
-                    thao tác trên {log.entityType} ({log.entityId.slice(0, 8)}
-                    ...)
+          <Card className="shadow-sm">
+            <div className="divide-y divide-border text-xs">
+              {data.recentLogs.slice(0, 8).map((log) => (
+                <div
+                  key={log.id}
+                  className="p-3 flex items-center justify-between gap-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <Badge
+                      variant="outline"
+                      className="font-mono text-[10px] uppercase"
+                    >
+                      {log.action}
+                    </Badge>
+                    <span className="font-medium text-foreground">
+                      {log.actor?.profile?.fullName || log.actor?.name}
+                    </span>
+                    <span className="text-muted-foreground text-[11px]">
+                      thao tác trên {log.entityType} ({log.entityId.slice(0, 8)}
+                      ...)
+                    </span>
+                  </div>
+                  <span className="text-muted-foreground text-[11px] shrink-0">
+                    {new Date(log.createdAt).toLocaleString("vi-VN")}
                   </span>
                 </div>
-                <span className="text-muted-foreground text-[11px] shrink-0">
-                  {new Date(log.createdAt).toLocaleString("vi-VN")}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
