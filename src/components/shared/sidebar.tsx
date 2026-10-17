@@ -44,6 +44,7 @@ import {
   type NotificationItem,
 } from "@/components/shared/notifications-popover";
 import { CompanySwitcher } from "@/components/shared/company-switcher";
+import { DLULogo } from "@/components/shared/dlu-logo";
 import { cn } from "@/lib/utils";
 
 export interface NavItem {
@@ -115,7 +116,12 @@ const SidebarInner = ({
   const { toggleSidebar } = useAnimatedSidebar();
 
   const handleSignOut = async () => {
-    await authClient.signOut();
+    try {
+      await fetch("/api/auth/demo-logout", { method: "POST" });
+    } catch (e) {}
+    try {
+      await authClient.signOut();
+    } catch (e) {}
     router.push("/login");
     router.refresh();
   };
@@ -305,16 +311,10 @@ const SidebarInner = ({
             <button
               type="button"
               onClick={toggleSidebar}
-              className="grid size-8 shrink-0 place-items-center rounded-lg bg-foreground text-background outline-none transition-transform hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring"
+              className="grid size-8 shrink-0 place-items-center rounded-full outline-none transition-transform hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-ring"
               title="Đổi chế độ thu gọn / mở rộng (⌘B)"
             >
-              {role === "admin" || role === "faculty_staff" ? (
-                <ShieldCheck aria-hidden="true" className="size-4" />
-              ) : role === "employer" ? (
-                <Building2 aria-hidden="true" className="size-4" />
-              ) : (
-                <GraduationCap aria-hidden="true" className="size-4" />
-              )}
+              <DLULogo size={32} />
             </button>
 
             <div className="flex min-w-0 flex-1 flex-col group-data-[state=collapsed]/sidebar:hidden">

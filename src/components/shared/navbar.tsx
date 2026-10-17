@@ -31,7 +31,27 @@ export const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
+  const [demoUser, setDemoUser] = React.useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    fetch("/api/auth/current-user")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.user) {
+          setDemoUser({
+            user: data.user,
+            profile: data.profile,
+            role: data.role,
+          });
+        } else {
+          setDemoUser(null);
+        }
+      })
+      .catch(() => setDemoUser(null));
+  }, [pathname]);
+
+  const activeUser = session?.user || demoUser?.user;
 
   const navLinks = [
     { href: "/", label: "Trang chủ", icon: null },
@@ -42,13 +62,26 @@ export const Navbar = () => {
   ];
 
   const handleSignOut = async () => {
-    await authClient.signOut();
+    try {
+      await fetch("/api/auth/demo-logout", { method: "POST" });
+    } catch (e) {}
+    try {
+      await authClient.signOut();
+    } catch (e) {}
+    setDemoUser(null);
     router.push("/login");
     router.refresh();
   };
 
   const getDashboardHref = () => {
-    return "/dashboard";
+    const role = demoUser?.role || "student";
+    if (role === "admin" || role === "faculty_staff") {
+      return "/faculty-admin/dashboard";
+    }
+    if (role === "employer") {
+      return "/employer/dashboard";
+    }
+    return "/student/dashboard";
   };
 
   return (
@@ -96,9 +129,7 @@ export const Navbar = () => {
 
         {/* Right Auth Section */}
         <div className="hidden md:flex items-center gap-3">
-          {isPending ? (
-            <div className="h-8 w-20 animate-pulse rounded-md bg-muted" />
-          ) : session?.user ? (
+          {activeUser ? (
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
@@ -109,13 +140,13 @@ export const Navbar = () => {
                 }
               >
                 <Avatar className="h-8 w-8 border border-[#1E4D2B]/20">
-                  <AvatarImage src={session.user.image || undefined} />
+                  <AvatarImage src={activeUser.image || undefined} />
                   <AvatarFallback className="bg-[#1E4D2B]/10 text-[#1E4D2B] font-semibold text-xs">
-                    {session.user.name?.slice(0, 2).toUpperCase() || "DLU"}
+                    {activeUser.name?.slice(0, 2).toUpperCase() || "DLU"}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-sm font-medium max-w-[120px] truncate text-foreground pr-1">
-                  {session.user.name}
+                <span className="text-sm font-medium max-w-[140px] truncate text-foreground pr-1">
+                  {activeUser.name}
                 </span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -123,10 +154,10 @@ export const Navbar = () => {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-semibold leading-none text-foreground">
-                        {session.user.name}
+                        {activeUser.name}
                       </p>
                       <p className="text-xs leading-none text-muted-foreground truncate">
-                        {session.user.email}
+                        {activeUser.email}
                       </p>
                     </div>
                   </DropdownMenuLabel>
@@ -149,6 +180,8 @@ export const Navbar = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+          ) : isPending ? (
+            <div className="h-8 w-20 animate-pulse rounded-md bg-muted" />
           ) : (
             <div className="flex items-center gap-2">
               <Link
@@ -204,7 +237,7 @@ export const Navbar = () => {
             </Link>
           ))}
           <div className="pt-2 border-t border-border flex flex-col gap-2">
-            {session?.user ? (
+            {activeUser ? (
               <>
                 <Link
                   href={getDashboardHref()}
@@ -212,7 +245,7 @@ export const Navbar = () => {
                   className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-[#1E4D2B]/10 text-[#1E4D2B]"
                 >
                   <LayoutDashboard className="h-4 w-4" />
-                  Trang điều khiển ({session.user.name})
+                  Trang điều khiển ({activeUser.name})
                 </Link>
                 <Button
                   variant="outline"
