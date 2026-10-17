@@ -14,6 +14,7 @@ import {
   Globe,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { JobApplyModal } from "@/components/jobs/job-apply-modal";
 
 interface JobDetailPageProps {
   params: Promise<{ id: string }>;
@@ -106,9 +107,23 @@ const JobDetailPage = async ({ params }: JobDetailPageProps) => {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-foreground/90 whitespace-pre-line leading-relaxed">
-              {job.requirements}
+              {job.requirements || "Tốt nghiệp hoặc sinh viên năm cuối Trường Đại học Đà Lạt."}
             </CardContent>
           </Card>
+
+          {/* Benefits */}
+          {job.benefits && (
+            <Card className="border border-border/80">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold">
+                  Quyền lợi & Đãi ngộ
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-foreground/90 whitespace-pre-line leading-relaxed">
+                {job.benefits}
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Sidebar Info (1 col) */}
@@ -137,29 +152,17 @@ const JobDetailPage = async ({ params }: JobDetailPageProps) => {
                   Phương thức ứng tuyển:
                 </span>
                 <p className="font-mono text-xs break-all bg-muted/60 p-2.5 rounded-lg border border-border/70">
-                  {job.applyUrlOrEmail}
+                  {job.applyUrlOrEmail || "tuyendung@dlu-partner.vn"}
                 </p>
               </div>
 
               {!isExpired && (
-                <Button
-                  render={
-                    <a
-                      href={
-                        job.applyUrlOrEmail.includes("@")
-                          ? `mailto:${job.applyUrlOrEmail}?subject=Ung tuyen ${encodeURIComponent(job.title)}`
-                          : job.applyUrlOrEmail
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    />
-                  }
-                  nativeButton={false}
-                  className="w-full font-medium"
-                >
-                  Nộp đơn ứng tuyển ngay
-                  <ExternalLink data-icon="inline-end" />
-                </Button>
+                <JobApplyModal
+                  jobId={job.id}
+                  jobTitle={job.title}
+                  companyName={job.company?.name}
+                  applyContact={job.applyUrlOrEmail || "tuyendung@dlu-partner.vn"}
+                />
               )}
             </CardContent>
           </Card>

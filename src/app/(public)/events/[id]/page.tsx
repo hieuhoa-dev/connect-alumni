@@ -35,10 +35,10 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
   }
 
   const isRegistered = currentUser?.user
-    ? event.registrations.some((r) => r.userId === currentUser.user.id)
+    ? (event.registrations || []).some((r: any) => r.userId === currentUser.user.id)
     : false;
 
-  const isPassed = new Date(event.endTime) < new Date();
+  const isPassed = event.endTime ? new Date(event.endTime) < new Date() : false;
 
   return (
     <div className="container mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">

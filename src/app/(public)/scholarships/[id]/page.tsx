@@ -47,8 +47,8 @@ const ScholarshipDetailPage = async ({
   const percent = Math.min(100, Math.round((current / (target || 1)) * 100));
   const isExpired = new Date(campaign.applicationDeadline) < new Date();
 
-  const fulfilledPledges = campaign.pledges.filter(
-    (p) => p.status === "fulfilled",
+  const fulfilledPledges = (campaign.pledges || []).filter(
+    (p: any) => p.status === "fulfilled" || p.status === "confirmed",
   );
 
   return (
