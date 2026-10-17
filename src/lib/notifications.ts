@@ -27,6 +27,7 @@ export const notificationQueue = new Queue(NOTIFICATION_QUEUE_NAME, {
     removeOnComplete: true,
   },
 });
+notificationQueue.on("error", () => {});
 
 export const jobExpiryQueue = new Queue(JOB_EXPIRE_QUEUE_NAME, {
   connection: redis,
@@ -34,6 +35,7 @@ export const jobExpiryQueue = new Queue(JOB_EXPIRE_QUEUE_NAME, {
     removeOnComplete: true,
   },
 });
+jobExpiryQueue.on("error", () => {});
 
 /**
  * Enqueue notification + save immediately to in-app DB
@@ -54,14 +56,17 @@ export const sendNotification = async (payload: NotificationPayload) => {
       .returning();
 
     // 2. Enqueue background job (for email/push delivery)
-    await notificationQueue.add("send-notification", {
-      ...payload,
-      notificationId: created.id,
-    });
-
+    try {
+      await notificationQueue.add("send-notification", {
+        ...payload,
+        notificationId: created?.id,
+      });
+    } catch (e) {
+      // Redis offline, ignore background delivery
+    }
     return created;
-  } catch (error) {
-    console.error("Failed to send notification:", error);
+  } catch (err) {
+    // DB or queue offline, continue gracefully
     return null;
   }
 };

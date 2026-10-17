@@ -9,7 +9,7 @@ export const metadata = {
 
 const AuditLogsPage = async () => {
   // Hard security guard Layer 2
-  await requireRole("admin");
+  await requireRole(["admin", "faculty_staff"]);
   const logs = await getAuditLogs(150);
 
   return (

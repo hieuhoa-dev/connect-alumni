@@ -184,7 +184,7 @@ const FacultyDashboardPage = async () => {
                     {log.actor?.profile?.fullName || log.actor?.name}
                   </span>
                   <span className="text-muted-foreground text-[11px]">
-                    thao tác trên {log.entityType} ({log.entityId.slice(0, 8)}
+                    thao tác trên {log.entityType} ({log.entityId ? log.entityId.slice(0, 8) : "—"}
                     ...)
                   </span>
                 </div>

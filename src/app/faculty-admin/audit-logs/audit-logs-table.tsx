@@ -119,7 +119,7 @@ export const AuditLogsTable = ({ initialData }: AuditLogsTableProps) => {
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <span className="px-1.5 py-0.5 rounded bg-muted text-[11px] text-muted-foreground">
-                          {log.entityType} #{log.entityId.slice(0, 8)}...
+                          {log.entityType} #{log.entityId ? log.entityId.slice(0, 8) : "—"}...
                         </span>
                       </td>
                       <td className="px-4 py-3 max-w-xs truncate text-[11px] text-muted-foreground">

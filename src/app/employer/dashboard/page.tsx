@@ -34,7 +34,9 @@ const EmployerDashboardPage = async () => {
   const approvedJobs = jobs.filter((j) => j.status === "approved").length;
   const expiredJobs = jobs.filter((j) => j.status === "expired").length;
 
-  const isNotVerified = activeCompany.verificationStatus !== "verified";
+  const isNotVerified = activeCompany
+    ? activeCompany.verificationStatus !== "verified"
+    : true;
   return (
     <div className="space-y-8">
       {/* Top Banner */}

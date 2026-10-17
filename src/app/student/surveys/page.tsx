@@ -54,7 +54,7 @@ const SurveysPage = async () => {
           </Card>
         ) : (
           forms.map((f) => {
-            const hasSubmitted = f.responses.length > 0;
+            const hasSubmitted = (f.responses || []).length > 0;
             const isDeadlinePassed = f.deadline
               ? new Date(f.deadline) < new Date()
               : false;

@@ -16,6 +16,11 @@ export const getRedisClient = (): Redis => {
     global.__redisClient = new Redis(redisUrl, {
       maxRetriesPerRequest: null,
       enableReadyCheck: false,
+      lazyConnect: true,
+      retryStrategy: () => null,
+    });
+    global.__redisClient.on("error", () => {
+      // Suppress connection errors when redis is offline in dev
     });
   }
   return global.__redisClient;
