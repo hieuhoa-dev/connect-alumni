@@ -6,6 +6,7 @@ import {
   getScholarshipCampaigns,
   getAllApplicationsForReview,
   applyForScholarship,
+  submitScholarshipApplication,
   reviewScholarshipApplication,
   createDonationPledge,
   confirmFulfillPledge,
@@ -52,11 +53,15 @@ export const useApplyScholarship = () => {
   return useMutation({
     mutationFn: ({
       campaignId,
-      formResponseId,
+      answers,
     }: {
       campaignId: string;
-      formResponseId?: string;
-    }) => applyForScholarship(campaignId, formResponseId),
+      answers?: Array<{
+        questionId: string;
+        answerValue?: any;
+        fileUrl?: string;
+      }>;
+    }) => submitScholarshipApplication({ campaignId, answers }),
     onSuccess: () => {
       toast.add({
         type: "success",

@@ -7,11 +7,17 @@ import {
   NOTIFICATION_QUEUE_NAME,
   JOB_EXPIRE_QUEUE_NAME,
   NotificationPayload,
+  scheduleJobExpiryCheck,
 } from "../lib/notifications";
 
 const connection = getRedisClient();
 
 console.log("🚀 Starting Alumni Notification & Background Worker...");
+
+// Initialize repeatable job schedule
+scheduleJobExpiryCheck()
+  .then(() => console.log("✅ Scheduled recurring job post expiry check."))
+  .catch((err) => console.error("❌ Failed to schedule recurring job expiry:", err));
 
 // 1. Notification Worker
 const notificationWorker = new Worker(

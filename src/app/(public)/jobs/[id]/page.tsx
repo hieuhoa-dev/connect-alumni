@@ -112,7 +112,7 @@ const JobDetailPage = async ({ params }: JobDetailPageProps) => {
           </Card>
 
           {/* Benefits */}
-          {job.benefits && (
+          {(job as any).benefits && (
             <Card className="border border-border/80">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base font-semibold">
@@ -120,7 +120,7 @@ const JobDetailPage = async ({ params }: JobDetailPageProps) => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-foreground/90 whitespace-pre-line leading-relaxed">
-                {job.benefits}
+                {(job as any).benefits}
               </CardContent>
             </Card>
           )}

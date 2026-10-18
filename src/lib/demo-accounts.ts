@@ -95,6 +95,13 @@ export const getDemoAccount = (email: string): DemoUser | null => {
 
 export const DEMO_COOKIE_NAME = "dlu_demo_user";
 
+export const isDemoEnabled = (): boolean => {
+  return (
+    process.env.ENABLE_DEMO_LOGIN === "true" &&
+    process.env.NODE_ENV !== "production"
+  );
+};
+
 export const sampleDemoNotifications = [
   {
     id: "notif-1",

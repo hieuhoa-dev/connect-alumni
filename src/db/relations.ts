@@ -24,6 +24,13 @@ export const relations = defineRelations(schema, (r) => ({
     pledgesCreated: r.many.donationPledges({ alias: "pledge_creator" }),
     notifications: r.many.notifications(),
     auditLogs: r.many.auditLogs(),
+    workExperiences: r.many.workExperiences(),
+    profileRevisions: r.many.profileRevisions({ alias: "profile_owner" }),
+    profileChangesMade: r.many.profileRevisions({ alias: "profile_changer" }),
+    sentConnections: r.many.alumniConnections({ alias: "sent_connections" }),
+    receivedConnections: r.many.alumniConnections({
+      alias: "received_connections",
+    }),
   },
   session: {
     user: r.one.user({ from: r.session.userId, to: r.user.id }),
@@ -33,6 +40,33 @@ export const relations = defineRelations(schema, (r) => ({
   },
   profiles: {
     user: r.one.user({ from: r.profiles.userId, to: r.user.id }),
+  },
+  workExperiences: {
+    user: r.one.user({ from: r.workExperiences.userId, to: r.user.id }),
+  },
+  profileRevisions: {
+    user: r.one.user({
+      from: r.profileRevisions.userId,
+      to: r.user.id,
+      alias: "profile_owner",
+    }),
+    changer: r.one.user({
+      from: r.profileRevisions.changedBy,
+      to: r.user.id,
+      alias: "profile_changer",
+    }),
+  },
+  alumniConnections: {
+    requester: r.one.user({
+      from: r.alumniConnections.requesterId,
+      to: r.user.id,
+      alias: "sent_connections",
+    }),
+    receiver: r.one.user({
+      from: r.alumniConnections.receiverId,
+      to: r.user.id,
+      alias: "received_connections",
+    }),
   },
 
   // ─── Companies & Members ───────────────────────────────────────────────────

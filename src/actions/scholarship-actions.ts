@@ -1,143 +1,97 @@
 "use server";
 
-import { eq, sql } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { db } from "@/db";
 import {
   scholarshipCampaigns,
   donationPledges,
   scholarshipApplications,
+  formResponses,
+  formAnswers,
+  formQuestions,
 } from "@/db/schema";
 import { getCurrentUser, requireRole } from "@/lib/permissions";
 import {
   campaignCreateSchema,
   donationPledgeSchema,
+  pledgeDonationSchema,
+  recordDonationOnBehalfSchema,
   scholarshipApplicationReviewSchema,
   CampaignCreateInput,
   DonationPledgeInput,
+  PledgeDonationInput,
+  RecordDonationOnBehalfInput,
   ScholarshipApplicationReviewInput,
 } from "@/validators/scholarship-schema";
 import { logAuditEvent } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications";
+import {
+  NotFoundError,
+  InvalidStateError,
+  ForbiddenError,
+  ConflictError,
+  ValidationError,
+  UnauthorizedError,
+} from "@/lib/errors";
+import { validateStateTransition } from "@/lib/state-machine";
 
-import { sampleDLUScholarships } from "@/lib/dlu-sample-data";
 
 /**
  * Public: Get active scholarship campaigns
  */
 export const getScholarshipCampaigns = async () => {
-  try {
-    const campaigns = await db.query.scholarshipCampaigns.findMany({
-      where: {
-        status: "open",
-      },
-      with: {
-        pledges: true,
-        applications: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+  const campaigns = await db.query.scholarshipCampaigns.findMany({
+    where: {
+      status: "open",
+    },
+    with: {
+      pledges: true,
+      applications: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
-    if (campaigns && campaigns.length > 0) return campaigns;
-  } catch (err) {
-    // Database offline
-  }
-
-  return sampleDLUScholarships.map((s) => ({
-    id: s.id,
-    title: s.title,
-    description: s.description,
-    targetAmount: s.targetAmount.toString(),
-    currentAmount: s.currentAmount.toString(),
-    status: "open" as const,
-    deadline: new Date(s.deadline),
-    applicationDeadline: new Date(s.applicationDeadline),
-    applicationFormId: null,
-    creatorId: "staff-dlu-id",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    pledges: s.pledges || [],
-    applications: s.applications || [],
-  }));
+  return campaigns || [];
 };
 
 /**
  * Get campaign by ID
  */
 export const getCampaignById = async (id: string) => {
-  try {
-    const campaign = await db.query.scholarshipCampaigns.findFirst({
-      where: {
-        id: id,
-      },
-      with: {
-        applicationForm: {
-          with: {
-            questions: {
-              orderBy: {
-                orderIndex: "asc",
-              },
-            },
-          },
-        },
-        pledges: {
-          orderBy: {
-            createdAt: "desc",
-          },
-        },
-        applications: {
-          with: {
-            student: {
-              with: {
-                profile: true,
-              },
+  const campaign = await db.query.scholarshipCampaigns.findFirst({
+    where: {
+      id: id,
+    },
+    with: {
+      applicationForm: {
+        with: {
+          questions: {
+            orderBy: {
+              orderIndex: "asc",
             },
           },
         },
       },
-    });
+      pledges: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
+      applications: {
+        with: {
+          student: {
+            with: {
+              profile: true,
+            },
+          },
+        },
+      },
+    },
+  });
 
-    if (campaign) return campaign;
-  } catch (err) {
-    // Database offline
-  }
-
-  const sample = sampleDLUScholarships.find((s) => s.id === id);
-  if (sample) {
-    return {
-      id: sample.id,
-      title: sample.title,
-      description: sample.description,
-      targetAmount: sample.targetAmount.toString(),
-      currentAmount: sample.currentAmount.toString(),
-      status: "open" as const,
-      deadline: new Date(sample.deadline),
-      applicationDeadline: new Date(sample.applicationDeadline),
-      applicationFormId: null,
-      creatorId: "staff-dlu-id",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      applicationForm: null,
-      pledges: (sample.pledges || []).map((_, i) => ({
-        id: `pledge-${i}`,
-        amount: "5000000",
-        donorName: "Cựu SV Doanh nhân DLU",
-        isAnonymous: false,
-        message: "Chúc các em sinh viên DLU luôn giữ vững ngọn lửa hiếu học!",
-        status: "confirmed" as const,
-        createdAt: new Date(),
-      })),
-      applications: (sample.applications || []).map((_, i) => ({
-        id: `app-${i}`,
-        studentId: `student-${i}`,
-        status: "pending" as const,
-        submittedAt: new Date(),
-      })),
-    };
-  }
-
-  return null;
+  return campaign || null;
 };
 
 /**
@@ -176,28 +130,103 @@ export const createScholarshipCampaign = async (input: CampaignCreateInput) => {
 };
 
 /**
- * Donor or Faculty: Pledge or record a donation
+ * Task 1.9: Authenticated user pledges donation for themselves
  */
-export const createDonationPledge = async (input: DonationPledgeInput) => {
+export const pledgeDonation = async (input: PledgeDonationInput) => {
   const current = await getCurrentUser();
-  if (!current?.user) {
-    throw new Error("Vui lòng đăng nhập để cam kết tài trợ hoặc nhập ghi nhận");
+  if (!current?.user || !current?.profile) {
+    throw new UnauthorizedError(
+      "Vui lòng đăng nhập để thực hiện cam kết tài trợ",
+    );
   }
 
-  const validated = donationPledgeSchema.parse(input);
+  if (current.profile.status !== "active") {
+    throw new ForbiddenError(
+      "Tài khoản của bạn hiện không thể thực hiện cam kết tài trợ",
+    );
+  }
 
-  const isStaff = current.role === "faculty_staff" || current.role === "admin";
-  // If staff is entering on behalf of external donor, donorId can be null
-  const donorId =
-    isStaff && input.donorDisplayName !== current.profile?.fullName
-      ? null
-      : current.user.id;
+  const validated = pledgeDonationSchema.parse(input);
+
+  const campaign = await db.query.scholarshipCampaigns.findFirst({
+    where: {
+      id: validated.campaignId,
+    },
+  });
+
+  if (!campaign) {
+    throw new NotFoundError("Không tìm thấy chiến dịch học bổng");
+  }
+
+  if (campaign.status !== "open") {
+    throw new InvalidStateError(
+      "Chiến dịch học bổng đã kết thúc nhận cam kết tài trợ",
+    );
+  }
+
+  const donorDisplayName =
+    current.profile.fullName || current.user.name || "Cựu sinh viên / Nhà hảo tâm";
 
   const [pledge] = await db
     .insert(donationPledges)
     .values({
       campaignId: validated.campaignId,
-      donorId,
+      donorId: current.user.id,
+      donorDisplayName,
+      isAnonymous: validated.isAnonymous,
+      amount: validated.amount.toString(),
+      status: "pledged",
+      note: validated.note || null,
+      createdBy: current.user.id,
+    })
+    .returning();
+
+  await logAuditEvent({
+    actorId: current.user.id,
+    action: "pledge_donation",
+    entityType: "donation_pledge",
+    entityId: pledge.id,
+    metadata: {
+      campaignId: validated.campaignId,
+      amount: validated.amount,
+      isAnonymous: validated.isAnonymous,
+    },
+  });
+
+  return pledge;
+};
+
+/**
+ * Task 1.9: Faculty/Admin records donation on behalf of external donors
+ */
+export const recordDonationOnBehalf = async (
+  input: RecordDonationOnBehalfInput,
+) => {
+  const current = await requireRole(["faculty_staff", "admin"]);
+
+  const validated = recordDonationOnBehalfSchema.parse(input);
+
+  const campaign = await db.query.scholarshipCampaigns.findFirst({
+    where: {
+      id: validated.campaignId,
+    },
+  });
+
+  if (!campaign) {
+    throw new NotFoundError("Không tìm thấy chiến dịch học bổng");
+  }
+
+  if (campaign.status !== "open") {
+    throw new InvalidStateError(
+      "Chiến dịch học bổng đã kết thúc nhận cam kết tài trợ",
+    );
+  }
+
+  const [pledge] = await db
+    .insert(donationPledges)
+    .values({
+      campaignId: validated.campaignId,
+      donorId: null, // External donor
       donorDisplayName: validated.donorDisplayName,
       isAnonymous: validated.isAnonymous,
       amount: validated.amount.toString(),
@@ -209,17 +238,52 @@ export const createDonationPledge = async (input: DonationPledgeInput) => {
 
   await logAuditEvent({
     actorId: current.user.id,
-    action: "create_donation_pledge",
+    action: "record_donation_on_behalf",
     entityType: "donation_pledge",
     entityId: pledge.id,
     metadata: {
       campaignId: validated.campaignId,
       amount: validated.amount,
       donorDisplayName: validated.donorDisplayName,
+      isAnonymous: validated.isAnonymous,
     },
   });
 
   return pledge;
+};
+
+/**
+ * Backward compatibility wrapper for createDonationPledge
+ */
+export const createDonationPledge = async (input: DonationPledgeInput) => {
+  const current = await getCurrentUser();
+  if (!current?.user) {
+    throw new UnauthorizedError(
+      "Vui lòng đăng nhập để cam kết tài trợ hoặc nhập ghi nhận",
+    );
+  }
+
+  const isStaff = current.role === "faculty_staff" || current.role === "admin";
+  if (
+    isStaff &&
+    input.donorDisplayName &&
+    input.donorDisplayName !== current.profile?.fullName
+  ) {
+    return recordDonationOnBehalf({
+      campaignId: input.campaignId,
+      donorDisplayName: input.donorDisplayName,
+      amount: input.amount,
+      isAnonymous: input.isAnonymous ?? false,
+      note: input.note,
+    });
+  }
+
+  return pledgeDonation({
+    campaignId: input.campaignId,
+    amount: input.amount,
+    isAnonymous: input.isAnonymous ?? false,
+    note: input.note,
+  });
 };
 
 /**
@@ -230,35 +294,30 @@ export const createDonationPledge = async (input: DonationPledgeInput) => {
 export const confirmFulfillPledge = async (pledgeId: string) => {
   const current = await requireRole(["faculty_staff", "admin"]);
 
-  // Pre-fetch và validate ngoài transaction để giảm thời gian giữ lock
-  const pledge = await db.query.donationPledges.findFirst({
-    where: {
-      id: pledgeId,
-    },
-  });
-  if (!pledge) {
-    throw new Error("Không tìm thấy cam kết tài trợ");
-  }
-  if (pledge.status !== "pledged") {
-    throw new Error(
-      `Cam kết đang ở trạng thái "${pledge.status}", không thể xác nhận nhận tiền.`,
-    );
-  }
-
-  // Transaction chỉ bao gồm 2 UPDATE nguyên tử — không có side effects
   const updatedPledge = await db.transaction(async (tx) => {
     const [updated] = await tx
       .update(donationPledges)
       .set({ status: "fulfilled" })
-      .where(eq(donationPledges.id, pledgeId))
+      .where(
+        and(
+          eq(donationPledges.id, pledgeId),
+          eq(donationPledges.status, "pledged"),
+        ),
+      )
       .returning();
+
+    if (!updated) {
+      throw new Error(
+        "Cam kết tài trợ không tồn tại hoặc đã được xử lý từ trước.",
+      );
+    }
 
     await tx
       .update(scholarshipCampaigns)
       .set({
-        currentAmount: sql`${scholarshipCampaigns.currentAmount} + ${pledge.amount}`,
+        currentAmount: sql`${scholarshipCampaigns.currentAmount} + ${updated.amount}`,
       })
-      .where(eq(scholarshipCampaigns.id, pledge.campaignId));
+      .where(eq(scholarshipCampaigns.id, updated.campaignId));
 
     return updated;
   });
@@ -268,16 +327,19 @@ export const confirmFulfillPledge = async (pledgeId: string) => {
     actorId: current.user.id,
     action: "fulfill_donation_pledge",
     entityType: "donation_pledge",
-    entityId: pledge.id,
-    metadata: { amount: pledge.amount, campaignId: pledge.campaignId },
+    entityId: updatedPledge.id,
+    metadata: {
+      amount: updatedPledge.amount,
+      campaignId: updatedPledge.campaignId,
+    },
   });
 
-  if (pledge.donorId) {
+  if (updatedPledge.donorId) {
     await sendNotification({
-      userId: pledge.donorId,
+      userId: updatedPledge.donorId,
       type: "donation_fulfilled",
       title: "Xác nhận nhận tiền tài trợ Quỹ Khuyến học",
-      body: `Khoa đã nhận được số tiền ${Number(pledge.amount).toLocaleString("vi-VN")} VNĐ từ bạn. Trân trọng cảm ơn tấm lòng hảo tâm!`,
+      body: `Khoa đã nhận được số tiền ${Number(updatedPledge.amount).toLocaleString("vi-VN")} VNĐ từ bạn. Trân trọng cảm ơn tấm lòng hảo tâm!`,
       linkUrl: "/scholarships",
       sendEmail: true,
     });
@@ -292,103 +354,191 @@ export const confirmFulfillPledge = async (pledgeId: string) => {
 export const cancelPledge = async (pledgeId: string) => {
   const current = await requireRole(["faculty_staff", "admin"]);
 
-  const pledge = await db.query.donationPledges.findFirst({
-    where: {
-      id: pledgeId,
-    },
-  });
-
-  if (!pledge) throw new Error("Không tìm thấy cam kết");
-  if (pledge.status !== "pledged") {
-    throw new Error(
-      "Chỉ có thể hủy cam kết khi còn ở trạng thái đang cam kết (pledged).",
-    );
-  }
-
   const [updated] = await db
     .update(donationPledges)
     .set({ status: "cancelled" })
-    .where(eq(donationPledges.id, pledgeId))
+    .where(
+      and(
+        eq(donationPledges.id, pledgeId),
+        eq(donationPledges.status, "pledged"),
+      ),
+    )
     .returning();
+
+  if (!updated) {
+    throw new InvalidStateError(
+      "Không tìm thấy cam kết hoặc cam kết không ở trạng thái có thể hủy.",
+    );
+  }
+
+  await logAuditEvent({
+    actorId: current.user.id,
+    action: "cancel_donation_pledge",
+    entityType: "donation_pledge",
+    entityId: updated.id,
+    metadata: {
+      campaignId: updated.campaignId,
+      amount: updated.amount,
+    },
+  });
 
   return updated;
 };
 
 /**
- * Student: Apply for a scholarship
+ * Task 1.5: Submit scholarship application in an atomic transaction
+ * Validates active student status, campaign deadline, form questions, and inserts response + application
+ */
+export const submitScholarshipApplication = async (data: {
+  campaignId: string;
+  answers?: Array<{
+    questionId: string;
+    answerValue?: any;
+    fileUrl?: string;
+  }>;
+}) => {
+  const current = await requireRole(["student"]);
+  if (current.profile?.status !== "active") {
+    throw new ForbiddenError("Tài khoản của bạn hiện không thể nộp hồ sơ.");
+  }
+
+  const campaign = await db.query.scholarshipCampaigns.findFirst({
+    where: {
+      id: data.campaignId,
+    },
+  });
+
+  if (!campaign) {
+    throw new NotFoundError("Không tìm thấy chiến dịch học bổng");
+  }
+
+  if (campaign.status !== "open") {
+    throw new InvalidStateError(
+      "Chiến dịch học bổng đã đóng hoặc không hợp lệ để nộp hồ sơ.",
+    );
+  }
+
+  if (new Date() > new Date(campaign.applicationDeadline)) {
+    throw new InvalidStateError("Đã hết hạn nộp hồ sơ xin học bổng này.");
+  }
+
+  // Pre-check duplicate
+  const existing = await db.query.scholarshipApplications.findFirst({
+    where: {
+      campaignId: data.campaignId,
+      studentId: current.user.id,
+    },
+  });
+  if (existing) {
+    throw new ConflictError(
+      "Bạn đã nộp hồ sơ cho chiến dịch học bổng này rồi. Vui lòng chờ kết quả xét duyệt.",
+    );
+  }
+
+  try {
+    const application = await db.transaction(async (tx) => {
+      let formResponseId: string | null = null;
+
+      if (campaign.applicationFormId) {
+        const questions = await tx.query.formQuestions.findMany({
+          where: {
+            formId: campaign.applicationFormId,
+          },
+        });
+
+        const answerMap = new Map(
+          (data.answers || []).map((a) => [a.questionId, a]),
+        );
+
+        // Validate required questions
+        for (const q of questions) {
+          if (q.isRequired) {
+            const ans = answerMap.get(q.id);
+            const hasVal =
+              ans &&
+              ((ans.answerValue !== undefined &&
+                ans.answerValue !== null &&
+                ans.answerValue !== "") ||
+                ans.fileUrl);
+            if (!hasVal) {
+              throw new ValidationError(
+                `Vui lòng hoàn thành câu hỏi bắt buộc: "${q.label}"`,
+              );
+            }
+          }
+        }
+
+        const [resp] = await tx
+          .insert(formResponses)
+          .values({
+            formId: campaign.applicationFormId,
+            respondentId: current.user.id,
+          })
+          .returning();
+
+        formResponseId = resp.id;
+
+        if (data.answers && data.answers.length > 0) {
+          const validQuestionIds = new Set(questions.map((q) => q.id));
+          const answersToInsert = data.answers
+            .filter((a) => validQuestionIds.has(a.questionId))
+            .map((a) => ({
+              responseId: resp.id,
+              questionId: a.questionId,
+              answerValue: a.answerValue ?? null,
+              fileUrl: a.fileUrl ?? null,
+            }));
+
+          if (answersToInsert.length > 0) {
+            await tx.insert(formAnswers).values(answersToInsert);
+          }
+        }
+      }
+
+      const [newApp] = await tx
+        .insert(scholarshipApplications)
+        .values({
+          campaignId: data.campaignId,
+          studentId: current.user.id,
+          formResponseId,
+          status: "pending",
+        })
+        .returning();
+
+      return newApp;
+    });
+
+    await logAuditEvent({
+      actorId: current.user.id,
+      action: "submit_scholarship_application",
+      entityType: "scholarship_application",
+      entityId: application.id,
+      metadata: { campaignId: data.campaignId },
+    });
+
+    return application;
+  } catch (err: any) {
+    if (err.code === "23505" || err.message?.includes("unique")) {
+      throw new ConflictError(
+        "Bạn đã nộp hồ sơ cho chiến dịch học bổng này rồi.",
+      );
+    }
+    throw err;
+  }
+};
+
+/**
+ * Backward compatibility wrapper for applying
  */
 export const applyForScholarship = async (
   campaignId: string,
   formResponseId?: string,
 ) => {
-  const current = await requireRole(["student"]);
-
-  try {
-    const campaign = await db.query.scholarshipCampaigns.findFirst({
-      where: {
-        id: campaignId,
-      },
-    });
-
-    if (campaign) {
-      if (campaign.status !== "open") {
-        throw new Error("Chiến dịch học bổng đã đóng hoặc không hợp lệ");
-      }
-      if (new Date() > new Date(campaign.applicationDeadline)) {
-        throw new Error("Đã hết hạn nộp hồ sơ xin học bổng");
-      }
-
-      const existing = await db.query.scholarshipApplications.findFirst({
-        where: {
-          campaignId: campaignId,
-          studentId: current.user.id,
-        },
-      });
-      if (existing) {
-        throw new Error(
-          "Bạn đã nộp hồ sơ cho chiến dịch học bổng này rồi. Vui lòng chờ kết quả xét duyệt.",
-        );
-      }
-
-      const [application] = await db
-        .insert(scholarshipApplications)
-        .values({
-          campaignId,
-          studentId: current.user.id,
-          formResponseId: formResponseId || null,
-          status: "pending",
-        })
-        .returning();
-
-      await logAuditEvent({
-        actorId: current.user.id,
-        action: "submit_scholarship_application",
-        entityType: "scholarship_application",
-        entityId: application.id,
-        metadata: { campaignId },
-      });
-
-      return application;
-    }
-  } catch (err: any) {
-    if (err.message && err.message.includes("nộp hồ sơ")) {
-      throw err;
-    }
-    // Database offline, return mock application for smooth presentation
-  }
-
-  return {
-    id: `app-demo-${Date.now()}`,
-    campaignId,
-    studentId: current.user.id,
-    formResponseId: formResponseId || null,
-    status: "pending" as const,
-    submittedAt: new Date(),
-  };
+  return submitScholarshipApplication({ campaignId });
 };
 
 /**
- * Faculty/Admin: Review scholarship application with scoring
+ * Faculty/Admin: Review scholarship application with scoring and slot checking
  */
 export const reviewScholarshipApplication = async (
   applicationId: string,
@@ -396,6 +546,52 @@ export const reviewScholarshipApplication = async (
 ) => {
   const current = await requireRole(["faculty_staff", "admin"]);
   const validated = scholarshipApplicationReviewSchema.parse(input);
+
+  const existing = await db.query.scholarshipApplications.findFirst({
+    where: {
+      id: applicationId,
+    },
+  });
+
+  if (!existing) {
+    throw new NotFoundError("Không tìm thấy hồ sơ học bổng");
+  }
+
+  // Validate state transitions
+  validateStateTransition(
+    "scholarship_application",
+    existing.status,
+    validated.status,
+    current.role === "admin",
+  );
+
+  // If approving, enforce campaign slots if set
+  if (validated.status === "approved") {
+    const campaign = await db.query.scholarshipCampaigns.findFirst({
+      where: { id: existing.campaignId },
+    });
+
+    if (campaign?.slots && campaign.slots > 0) {
+      const approvedResult = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(scholarshipApplications)
+        .where(
+          and(
+            eq(scholarshipApplications.campaignId, existing.campaignId),
+            eq(scholarshipApplications.status, "approved"),
+          ),
+        );
+      const approvedCount = Number(approvedResult[0]?.count || 0);
+      if (approvedCount >= campaign.slots) {
+        throw new InvalidStateError(
+          `Chiến dịch đã đủ số lượng chỉ tiêu học bổng phê duyệt (${campaign.slots} suất).`,
+        );
+      }
+    }
+  }
+
+  const isFinalDecision =
+    validated.status === "approved" || validated.status === "rejected";
 
   const [updated] = await db
     .update(scholarshipApplications)
@@ -405,26 +601,47 @@ export const reviewScholarshipApplication = async (
         validated.score !== undefined && validated.score !== null
           ? validated.score.toString()
           : null,
+      awardedAmount:
+        validated.awardedAmount !== undefined && validated.awardedAmount !== null
+          ? validated.awardedAmount.toString()
+          : null,
       reviewNote: validated.reviewNote || null,
       reviewedBy: current.user.id,
-      decidedAt: new Date(),
+      decidedAt: isFinalDecision ? new Date() : null,
     })
-    .where(eq(scholarshipApplications.id, applicationId))
+    .where(
+      and(
+        eq(scholarshipApplications.id, applicationId),
+        eq(scholarshipApplications.status, existing.status),
+      ),
+    )
     .returning();
 
-  if (!updated) throw new Error("Không tìm thấy hồ sơ");
+  if (!updated) {
+    throw new InvalidStateError(
+      "Hồ sơ đã được cập nhật bởi một phiên xét duyệt khác. Vui lòng tải lại trang.",
+    );
+  }
 
-  // Notify student
+  // Notify student in Vietnamese
+  const statusLabels: Record<string, string> = {
+    approved: "Chúc mừng! Hồ sơ học bổng của bạn đã được PHÊ DUYỆT",
+    rejected: "Thông báo kết quả: Hồ sơ học bổng KHÔNG ĐƯỢC PHÊ DUYỆT",
+    reviewing: "Hồ sơ học bổng của bạn đang trong quá trình XEM XÉT",
+  };
+
+  const scoreText =
+    validated.score !== undefined && validated.score !== null
+      ? `${validated.score}/100`
+      : "Chưa chấm điểm";
+
   await sendNotification({
     userId: updated.studentId,
     type: "scholarship_application_reviewed",
-    title:
-      validated.status === "approved"
-        ? "Chúc mừng! Hồ sơ học bổng của bạn đã được phê duyệt"
-        : `Kết quả xét duyệt hồ sơ học bổng: ${validated.status}`,
+    title: statusLabels[validated.status] || "Cập nhật trạng thái hồ sơ học bổng",
     body:
       validated.status === "approved"
-        ? `Điểm đánh giá: ${validated.score || "Đạt"}. Ghi chú: ${validated.reviewNote || "Chúc mừng bạn!"}`
+        ? `Điểm đánh giá: ${scoreText}. ${validated.awardedAmount ? `Số tiền trao: ${Number(validated.awardedAmount).toLocaleString("vi-VN")} VNĐ. ` : ""}Ghi chú: ${validated.reviewNote || "Chúc mừng bạn!"}`
         : `Nhận xét: ${validated.reviewNote || "Chưa đạt điều kiện đợt này."}`,
     linkUrl: "/student/scholarships",
     sendEmail: true,
@@ -435,7 +652,11 @@ export const reviewScholarshipApplication = async (
     action: `review_scholarship_application_${validated.status}`,
     entityType: "scholarship_application",
     entityId: updated.id,
-    metadata: { score: validated.score, status: validated.status },
+    metadata: {
+      score: validated.score,
+      status: validated.status,
+      awardedAmount: validated.awardedAmount,
+    },
   });
 
   return updated;
@@ -501,45 +722,20 @@ export const getMyScholarshipApplications = async () => {
 export const getAllCampaignsForFaculty = async () => {
   await requireRole(["faculty_staff", "admin"]);
 
-  try {
-    const campaigns = await db.query.scholarshipCampaigns.findMany({
-      with: {
-        pledges: true,
-        applications: true,
-        creator: {
-          with: { profile: true },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-    if (campaigns && campaigns.length > 0) return campaigns;
-  } catch (err) {
-    // Database offline
-  }
-
-  return sampleDLUScholarships.map((s) => ({
-    id: s.id,
-    title: s.title,
-    description: s.description,
-    targetAmount: s.targetAmount.toString(),
-    currentAmount: s.currentAmount.toString(),
-    status: "open" as const,
-    deadline: new Date(s.deadline),
-    applicationDeadline: new Date(s.applicationDeadline),
-    applicationFormId: null,
-    createdBy: "staff-dlu-id",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    creator: {
-      profile: {
-        fullName: "Ban Quản lý Quỹ Khuyến học DLU",
+  const campaigns = await db.query.scholarshipCampaigns.findMany({
+    with: {
+      pledges: true,
+      applications: true,
+      creator: {
+        with: { profile: true },
       },
     },
-    pledges: s.pledges || [],
-    applications: s.applications || [],
-  }));
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return campaigns || [];
 };
 
 /**
@@ -548,98 +744,43 @@ export const getAllCampaignsForFaculty = async () => {
 export const getCampaignDetailsForFaculty = async (campaignId: string) => {
   await requireRole(["faculty_staff", "admin"]);
 
-  try {
-    const campaign = await db.query.scholarshipCampaigns.findFirst({
-      where: {
-        id: campaignId,
-      },
-      with: {
-        pledges: {
-          orderBy: {
-            createdAt: "desc",
-          },
-          with: {
-            donor: {
-              with: { profile: true },
-            },
-          },
+  const campaign = await db.query.scholarshipCampaigns.findFirst({
+    where: {
+      id: campaignId,
+    },
+    with: {
+      pledges: {
+        orderBy: {
+          createdAt: "desc",
         },
-        applications: {
-          with: {
-            student: {
-              with: { profile: true },
-            },
-            reviewer: {
-              with: { profile: true },
-            },
-            formResponse: {
-              with: {
-                answers: true,
-              },
-            },
-          },
-          orderBy: {
-            submittedAt: "desc",
+        with: {
+          donor: {
+            with: { profile: true },
           },
         },
       },
-    });
-    if (campaign) return campaign;
-  } catch (err) {
-    // Database offline
-  }
+      applications: {
+        with: {
+          student: {
+            with: { profile: true },
+          },
+          reviewer: {
+            with: { profile: true },
+          },
+          formResponse: {
+            with: {
+              answers: true,
+            },
+          },
+        },
+        orderBy: {
+          submittedAt: "desc",
+        },
+      },
+    },
+  });
 
-  const sample = sampleDLUScholarships.find((s) => s.id === campaignId) || sampleDLUScholarships[0];
-  return {
-    id: sample.id,
-    title: sample.title,
-    description: sample.description,
-    targetAmount: sample.targetAmount.toString(),
-    currentAmount: sample.currentAmount.toString(),
-    status: "open" as const,
-    deadline: new Date(sample.deadline),
-    applicationDeadline: new Date(sample.applicationDeadline),
-    applicationFormId: null,
-    createdBy: "staff-dlu-id",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    pledges: (sample.pledges || []).map((p, i) => ({
-      id: `pledge-${i}`,
-      amount: "5000000",
-      donorName: "Cựu SV Doanh nhân DLU",
-      isAnonymous: false,
-      message: "Chúc các em học tốt!",
-      status: "confirmed" as const,
-      createdAt: new Date(),
-      donor: {
-        profile: {
-          fullName: "Lê Hoàng Nam",
-        },
-      },
-    })),
-    applications: (sample.applications || []).map((a, i) => ({
-      id: `app-${i}`,
-      studentId: `student-${i}`,
-      status: "approved" as const,
-      score: "9.0",
-      reviewNote: "Học tập tốt, hoàn cảnh khó khăn cần tiếp sức.",
-      decidedAt: new Date(),
-      submittedAt: new Date(),
-      student: {
-        profile: {
-          fullName: "Nguyễn Tiến Hoa",
-          studentCode: "21110045",
-          faculty: "Công nghệ Thông tin",
-        },
-      },
-      reviewer: {
-        profile: {
-          fullName: "ThS. Trần Thị Giáo Vụ",
-        },
-      },
-      formResponse: null,
-    })),
-  };
+  return campaign || null;
 };
 
 /**
@@ -648,58 +789,26 @@ export const getCampaignDetailsForFaculty = async (campaignId: string) => {
 export const getAllApplicationsForReview = async (campaignId?: string) => {
   await requireRole(["faculty_staff", "admin"]);
 
-  try {
-    return await db.query.scholarshipApplications.findMany({
-      where: campaignId ? { campaignId: campaignId } : undefined,
-      with: {
-        campaign: true,
-        student: {
-          with: { profile: true },
-        },
-        reviewer: {
-          with: { profile: true },
-        },
-        formResponse: {
-          with: {
-            answers: true,
-          },
+  const applications = await db.query.scholarshipApplications.findMany({
+    where: campaignId ? { campaignId: campaignId } : undefined,
+    with: {
+      campaign: true,
+      student: {
+        with: { profile: true },
+      },
+      reviewer: {
+        with: { profile: true },
+      },
+      formResponse: {
+        with: {
+          answers: true,
         },
       },
-      orderBy: {
-        submittedAt: "desc",
-      },
-    });
-  } catch (err) {
-    return [
-      {
-        id: "app-rev-1",
-        campaignId: "dlu-sch-1",
-        studentId: "demo-user-student",
-        formResponseId: null,
-        status: "pending" as const,
-        score: null,
-        reviewedBy: null,
-        reviewNote: null,
-        decidedAt: null,
-        submittedAt: new Date(),
-        campaign: {
-          id: "dlu-sch-1",
-          title: "Quỹ Học Bổng DLU Vươn Xa 2026",
-          description: "Chương trình học bổng thường niên",
-          targetAmount: "500000000",
-          currentAmount: "385000000",
-        },
-        student: {
-          name: "Nguyễn Tiến Hoa",
-          profile: {
-            fullName: "Nguyễn Tiến Hoa",
-            studentCode: "21110045",
-            faculty: "Công nghệ Thông tin",
-          },
-        },
-        reviewer: null,
-        formResponse: null,
-      },
-    ];
-  }
+    },
+    orderBy: {
+      submittedAt: "desc",
+    },
+  });
+
+  return applications || [];
 };

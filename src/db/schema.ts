@@ -58,6 +58,20 @@ export const eventStatusEnum = pgEnum("event_status", [
   "completed",
 ]);
 
+export const employmentStatusEnum = pgEnum("employment_status", [
+  "employed",
+  "self_employed",
+  "seeking",
+  "studying",
+  "other",
+]);
+
+export const profileVisibilityEnum = pgEnum("profile_visibility", [
+  "public",
+  "members",
+  "private",
+]);
+
 export const invitationStatusEnum = pgEnum("invitation_status", [
   "pending",
   "accepted",
@@ -210,11 +224,30 @@ export const profiles = pgTable(
     fullName: text("full_name").notNull(),
     studentCode: text("student_code"),
     faculty: text("faculty"),
+    major: text("major"),
+    province: text("province"),
     batchYear: integer("batch_year"),
     graduationYear: integer("graduation_year"),
     phone: text("phone"),
     avatarUrl: text("avatar_url"),
     bio: text("bio"),
+    employmentStatus: employmentStatusEnum("employment_status"),
+    currentTitle: text("current_title"),
+    currentCompanyName: text("current_company_name"),
+    currentCompanyId: uuid("current_company_id"),
+    industry: text("industry"),
+    linkedinUrl: text("linkedin_url"),
+    githubUrl: text("github_url"),
+    websiteUrl: text("website_url"),
+    skills: text("skills").array(),
+    visibility: profileVisibilityEnum("visibility").default("members").notNull(),
+    showEmail: boolean("show_email").default(false).notNull(),
+    showPhone: boolean("show_phone").default(false).notNull(),
+    alumniVerifiedAt: timestamp("alumni_verified_at"),
+    alumniVerifiedBy: text("alumni_verified_by").references(() => user.id),
+    alumniRejectedReason: text("alumni_rejected_reason"),
+    lastConfirmedAt: timestamp("last_confirmed_at"),
+    emailNotifications: boolean("email_notifications").default(true).notNull(),
     status: accountStatusEnum("status").default("active").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
@@ -225,6 +258,83 @@ export const profiles = pgTable(
   (table) => [
     index("profiles_role_idx").on(table.role),
     index("profiles_batchYear_idx").on(table.batchYear),
+    index("profiles_major_idx").on(table.major),
+    index("profiles_province_idx").on(table.province),
+    index("profiles_alumni_verified_idx").on(table.alumniVerifiedAt),
+  ],
+);
+
+export const workExperiences = pgTable(
+  "work_experiences",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    companyName: text("company_name").notNull(),
+    companyId: uuid("company_id"),
+    title: text("title").notNull(),
+    industry: text("industry"),
+    startDate: timestamp("start_date").notNull(),
+    endDate: timestamp("end_date"),
+    isCurrent: boolean("is_current").default(false).notNull(),
+    description: text("description"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("work_experiences_userId_idx").on(table.userId),
+    index("work_experiences_isCurrent_idx").on(table.isCurrent),
+  ],
+);
+
+export const profileRevisions = pgTable(
+  "profile_revisions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    changedBy: text("changed_by")
+      .notNull()
+      .references(() => user.id),
+    changes: jsonb("changes").$type<Record<string, { from: any; to: any }>>().notNull(),
+    source: text("source").notNull().default("self"), // self | staff | import
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [index("profile_revisions_userId_idx").on(table.userId)],
+);
+
+export const connectionStatusEnum = pgEnum("connection_status", [
+  "pending",
+  "accepted",
+  "declined",
+  "blocked",
+  "cancelled",
+]);
+
+export const alumniConnections = pgTable(
+  "alumni_connections",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    requesterId: text("requester_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    receiverId: text("receiver_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    status: connectionStatusEnum("status").default("pending").notNull(),
+    message: text("message"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    respondedAt: timestamp("responded_at"),
+  },
+  (table) => [
+    index("alumni_connections_requester_idx").on(table.requesterId),
+    index("alumni_connections_receiver_idx").on(table.receiverId),
+    index("alumni_connections_status_idx").on(table.status),
   ],
 );
 
@@ -407,6 +517,7 @@ export const experiencePosts = pgTable(
     coverImageUrl: text("cover_image_url"),
     tags: jsonb("tags").$type<string[]>().default([]).notNull(),
     status: postStatusEnum("status").default("draft").notNull(),
+    rejectedReason: text("rejected_reason"),
     viewCount: integer("view_count").default(0).notNull(),
     publishedAt: timestamp("published_at"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -519,6 +630,7 @@ export const scholarshipCampaigns = pgTable(
       .notNull(),
     applicationFormId: uuid("application_form_id").references(() => forms.id),
     applicationDeadline: timestamp("application_deadline").notNull(),
+    slots: integer("slots"),
     status: campaignStatusEnum("status").default("draft").notNull(),
     createdBy: text("created_by")
       .notNull()
@@ -572,12 +684,18 @@ export const scholarshipApplications = pgTable(
     ),
     status: applicationStatusEnum("status").default("pending").notNull(),
     score: numeric("score", { precision: 5, scale: 2 }),
+    awardedAmount: numeric("awarded_amount", { precision: 14, scale: 2 }),
+    disbursedAt: timestamp("disbursed_at"),
     reviewedBy: text("reviewed_by").references(() => user.id),
     reviewNote: text("review_note"),
     decidedAt: timestamp("decided_at"),
     submittedAt: timestamp("submitted_at").defaultNow().notNull(),
   },
   (table) => [
+    uniqueIndex("scholarship_applications_campaign_student_unique").on(
+      table.campaignId,
+      table.studentId,
+    ),
     index("scholarship_applications_campaignId_idx").on(table.campaignId),
     index("scholarship_applications_studentId_idx").on(table.studentId),
   ],

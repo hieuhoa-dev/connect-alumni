@@ -1,6 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { db } from "@/db";
 import { getCampaignById } from "@/actions/scholarship-actions";
 import { getCurrentUser } from "@/lib/permissions";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -27,6 +28,21 @@ const ScholarshipApplyPage = async ({ params }: ApplyPageProps) => {
 
   if (!campaign) {
     notFound();
+  }
+
+  let questions: any[] = [];
+  if (campaign.applicationFormId) {
+    const form = await db.query.forms.findFirst({
+      where: { id: campaign.applicationFormId },
+      with: {
+        questions: {
+          orderBy: { orderIndex: "asc" },
+        },
+      },
+    });
+    if (form?.questions) {
+      questions = form.questions;
+    }
   }
 
   const isExpired = new Date(campaign.applicationDeadline) < new Date();
@@ -71,6 +87,7 @@ const ScholarshipApplyPage = async ({ params }: ApplyPageProps) => {
             isExpired={isExpired}
             studentName={current?.profile?.fullName || current?.user.name || ""}
             studentCode={current?.profile?.studentCode || ""}
+            questions={questions}
           />
         </CardContent>
       </Card>

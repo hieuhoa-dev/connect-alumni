@@ -1,17 +1,34 @@
 import * as React from "react";
-import { requireRole } from "@/lib/permissions";
+import { redirect } from "next/navigation";
+import { requireRole, UnauthorizedError, ForbiddenError } from "@/lib/permissions";
 import { db } from "@/db";
 import { notifications } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { Sidebar } from "@/components/shared/sidebar";
+
+export const dynamic = "force-dynamic";
 
 const FacultyAdminLayout = async ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  // Hard guard layer: only faculty staff and admin
-  const current = await requireRole(["faculty_staff", "admin"]);
+  let current;
+  try {
+    current = await requireRole(["faculty_staff", "admin"]);
+  } catch (err) {
+    if (err instanceof UnauthorizedError) {
+      redirect("/login?next=/faculty-admin/dashboard");
+    }
+    if (err instanceof ForbiddenError) {
+      redirect("/403");
+    }
+    throw err;
+  }
+
+  if (current.profile?.status === "locked") {
+    redirect("/403");
+  }
 
   let userNotifications: any[] = [];
   try {
@@ -22,24 +39,8 @@ const FacultyAdminLayout = async ({
       .orderBy(desc(notifications.createdAt))
       .limit(10);
   } catch (err) {
-    userNotifications = [
-      {
-        id: "notif-f1",
-        title: "Hồ sơ doanh nghiệp mới chờ phê duyệt",
-        content: "Công ty Cổ phần Công nghệ SmartCity vừa đăng ký tham gia mạng lưới.",
-        type: "system",
-        read: false,
-        createdAt: new Date(),
-      },
-      {
-        id: "notif-f2",
-        title: "Tin tuyển dụng mới",
-        content: "Dalat Hasfarm Tech vừa gửi tin tuyển dụng Kỹ sư Phần mềm & AI.",
-        type: "job",
-        read: true,
-        createdAt: new Date(Date.now() - 3600000 * 5),
-      },
-    ];
+    console.error("Error fetching faculty notifications:", err);
+    userNotifications = [];
   }
 
   return (

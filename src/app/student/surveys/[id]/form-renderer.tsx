@@ -11,6 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Send, CheckCircle2 } from "lucide-react";
+import { FileUpload } from "@/components/ui/file-upload";
 
 interface FormQuestion {
   id: string;
@@ -287,17 +288,14 @@ export const SurveyFormRenderer = ({ form, isExpired }: FormRendererProps) => {
 
             {/* 6. File Upload */}
             {q.questionType === "file_upload" && (
-              <div className="space-y-1.5">
-                <Input
-                  placeholder="Nhập đường dẫn tài liệu đính kèm (hoặc link Google Drive / Cloud)..."
-                  value={fileUrls[q.id] || ""}
-                  onChange={(e) =>
-                    setFileUrls((prev) => ({ ...prev, [q.id]: e.target.value }))
-                  }
-                  disabled={isLoading}
-                  className="text-xs font-mono"
-                />
-              </div>
+              <FileUpload
+                value={fileUrls[q.id] || ""}
+                onChange={(url) =>
+                  setFileUrls((prev) => ({ ...prev, [q.id]: url }))
+                }
+                purpose="proof_document"
+                disabled={isLoading}
+              />
             )}
           </div>
         </div>

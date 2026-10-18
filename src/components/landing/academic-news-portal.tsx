@@ -33,12 +33,14 @@ import {
   sampleDLUExperiences,
   sampleDLUJobs,
 } from "@/lib/dlu-sample-data";
+import { stripHtml } from "@/lib/utils";
 
 interface AcademicNewsPortalProps {
   events?: any[];
   posts?: any[];
   jobs?: any[];
   scholarships?: any[];
+  spotlightAlumni?: any[];
 }
 
 export const AcademicNewsPortal = ({
@@ -46,10 +48,27 @@ export const AcademicNewsPortal = ({
   posts = [],
   jobs = [],
   scholarships = [],
+  spotlightAlumni = [],
 }: AcademicNewsPortalProps) => {
   // 1. Dữ liệu Tin tức Cựu sinh viên Đại học Đà Lạt
   const newsList = React.useMemo(() => {
-    const rawList = posts.length > 0 ? posts : sampleDLUExperiences;
+    if (posts && posts.length > 0) {
+      return posts.slice(0, 3).map((p: any) => ({
+        id: p.id,
+        title: p.title,
+        description: stripHtml(p.content || ""),
+        date: new Date(p.publishedAt || p.createdAt).toLocaleDateString(
+          "vi-VN",
+        ),
+        imageUrl:
+          p.coverImageUrl ||
+          "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80",
+        href: `/experiences/${p.id}`,
+        tag:
+          ((p.tags as string[]) || ["CHIA SẺ"])[0]?.toUpperCase() || "CHIA SẺ",
+      }));
+    }
+
     return [
       {
         id: "dlu-news-1",
@@ -136,52 +155,75 @@ export const AcademicNewsPortal = ({
   }, [jobs]);
 
   // 4. Gương mặt Cựu sinh viên tiêu biểu (Section 8: 4 cards ảnh đứng)
-  const alumniSpotlights = [
-    {
-      id: "alumni-1",
-      name: "Nguyễn Hoàng Nam",
-      role: "Giám Đốc Công Nghệ (CTO) tại TechCorp",
-      cohort: "Cựu SV K32 CNTT",
-      quote:
-        "Đà Lạt với đồi thông và thư viện DLU yên bình rèn luyện cho tôi tính kiên trì, đam mê tự học. Tinh thần đó theo tôi trên con đường kiến tạo sản phẩm số.",
-      imageUrl:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
-      href: "/experiences",
-    },
-    {
-      id: "alumni-2",
-      name: "Trần Thị Mai Phương",
-      role: "Tổng Quản Lý Tập Đoàn Khách Sạn & Nghỉ Dưỡng",
-      cohort: "Cựu SV K35 Du Lịch",
-      quote:
-        "Tự hào là sinh viên xứ hoa. Mạng lưới cựu sinh viên là cầu nối vững chắc để trao học bổng và mở rộng cơ hội thực tập cho các bạn sinh viên đàn em.",
-      imageUrl:
-        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
-      href: "/experiences",
-    },
-    {
-      id: "alumni-3",
-      name: "Lê Văn Hùng",
-      role: "Kỹ Sư Trưởng AI tại Zalo AI Lab",
-      cohort: "Cựu SV K38 CNTT",
-      quote:
-        "Nền tảng toán học và tư duy giải thuật từ giảng đường DLU đã trang bị cho tôi sự tự tin để làm chủ công nghệ trí tuệ nhân tạo hiện đại.",
-      imageUrl:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
-      href: "/experiences",
-    },
-    {
-      id: "alumni-4",
-      name: "Đặng Thu Thảo",
-      role: "Sáng Lập Nông Nghiệp Công Nghệ Cao DalatFarm",
-      cohort: "Cựu SV K34 Nông Học",
-      quote:
-        "Ứng dụng IoT và chuỗi cung ứng thông minh đưa nông sản sạch Đà Lạt ra thị trường quốc tế là niềm tự hào của thế hệ trẻ Đại học Đà Lạt.",
-      imageUrl:
-        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80",
-      href: "/experiences",
-    },
-  ];
+  const alumniSpotlights = React.useMemo(() => {
+    if (spotlightAlumni && spotlightAlumni.length > 0) {
+      return spotlightAlumni.slice(0, 4).map((a: any, i: number) => ({
+        id: a.userId || a.id || `alumni-${i}`,
+        name: a.fullName || a.name,
+        role: a.currentTitle ? `${a.currentTitle}${a.currentCompanyName ? ` tại ${a.currentCompanyName}` : ""}` : (a.bio || "Thành viên Ban liên lạc"),
+        cohort: a.batchYear ? `Cựu SV K${a.batchYear}` : (a.major || a.faculty || "Cựu SV DLU"),
+        quote:
+          a.bio ||
+          "Đại học Đà Lạt là cái nôi nuôi dưỡng tri thức, nhân cách và tình yêu nghề nghiệp cho bao thế hệ sinh viên.",
+        imageUrl:
+          a.avatarUrl ||
+          `https://images.unsplash.com/photo-${[
+            "1534528741775-53994a69daeb",
+            "1573496359142-b8d87734a5a2",
+            "1507003211169-0a1dd7228f2d",
+            "1500648767791-00dcc994a43e",
+          ][i % 4]}?auto=format&fit=crop&w=600&q=80`,
+        href: `/alumni`,
+      }));
+    }
+
+    return [
+      {
+        id: "alumni-1",
+        name: "Bùi Đình An",
+        role: "Ủy viên Ban liên lạc · Công ty CP Mạnh Đan",
+        cohort: "Cựu SV DLU",
+        quote:
+          "Tự hào là cựu sinh viên Đại học Đà Lạt. Ban liên lạc luôn sẵn sàng đồng hành, kết nối cơ hội phát triển cho các thế hệ đàn em.",
+        imageUrl:
+          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
+        href: "/alumni",
+      },
+      {
+        id: "alumni-2",
+        name: "Bùi Thị Thoa",
+        role: "Ủy viên Ban liên lạc · Phó Trưởng khoa Quốc tế học",
+        cohort: "Cựu SV DLU",
+        quote:
+          "Mạng lưới cựu sinh viên là cầu nối vững chắc gắn kết giữa Nhà trường, Khoa và các cựu sinh viên trên mọi miền Tổ quốc.",
+        imageUrl:
+          "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
+        href: "/alumni",
+      },
+      {
+        id: "alumni-3",
+        name: "Chu Văn Bình",
+        role: "Phó trưởng ban BLL Khoa Luật học · Tòa án khu vực 1",
+        cohort: "Cựu SV Luật học DLU",
+        quote:
+          "Những giá trị công lý, tri thức được trui rèn tại giảng đường DLU là kim chỉ nam cho sự nghiệp và cuộc sống.",
+        imageUrl:
+          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80",
+        href: "/alumni",
+      },
+      {
+        id: "alumni-4",
+        name: "Lê Văn Thảo",
+        role: "Ủy viên Ban Chấp hành · Viện Kiểm sát Nhân dân tỉnh Lâm Đồng",
+        cohort: "Cựu SV Luật học DLU",
+        quote:
+          "Mỗi chuyến trở về trường cũ là một lần được tiếp thêm nguồn cảm hứng và niềm tin cống hiến cho cộng đồng và quê hương.",
+        imageUrl:
+          "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
+        href: "/alumni",
+      },
+    ];
+  }, [spotlightAlumni]);
 
   return (
     <div className="space-y-0">
@@ -255,7 +297,10 @@ export const AcademicNewsPortal = ({
               <Reveal variant="scale">
                 <Card className="rounded-2xl border border-border bg-card shadow-brand overflow-hidden hover:shadow-brand-lg transition-all duration-300 group">
                   {/* Event image with badge */}
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
+                  <div
+                    data-slot="card-image"
+                    className="relative aspect-[16/10] w-full overflow-hidden bg-muted"
+                  >
                     <Image
                       src={leadEvent.imageUrl}
                       alt={leadEvent.title}

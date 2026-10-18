@@ -7,6 +7,7 @@ import { EASE_OUT } from "@/lib/ease";
 type RevealProps = {
   children: React.ReactNode;
   index?: number;
+  delay?: number;
   variant?: "up" | "fade" | "scale" | "left" | "right";
   className?: string;
 };
@@ -22,6 +23,7 @@ const from = {
 export const Reveal = ({
   children,
   index = 0,
+  delay,
   variant = "up",
   className,
 }: RevealProps) => {
@@ -37,7 +39,7 @@ export const Reveal = ({
       transition={{
         duration: 0.6,
         ease: EASE_OUT,
-        delay: Math.min(index, 8) * 0.07,
+        delay: delay !== undefined ? delay : Math.min(index, 8) * 0.07,
       }}
     >
       {children}

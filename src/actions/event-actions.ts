@@ -18,153 +18,75 @@ import {
 import { logAuditEvent } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications";
 
-import { sampleDLUEvents } from "@/lib/dlu-sample-data";
-
 /**
  * Public: Get published events
  */
 export const getPublishedEvents = async () => {
-  try {
-    const data = await db.query.events.findMany({
-      where: {
-        status: "published",
-      },
-      with: {
-        creator: {
-          with: {
-            profile: true,
-          },
+  const data = await db.query.events.findMany({
+    where: {
+      status: "published",
+    },
+    with: {
+      creator: {
+        with: {
+          profile: true,
         },
-        speakers: {
-          with: {
-            alumni: {
-              with: {
-                profile: true,
-              },
+      },
+      speakers: {
+        with: {
+          alumni: {
+            with: {
+              profile: true,
             },
           },
         },
-        registrations: true,
       },
-      orderBy: {
-        startTime: "desc",
-      },
-    });
-
-    if (data && data.length > 0) return data;
-  } catch (err) {
-    // Database offline, return sample events
-  }
-
-  return sampleDLUEvents.map((e) => ({
-    id: e.id,
-    title: e.title,
-    description: e.description,
-    type: e.type,
-    format: e.format,
-    startTime: new Date(e.startTime),
-    endTime: new Date(new Date(e.startTime).getTime() + 3 * 3600 * 1000),
-    locationOrLink: e.locationOrLink,
-    coverImageUrl: e.coverImageUrl,
-    status: "published" as const,
-    creatorId: "staff-dlu-id",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    creator: {
-      profile: {
-        fullName: "Ban Thường trực Hội Cựu sinh viên DLU",
-      },
+      registrations: true,
     },
-    speakers: [],
-    registrations: e.registrations || [],
-  }));
+    orderBy: {
+      startTime: "desc",
+    },
+  });
+
+  return data || [];
 };
 
 /**
  * Get event details by ID
  */
 export const getEventById = async (id: string) => {
-  try {
-    const event = await db.query.events.findFirst({
-      where: {
-        id: id,
-      },
-      with: {
-        creator: {
-          with: {
-            profile: true,
-          },
-        },
-        speakers: {
-          with: {
-            alumni: {
-              with: {
-                profile: true,
-              },
-            },
-          },
-        },
-        registrations: {
-          with: {
-            user: {
-              with: {
-                profile: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (event) return event;
-  } catch (err) {
-    // Database offline
-  }
-
-  const sample = sampleDLUEvents.find((e) => e.id === id);
-  if (sample) {
-    return {
-      id: sample.id,
-      title: sample.title,
-      description: sample.description,
-      type: sample.type,
-      format: sample.format as "offline" | "online",
-      startTime: new Date(sample.startTime),
-      endTime: new Date(new Date(sample.startTime).getTime() + 4 * 3600 * 1000),
-      locationOrLink: sample.locationOrLink,
-      coverImageUrl: sample.coverImageUrl,
-      status: "published" as const,
-      creatorId: "staff-dlu-id",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+  const event = await db.query.events.findFirst({
+    where: {
+      id: id,
+    },
+    with: {
       creator: {
-        profile: {
-          fullName: "Ban Thường trực Mạng lưới Cựu sinh viên DLU",
+        with: {
+          profile: true,
         },
       },
-      speakers: [
-        {
-          id: "speaker-1",
+      speakers: {
+        with: {
           alumni: {
-            name: "Lê Hoàng Nam",
-            profile: {
-              fullName: "Lê Hoàng Nam (Cựu SV K18)",
-              bio: "Tech Lead FPT Software",
+            with: {
+              profile: true,
             },
           },
-          topic: "Kinh nghiệm hòa nhập môi trường công nghệ lớn",
         },
-      ],
-      registrations: (sample.registrations || []).map((_, i) => ({
-        id: `reg-${i}`,
-        userId: `user-${i}`,
-        registeredAt: new Date(),
-        attendanceStatus: "registered",
-      })),
-    };
-  }
+      },
+      registrations: {
+        with: {
+          user: {
+            with: {
+              profile: true,
+            },
+          },
+        },
+      },
+    },
+  });
 
-  return null;
+  return event || null;
 };
 
 /**
@@ -287,49 +209,39 @@ export const registerForEvent = async (eventId: string) => {
     throw new Error("Vui lòng đăng nhập để đăng ký tham gia sự kiện");
   }
 
-  try {
-    const eventItem = await db.query.events.findFirst({
-      where: {
-        id: eventId,
-      },
-      with: { registrations: true },
-    });
+  const eventItem = await db.query.events.findFirst({
+    where: {
+      id: eventId,
+    },
+    with: { registrations: true },
+  });
 
-    if (eventItem) {
-      if (eventItem.status !== "published")
-        throw new Error("Sự kiện chưa mở đăng ký");
-
-      if (
-        eventItem.capacity &&
-        eventItem.registrations.length >= eventItem.capacity
-      ) {
-        throw new Error("Sự kiện đã đủ số lượng người tham dự");
-      }
-
-      const [reg] = await db
-        .insert(eventRegistrations)
-        .values({
-          eventId,
-          userId: current.user.id,
-          attendanceStatus: "registered",
-        })
-        .onConflictDoNothing()
-        .returning();
-
-      return reg || { registered: true };
-    }
-  } catch (err: any) {
-    if (err.message && (err.message.includes("chưa mở") || err.message.includes("đủ số lượng"))) {
-      throw err;
-    }
+  if (!eventItem) {
+    throw new Error("Không tìm thấy thông tin sự kiện");
   }
 
-  return {
-    id: `reg-demo-${Date.now()}`,
-    eventId,
-    userId: current.user.id,
-    attendanceStatus: "registered" as const,
-  };
+  if (eventItem.status !== "published") {
+    throw new Error("Sự kiện chưa mở đăng ký");
+  }
+
+  if (
+    eventItem.capacity &&
+    eventItem.registrations.length >= eventItem.capacity
+  ) {
+    throw new Error("Sự kiện đã đủ số lượng người tham dự");
+  }
+
+  const [reg] = await db
+    .insert(eventRegistrations)
+    .values({
+      eventId,
+      userId: current.user.id,
+      attendanceStatus: "registered",
+    })
+    .onConflictDoNothing()
+    .returning();
+
+  return reg || { registered: true };
 };
 
 /**

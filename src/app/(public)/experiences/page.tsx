@@ -1,7 +1,7 @@
+import { BookOpen, Calendar, Eye, Search, User } from "lucide-react";
 import Link from "next/link";
 import { getPublishedExperiencePosts } from "@/actions/experience-actions";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -10,9 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BookOpen, Search, Eye, Calendar, User } from "lucide-react";
-
+import { Input } from "@/components/ui/input";
 import { sampleDLUExperiences } from "@/lib/dlu-sample-data";
+import { stripHtml, truncateText } from "@/lib/utils";
 
 interface ExperiencesPageProps {
   searchParams: Promise<{
@@ -43,7 +43,8 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
             Góc chia sẻ kinh nghiệm — Cựu sinh viên Đại học Đà Lạt
           </h1>
           <p className="text-sm text-muted-foreground">
-            Học hỏi bí quyết từ các thế hệ cựu sinh viên DLU: khởi nghiệp, kinh nghiệm làm việc, kỹ năng mềm và định hướng tương lai
+            Học hỏi bí quyết từ các thế hệ cựu sinh viên DLU: khởi nghiệp, kinh
+            nghiệm làm việc, kỹ năng mềm và định hướng tương lai
           </p>
         </div>
         <Button
@@ -81,40 +82,58 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
         ) : (
           displayPosts.map((post) => {
             const author = post.author?.profile;
+            const plainContent = stripHtml(post.content || "");
+            const snippet = truncateText(plainContent, 130);
+
             return (
               <Card
                 key={post.id}
-                className="flex flex-col justify-between border border-border/80 hover:border-foreground/20 transition-colors shadow-sm"
+                className="flex flex-col justify-between overflow-hidden border border-border/80 hover:border-pine-400 dark:hover:border-pine-600 transition-all duration-300 shadow-xs hover:shadow-md group"
               >
-                <CardHeader className="pb-3">
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    {post.tags.map((t) => (
-                      <span
-                        key={t}
-                        className="inline-flex items-center rounded-full border border-border/70 bg-muted/50 px-2 py-0.5 text-[10px] font-mono text-muted-foreground"
-                      >
-                        #{t}
-                      </span>
-                    ))}
+                {/* Cover Image thumbnail */}
+                {post.coverImageUrl && (
+                  <div
+                    data-slot="card-image"
+                    className="relative w-full h-44 overflow-hidden bg-muted"
+                  >
+                    <img
+                      src={post.coverImageUrl}
+                      alt={post.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
                   </div>
-                  <CardTitle className="text-base font-semibold leading-snug line-clamp-2">
+                )}
+
+                <CardHeader className="pb-2.5">
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {((post.tags as string[]) || [])
+                      .slice(0, 3)
+                      .map((t: string) => (
+                        <span
+                          key={t}
+                          className="inline-flex items-center rounded-full border border-pine-200/70 bg-pine-50/80 dark:border-pine-900/60 dark:bg-pine-950/40 px-2 py-0.5 text-[10px] font-mono text-pine-800 dark:text-pine-300"
+                        >
+                          #{t}
+                        </span>
+                      ))}
+                  </div>
+                  <CardTitle className="text-base font-bold leading-snug line-clamp-2 text-foreground group-hover:text-primary transition-colors">
                     <Link href={`/experiences/${post.id}`}>{post.title}</Link>
                   </CardTitle>
-                  <CardDescription className="text-[11px] pt-1 flex items-center gap-1.5 font-mono">
+                  <CardDescription className="text-[11px] pt-1 flex items-center gap-1.5 font-mono text-muted-foreground">
                     <User className="size-3" />
                     <span>
                       {author?.fullName || post.author?.name || "Tác giả"}
                     </span>
-                    {author?.batchYear && (
-                      <span className="text-muted-foreground">
-                        · K{author.batchYear % 100}
-                      </span>
-                    )}
+                    {author?.batchYear && <span>· K{author.batchYear}</span>}
                   </CardDescription>
                 </CardHeader>
+
                 <CardContent className="text-xs text-muted-foreground line-clamp-3 pb-3 leading-relaxed">
-                  {post.content}
+                  {snippet}
                 </CardContent>
+
                 <CardFooter className="pt-3 border-t border-border/50 flex items-center justify-between text-[11px] text-muted-foreground font-mono">
                   <span className="flex items-center gap-3">
                     <span className="flex items-center gap-1">
@@ -125,7 +144,7 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
                     </span>
                     <span className="flex items-center gap-1">
                       <Eye className="size-3" />
-                      {post.viewCount}
+                      {post.viewCount || 0}
                     </span>
                   </span>
                   <Button
@@ -133,7 +152,7 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
                     nativeButton={false}
                     variant="ghost"
                     size="sm"
-                    className="h-7 text-xs font-medium"
+                    className="h-7 text-xs font-semibold text-primary hover:text-primary/90"
                   >
                     Đọc tiếp
                   </Button>

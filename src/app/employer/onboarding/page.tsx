@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { FileUpload } from "@/components/ui/file-upload";
 import {
   Card,
   CardContent,
@@ -157,16 +158,13 @@ const CompanyOnboardingPage = () => {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="logo" className="text-xs font-medium">
-                    Link Logo công ty
-                  </Label>
-                  <Input
-                    id="logo"
-                    placeholder="https://images.unsplash.com/..."
+                  <FileUpload
                     value={logoUrl}
-                    onChange={(e) => setLogoUrl(e.target.value)}
+                    onChange={setLogoUrl}
+                    purpose="company_logo"
+                    label="Logo công ty"
+                    helperText="Tải lên logo doanh nghiệp (JPG, PNG, WEBP, SVG tối đa 2MB)"
                     disabled={isLoading}
-                    className="text-xs"
                   />
                 </div>
               </div>

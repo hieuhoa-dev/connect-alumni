@@ -1,14 +1,21 @@
 "use client";
 
-import * as React from "react";
+import { cn } from "cn";
+import useEmblaCarousel from "embla-carousel-react";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Pause,
+  Play,
+  Sparkles,
+} from "lucide-react";
+import { useReducedMotion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Pause, Play, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
-import useEmblaCarousel from "embla-carousel-react";
-import { useReducedMotion } from "motion/react";
-import { Button } from "@/components/ui/button";
+import * as React from "react";
 import { DLULogo } from "@/components/shared/dlu-logo";
-import { cn } from "cn";
+import { Button } from "@/components/ui/button";
 
 interface SlideData {
   id: string;
@@ -51,7 +58,7 @@ const slides: SlideData[] = [
   {
     id: "homecoming",
     badge: "ĐẠI HỘI CỰU SINH VIÊN 2026",
-    title: "DLU Homecoming: 30 Năm Truyền Thống",
+    title: "DLU Homecoming: 50 Năm Truyền Thống",
     highlightText: "Khẳng định bản lĩnh & Tri thức Đà Lạt",
     description:
       "Chuỗi sự kiện kỷ niệm chặng đường vẻ vang 1996–2026, giao lưu chuyên đề công nghệ và ngày hội kết nối thế hệ sinh viên DLU.",
@@ -63,8 +70,7 @@ const slides: SlideData[] = [
       label: "Gương mặt tiêu biểu",
       href: "/experiences",
     },
-    image:
-      "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=85",
+    image: "banner/50_nam_dlu.jpg",
     imageAlt: "Cựu sinh viên và sinh viên Đại học Đà Lạt gặp gỡ",
   },
   {
@@ -82,8 +88,7 @@ const slides: SlideData[] = [
       label: "Dành cho Doanh nghiệp",
       href: "/employer/onboarding",
     },
-    image:
-      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=85",
+    image: "banner/50_nam_dlu_2.jpg",
     imageAlt: "Môi trường làm việc công nghệ chuyên nghiệp",
   },
   {
@@ -101,8 +106,7 @@ const slides: SlideData[] = [
       label: "Nộp hồ sơ xin học bổng",
       href: "/scholarships",
     },
-    image:
-      "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1600&q=85",
+    image: "/banner/tan_sinh_vien.jpg",
     imageAlt: "Trao học bổng cho sinh viên xuất sắc",
   },
 ];
@@ -320,7 +324,9 @@ export const HeroCarousel = () => {
                     onClick={() => scrollTo(idx)}
                     className={cn(
                       "relative h-2 rounded-full overflow-hidden transition-all duration-300 cursor-pointer",
-                      isActive ? "w-8 bg-white/20" : "w-2 bg-white/40 hover:bg-white/70",
+                      isActive
+                        ? "w-8 bg-white/20"
+                        : "w-2 bg-white/40 hover:bg-white/70",
                     )}
                     aria-label={`Chuyển đến slide ${idx + 1}`}
                   >

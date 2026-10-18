@@ -192,6 +192,7 @@ export const ContactSection = () => {
                 <div className="pt-6 mt-6 border-t border-border/60">
                   <Button
                     variant="sun"
+                    nativeButton={false}
                     className="w-full justify-center gap-2 shadow-sun py-2.5 font-bold cursor-pointer"
                     render={
                       <a

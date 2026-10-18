@@ -3,6 +3,7 @@ import { getActiveJobPosts } from "@/actions/job-actions";
 import { getPublishedEvents } from "@/actions/event-actions";
 import { getPublishedExperiencePosts } from "@/actions/experience-actions";
 import { getScholarshipCampaigns } from "@/actions/scholarship-actions";
+import { getAlumniDirectory } from "@/server/dal/alumni";
 import { BreakingTicker } from "@/components/landing/breaking-ticker";
 import { HeroCarousel } from "@/components/landing/hero-carousel";
 import { AnniversaryBand } from "@/components/landing/anniversary-band";
@@ -17,11 +18,12 @@ export const revalidate = 60; // ISR cache 60s
 
 const HomePage = async () => {
   // Lấy dữ liệu thực tế từ Database thông qua Server Actions với fallback an toàn
-  const [jobs, events, posts, scholarships] = await Promise.all([
+  const [jobs, events, posts, scholarships, alumniRes] = await Promise.all([
     getActiveJobPosts({ limit: 6 }).catch(() => []),
     getPublishedEvents().catch(() => []),
     getPublishedExperiencePosts({ limit: 8 }).catch(() => []),
     getScholarshipCampaigns().catch(() => []),
+    getAlumniDirectory({ limit: 8 }).catch(() => ({ alumni: [] })),
   ]);
 
   const featuredCampaign = scholarships.length > 0 ? scholarships[0] : null;
@@ -43,6 +45,7 @@ const HomePage = async () => {
         posts={posts}
         jobs={jobs}
         scholarships={scholarships}
+        spotlightAlumni={alumniRes?.alumni || []}
       />
 
       {/* 6. Số liệu mạng lưới DLU với Count-up (bg-photo-tint) */}

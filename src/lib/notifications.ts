@@ -27,7 +27,9 @@ export const notificationQueue = new Queue(NOTIFICATION_QUEUE_NAME, {
     removeOnComplete: true,
   },
 });
-notificationQueue.on("error", () => {});
+notificationQueue.on("error", (err) => {
+  console.error("[NotificationQueue] Queue error:", err);
+});
 
 export const jobExpiryQueue = new Queue(JOB_EXPIRE_QUEUE_NAME, {
   connection: redis,
@@ -35,7 +37,9 @@ export const jobExpiryQueue = new Queue(JOB_EXPIRE_QUEUE_NAME, {
     removeOnComplete: true,
   },
 });
-jobExpiryQueue.on("error", () => {});
+jobExpiryQueue.on("error", (err) => {
+  console.error("[JobExpiryQueue] Queue error:", err);
+});
 
 /**
  * Enqueue notification + save immediately to in-app DB
@@ -76,11 +80,16 @@ export const sendNotification = async (payload: NotificationPayload) => {
  */
 export const scheduleJobExpiryCheck = async () => {
   try {
-    await jobExpiryQueue.add("check-expired-jobs", {}, {
-      repeat: {
-        pattern: "0 * * * *", // Every hour at minute 0
-      },
-    } as any);
+    await jobExpiryQueue.add(
+      "check-expired-jobs",
+      {},
+      {
+        jobId: "repeat-check-expired-jobs",
+        repeat: {
+          pattern: "0 * * * *", // Every hour at minute 0
+        },
+      } as any,
+    );
   } catch (err) {
     console.warn("Could not schedule job expiry queue repeat pattern", err);
   }

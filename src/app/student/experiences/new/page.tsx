@@ -7,6 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { FileUpload } from "@/components/ui/file-upload";
 import {
   Card,
   CardContent,
@@ -144,18 +145,14 @@ const NewExperiencePage = () => {
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="cover" className="text-xs font-medium">
-                  Đường dẫn ảnh bìa (tùy chọn)
-                </Label>
-                <Input
-                  id="cover"
-                  placeholder="https://images.unsplash.com/photo-..."
-                  value={coverImageUrl}
-                  onChange={(e) => setCoverImageUrl(e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
+              <FileUpload
+                value={coverImageUrl}
+                onChange={setCoverImageUrl}
+                purpose="event_cover"
+                label="Ảnh bìa bài viết (tùy chọn)"
+                helperText="Tải lên ảnh bìa đại diện cho bài viết chia sẻ (JPG, PNG, WEBP tối đa 5MB)"
+                disabled={isLoading}
+              />
 
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">

@@ -1,32 +1,40 @@
 import * as React from "react";
-import { requireRole } from "@/lib/permissions";
+import { redirect } from "next/navigation";
+import { requireRole, UnauthorizedError, ForbiddenError } from "@/lib/permissions";
 import { db } from "@/db";
 import { notifications } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { getMyCompanies } from "@/actions/company-actions";
 import { Sidebar } from "@/components/shared/sidebar";
 
+export const dynamic = "force-dynamic";
+
 const EmployerLayout = async ({ children }: { children: React.ReactNode }) => {
-  const current = await requireRole(["employer", "admin"]);
+  let current;
+  try {
+    current = await requireRole(["employer", "admin"]);
+  } catch (err) {
+    if (err instanceof UnauthorizedError) {
+      redirect("/login?next=/employer/dashboard");
+    }
+    if (err instanceof ForbiddenError) {
+      redirect("/403");
+    }
+    throw err;
+  }
+
+  if (current.profile?.status === "locked") {
+    redirect("/403");
+  }
+
   let companiesList: any[] = [];
   let userNotifications: any[] = [];
 
   try {
     companiesList = await getMyCompanies();
   } catch (err) {
-    companiesList = [
-      {
-        id: "company-vng-dlu",
-        name: "Tập đoàn VNG Corporation",
-        description: "Kỳ lân công nghệ hàng đầu Việt Nam, đối tác chiến lược tuyển dụng của Trường Đại học Đà Lạt.",
-        industry: "Công nghệ thông tin & Game",
-        website: "https://vng.com.vn",
-        logoUrl: "https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=200",
-        verificationStatus: "verified",
-        isActiveContext: true,
-        membershipRole: "admin",
-      },
-    ];
+    console.error("Error fetching employer companies:", err);
+    companiesList = [];
   }
 
   try {
@@ -37,16 +45,8 @@ const EmployerLayout = async ({ children }: { children: React.ReactNode }) => {
       .orderBy(desc(notifications.createdAt))
       .limit(10);
   } catch (err) {
-    userNotifications = [
-      {
-        id: "notif-e1",
-        title: "Hồ sơ doanh nghiệp VNG Corporation đã được duyệt",
-        content: "Khoa CNTT đã xác minh hồ sơ. Bạn có thể đăng tin tuyển dụng ngay bây giờ.",
-        type: "system",
-        read: false,
-        createdAt: new Date(),
-      },
-    ];
+    console.error("Error fetching employer notifications:", err);
+    userNotifications = [];
   }
 
   return (

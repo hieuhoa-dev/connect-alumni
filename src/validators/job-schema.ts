@@ -19,10 +19,23 @@ export const jobPostSchema = z.object({
   companyId: z.string().uuid("ID công ty không hợp lệ"),
 });
 
-export const jobReviewSchema = z.object({
-  status: z.enum(["approved", "rejected"]),
-  rejectedReason: z.string().optional().nullable(),
-});
+export const jobReviewSchema = z
+  .object({
+    status: z.enum(["approved", "rejected"]),
+    rejectedReason: z.string().optional().nullable(),
+  })
+  .refine(
+    (data) => {
+      if (data.status === "rejected") {
+        return typeof data.rejectedReason === "string" && data.rejectedReason.trim().length >= 5;
+      }
+      return true;
+    },
+    {
+      message: "Vui lòng nhập lý do từ chối ít nhất 5 ký tự",
+      path: ["rejectedReason"],
+    }
+  );
 
 export type JobPostInput = z.infer<typeof jobPostSchema>;
 export type JobReviewInput = z.infer<typeof jobReviewSchema>;

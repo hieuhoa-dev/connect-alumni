@@ -8,6 +8,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { FileUpload } from "@/components/ui/file-upload";
 import {
   Card,
   CardContent,
@@ -210,36 +211,29 @@ const NewEventPage = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="loc" className="text-xs font-medium">
-                  Địa điểm hoặc Link phòng họp
-                </Label>
-                <Input
-                  id="loc"
-                  placeholder="Hội trường A hoặc https://meet.google.com/..."
-                  value={locationOrLink}
-                  onChange={(e) => setLocationOrLink(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  className="text-xs"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="img" className="text-xs font-medium">
-                  Ảnh bìa sự kiện (URL)
-                </Label>
-                <Input
-                  id="img"
-                  placeholder="https://images.unsplash.com/..."
-                  value={coverImageUrl}
-                  onChange={(e) => setCoverImageUrl(e.target.value)}
-                  disabled={isLoading}
-                  className="text-xs"
-                />
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="loc" className="text-xs font-medium">
+                Địa điểm hoặc Link phòng họp
+              </Label>
+              <Input
+                id="loc"
+                placeholder="Hội trường A hoặc https://meet.google.com/..."
+                value={locationOrLink}
+                onChange={(e) => setLocationOrLink(e.target.value)}
+                required
+                disabled={isLoading}
+                className="text-xs"
+              />
             </div>
+
+            <FileUpload
+              value={coverImageUrl}
+              onChange={setCoverImageUrl}
+              purpose="event_cover"
+              label="Ảnh bìa sự kiện"
+              helperText="Tải lên ảnh bìa giới thiệu sự kiện (JPG, PNG, WEBP tối đa 5MB)"
+              disabled={isLoading}
+            />
 
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">

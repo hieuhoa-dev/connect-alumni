@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/permissions";
 
+export const dynamic = "force-dynamic";
+
 const DashboardDispatcherPage = async () => {
   const current = await getCurrentUser();
 

@@ -15,10 +15,23 @@ export const companyCreateSchema = z.object({
     .min(2, "Chức vụ của bạn trong công ty (ví dụ: HR Lead, Recruiter)"),
 });
 
-export const companyReviewSchema = z.object({
-  status: z.enum(["verified", "rejected"]),
-  rejectedReason: z.string().optional().nullable(),
-});
+export const companyReviewSchema = z
+  .object({
+    status: z.enum(["verified", "rejected"]),
+    rejectedReason: z.string().optional().nullable(),
+  })
+  .refine(
+    (data) => {
+      if (data.status === "rejected") {
+        return typeof data.rejectedReason === "string" && data.rejectedReason.trim().length >= 5;
+      }
+      return true;
+    },
+    {
+      message: "Vui lòng nhập lý do từ chối ít nhất 5 ký tự",
+      path: ["rejectedReason"],
+    }
+  );
 
 export type CompanyCreateInput = z.infer<typeof companyCreateSchema>;
 export type CompanyReviewInput = z.infer<typeof companyReviewSchema>;

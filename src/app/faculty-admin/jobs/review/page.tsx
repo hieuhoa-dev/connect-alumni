@@ -14,10 +14,10 @@ import { JobReviewActions } from "./job-review-actions";
 const JobsReviewPage = async () => {
   const jobs = await getJobsForFacultyReview();
 
-  const pendingList = jobs.filter((j) => j.status === "pending");
-  const approvedList = jobs.filter((j) => j.status === "approved");
-  const rejectedList = jobs.filter((j) => j.status === "rejected");
-  const expiredList = jobs.filter((j) => j.status === "expired");
+  const pendingList = jobs.filter((j: any) => j.status === "pending");
+  const approvedList = jobs.filter((j: any) => j.status === "approved");
+  const rejectedList = jobs.filter((j: any) => j.status === "rejected");
+  const expiredList = jobs.filter((j: any) => j.status === "expired");
 
   return (
     <div className="space-y-8">
@@ -44,7 +44,7 @@ const JobsReviewPage = async () => {
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-4">
-            {pendingList.map((job) => (
+            {pendingList.map((job: any) => (
               <Card
                 key={job.id}
                 className="border-amber-500/30 bg-card shadow-sm"
@@ -115,7 +115,7 @@ const JobsReviewPage = async () => {
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {approvedList.map((job) => (
+          {approvedList.map((job: any) => (
             <Card
               key={job.id}
               className="p-4 flex flex-col justify-between shadow-sm"

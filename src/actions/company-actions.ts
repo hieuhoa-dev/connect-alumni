@@ -11,6 +11,8 @@ import {
 } from "@/validators/company-schema";
 import { logAuditEvent } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications";
+import { NotFoundError, InvalidStateError, ForbiddenError } from "@/lib/errors";
+import { validateStateTransition } from "@/lib/state-machine";
 
 /**
  * Register a new company profile (pending review by faculty)
@@ -122,6 +124,28 @@ export const reviewCompany = async (data: {
     rejectedReason: data.rejectedReason,
   });
 
+  const existing = await db.query.companies.findFirst({
+    where: {
+      id: data.companyId,
+    },
+  });
+
+  if (!existing) {
+    throw new NotFoundError("Không tìm thấy doanh nghiệp");
+  }
+
+  // Only admin can revoke already verified company
+  if (existing.verificationStatus === "verified" && current.role !== "admin") {
+    throw new ForbiddenError("Chỉ Quản trị viên (Admin) mới có quyền thu hồi xác minh doanh nghiệp");
+  }
+
+  validateStateTransition(
+    "company",
+    existing.verificationStatus,
+    validated.status,
+    current.role === "admin"
+  );
+
   const [company] = await db
     .update(companies)
     .set({
@@ -130,28 +154,41 @@ export const reviewCompany = async (data: {
       verifiedBy: current.user.id,
       verifiedAt: new Date(),
     })
-    .where(eq(companies.id, data.companyId))
+    .where(
+      and(
+        eq(companies.id, data.companyId),
+        eq(companies.verificationStatus, existing.verificationStatus)
+      )
+    )
     .returning();
 
   if (!company) {
-    throw new Error("Không tìm thấy doanh nghiệp");
+    throw new InvalidStateError("Trạng thái doanh nghiệp đã thay đổi bởi thao tác khác. Vui lòng thử lại.");
   }
 
-  // Notify company creator
-  await sendNotification({
-    userId: company.createdBy,
-    type: "company_verified",
-    title:
-      validated.status === "verified"
-        ? `Hồ sơ công ty ${company.name} đã được phê duyệt!`
-        : `Hồ sơ công ty ${company.name} bị từ chối`,
-    body:
-      validated.status === "verified"
-        ? "Doanh nghiệp của bạn hiện có thể đăng tin tuyển dụng và tham gia các hoạt động kết nối."
-        : `Lý do: ${validated.rejectedReason || "Chưa đạt tiêu chuẩn kết nối của Khoa."}`,
-    linkUrl: "/employer/dashboard",
-    sendEmail: true,
+  // Notify ALL company members (Task 1.8 requirement)
+  const members = await db.query.companyMembers.findMany({
+    where: {
+      companyId: company.id,
+    },
   });
+
+  for (const m of members) {
+    await sendNotification({
+      userId: m.userId,
+      type: "company_verified",
+      title:
+        validated.status === "verified"
+          ? `Hồ sơ công ty ${company.name} đã được phê duyệt!`
+          : `Hồ sơ công ty ${company.name} bị từ chối`,
+      body:
+        validated.status === "verified"
+          ? "Doanh nghiệp của bạn hiện có thể đăng tin tuyển dụng và tham gia các hoạt động kết nối."
+          : `Lý do: ${validated.rejectedReason || "Chưa đạt tiêu chuẩn kết nối của Khoa."}`,
+      linkUrl: "/employer/dashboard",
+      sendEmail: true,
+    });
+  }
 
   await logAuditEvent({
     actorId: current.user.id,
@@ -171,47 +208,24 @@ export const getMyCompanies = async () => {
   const current = await getCurrentUser();
   if (!current?.user) return [];
 
-  try {
-    const memberships = await db.query.companyMembers.findMany({
-      where: {
-        userId: current.user.id,
-      },
-      with: {
-        company: true,
-      },
-    });
+  const memberships = await db.query.companyMembers.findMany({
+    where: {
+      userId: current.user.id,
+    },
+    with: {
+      company: true,
+    },
+  });
 
-    if (memberships && memberships.length > 0) {
-      return memberships.map((m) => ({
-        ...m.company,
-        membershipRole: m.roleInCompany,
-        isActiveContext: m.isActiveContext,
-      }));
-    }
-  } catch (err) {
-    // Database offline
+  if (memberships && memberships.length > 0) {
+    return memberships.map((m) => ({
+      ...m.company,
+      membershipRole: m.roleInCompany,
+      isActiveContext: m.isActiveContext,
+    }));
   }
 
-  // Graceful fallback for demo employer or offline testing
-  const demoComp = {
-    id: "company-vng-dlu",
-    name: "Tập đoàn VNG Corporation",
-    description: "Kỳ lân công nghệ hàng đầu Việt Nam, đối tác chiến lược tuyển dụng của Trường Đại học Đà Lạt.",
-    industry: "Công nghệ thông tin & Game",
-    website: "https://vng.com.vn",
-    logoUrl: "https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=200",
-    verificationStatus: "verified" as const,
-    rejectedReason: null,
-    createdBy: current.user.id,
-    verifiedBy: "staff-dlu-id",
-    verifiedAt: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    membershipRole: "admin",
-    isActiveContext: true,
-  };
-
-  return [demoComp];
+  return [];
 };
 
 /**
@@ -222,77 +236,29 @@ export const getCompaniesForFaculty = async (
 ) => {
   await requireRole(["faculty_staff", "admin"]);
 
-  try {
-    const comps = await db.query.companies.findMany({
-      where: status ? { verificationStatus: status } : undefined,
-      with: {
-        creator: {
-          with: {
-            profile: true,
-          },
+  const comps = await db.query.companies.findMany({
+    where: status ? { verificationStatus: status } : undefined,
+    with: {
+      creator: {
+        with: {
+          profile: true,
         },
-        members: {
-          with: {
-            user: {
-              with: {
-                profile: true,
-              },
+      },
+      members: {
+        with: {
+          user: {
+            with: {
+              profile: true,
             },
           },
         },
-        jobPosts: true,
       },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    if (comps && comps.length > 0) return comps;
-  } catch (err) {
-    // Database offline
-  }
-
-  const sampleFacultyCompanies = [
-    {
-      id: "comp-vng-1",
-      name: "Tập đoàn VNG Corporation",
-      description: "Doanh nghiệp công nghệ đối tác chiến lược hàng đầu của DLU.",
-      industry: "Công nghệ thông tin",
-      website: "https://vng.com.vn",
-      logoUrl: "https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=200",
-      verificationStatus: "verified" as const,
-      rejectedReason: null,
-      createdAt: new Date(),
-      creator: {
-        profile: {
-          fullName: "Phạm Thu Trang",
-        },
-      },
-      members: [],
-      jobPosts: [],
+      jobPosts: true,
     },
-    {
-      id: "comp-hasfarm-2",
-      name: "Dalat Hasfarm AgriTech",
-      description: "Ứng dụng chuyển đổi số và tự động hóa nông nghiệp công nghệ cao tại Lâm Đồng.",
-      industry: "Nông nghiệp công nghệ cao",
-      website: "https://dalathasfarm.com",
-      logoUrl: "https://images.unsplash.com/photo-1595053826286-2e59ef7ae04b?w=200",
-      verificationStatus: "pending" as const,
-      rejectedReason: null,
-      createdAt: new Date(),
-      creator: {
-        profile: {
-          fullName: "Nguyễn Văn Hùng",
-        },
-      },
-      members: [],
-      jobPosts: [],
+    orderBy: {
+      createdAt: "desc",
     },
-  ];
+  });
 
-  if (status) {
-    return sampleFacultyCompanies.filter((c) => c.verificationStatus === status);
-  }
-  return sampleFacultyCompanies;
+  return comps || [];
 };

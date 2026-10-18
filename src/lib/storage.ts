@@ -10,7 +10,7 @@ const endpoint = process.env.AWS_ENDPOINT_URL_S3;
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID || "";
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY || "";
 const region = process.env.AWS_REGION || "us-east-2";
-const bucketName = process.env.S3_BUCKET_NAME || "connect-alumni";
+const bucketName = process.env.S3_BUCKET_NAME || "alumni";
 
 export const s3Client = new S3Client({
   region,
@@ -43,10 +43,8 @@ export const uploadFile = async ({
 
   await s3Client.send(command);
 
-  // Return key and fallback public/direct URL
-  const url = endpoint
-    ? `${endpoint}/${bucketName}/${key}`
-    : `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
+  // Return reliable accessible URL served through internal stream proxy
+  const url = `/api/v1/files/${key}`;
 
   return { key, url };
 };

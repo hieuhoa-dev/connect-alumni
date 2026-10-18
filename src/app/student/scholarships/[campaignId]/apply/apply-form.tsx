@@ -7,14 +7,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Send, CheckCircle2 } from "lucide-react";
+import { FileUpload } from "@/components/ui/file-upload";
+
+export interface FormQuestionItem {
+  id: string;
+  orderIndex: number;
+  questionType: string;
+  label: string;
+  options: string[] | null;
+  isRequired: boolean;
+  config: any;
+}
 
 interface ScholarshipApplyFormProps {
   campaignId: string;
   isExpired: boolean;
   studentName: string;
   studentCode: string;
+  questions?: FormQuestionItem[];
 }
 
 export const ScholarshipApplyForm = ({
@@ -22,18 +36,79 @@ export const ScholarshipApplyForm = ({
   isExpired,
   studentName,
   studentCode,
+  questions = [],
 }: ScholarshipApplyFormProps) => {
   const router = useRouter();
+
+  // For dynamic form questions
+  const [answers, setAnswers] = React.useState<Record<string, any>>({});
+  const [fileUrls, setFileUrls] = React.useState<Record<string, string>>({});
+
+  // For default form questions when no dynamic form is configured
   const [gpa, setGpa] = React.useState("");
   const [circumstance, setCircumstance] = React.useState("");
   const [proofUrl, setProofUrl] = React.useState("");
 
+  const [validationError, setValidationError] = React.useState<string | null>(null);
+
   const { mutate: apply, isPending, isSuccess, error } = useApplyScholarship();
+
+  const handleTextChange = (qId: string, value: string) => {
+    setAnswers((prev) => ({ ...prev, [qId]: value }));
+  };
+
+  const handleSingleChoice = (qId: string, value: string) => {
+    setAnswers((prev) => ({ ...prev, [qId]: value }));
+  };
+
+  const handleMultiChoice = (qId: string, option: string, checked: boolean) => {
+    setAnswers((prev) => {
+      const currentList: string[] = Array.isArray(prev[qId]) ? prev[qId] : [];
+      const updated = checked
+        ? [...currentList, option]
+        : currentList.filter((item) => item !== option);
+      return { ...prev, [qId]: updated };
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setValidationError(null);
+
+    let formattedAnswers: Array<{ questionId: string; answerValue?: any; fileUrl?: string }> = [];
+
+    if (questions.length > 0) {
+      // Validate dynamic questions
+      for (const q of questions) {
+        if (q.isRequired) {
+          const val = answers[q.id];
+          const file = fileUrls[q.id];
+          if (q.questionType === "file_upload" && !file) {
+            setValidationError(`Vui lòng tải lên tài liệu minh chứng cho câu: "${q.label}"`);
+            return;
+          }
+          if (
+            q.questionType !== "file_upload" &&
+            (val === undefined || val === null || val === "" || (Array.isArray(val) && val.length === 0))
+          ) {
+            setValidationError(`Vui lòng hoàn thành câu hỏi bắt buộc: "${q.label}"`);
+            return;
+          }
+        }
+      }
+
+      formattedAnswers = questions.map((q) => ({
+        questionId: q.id,
+        answerValue: answers[q.id] ?? null,
+        fileUrl: fileUrls[q.id] ?? null,
+      }));
+    }
+
     apply(
-      { campaignId },
+      {
+        campaignId,
+        answers: formattedAnswers,
+      },
       {
         onSuccess: () => {
           setTimeout(() => {
@@ -69,10 +144,10 @@ export const ScholarshipApplyForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
+      {(validationError || error) && (
         <Alert variant="destructive" className="py-2 text-xs">
           <AlertDescription>
-            {error.message || "Có lỗi xảy ra khi nộp hồ sơ"}
+            {validationError || error?.message || "Có lỗi xảy ra khi nộp hồ sơ"}
           </AlertDescription>
         </Alert>
       )}
@@ -92,54 +167,149 @@ export const ScholarshipApplyForm = ({
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="gpa" className="text-xs font-medium">
-          Điểm trung bình tích lũy (GPA)
-        </Label>
-        <Input
-          id="gpa"
-          placeholder="Ví dụ: 3.65 (Thang điểm 4)"
-          value={gpa}
-          onChange={(e) => setGpa(e.target.value)}
-          required
-          disabled={isPending}
-          className="text-xs"
-        />
-      </div>
+      {questions.length > 0 ? (
+        <div className="space-y-4 pt-2">
+          {questions.map((q, index) => (
+            <div
+              key={q.id}
+              className="space-y-2 rounded-lg border border-border/70 p-3.5 bg-card/60 shadow-sm"
+            >
+              <div className="flex items-start gap-2">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">
+                  {index + 1}
+                </span>
+                <Label className="text-xs font-semibold text-foreground leading-normal">
+                  {q.label}
+                  {q.isRequired && <span className="text-destructive ml-1">*</span>}
+                </Label>
+              </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="circumstance" className="text-xs font-medium">
-          Mô tả hoàn cảnh và nguyện vọng hỗ trợ
-        </Label>
-        <Textarea
-          id="circumstance"
-          placeholder="Trình bày hoàn cảnh kinh tế gia đình, khó khăn gặp phải và mục tiêu sử dụng học bổng..."
-          rows={5}
-          value={circumstance}
-          onChange={(e) => setCircumstance(e.target.value)}
-          required
-          disabled={isPending}
-          className="text-xs leading-relaxed"
-        />
-      </div>
+              <div className="pl-7 pt-1">
+                {q.questionType === "short_text" && (
+                  <Input
+                    placeholder="Câu trả lời của bạn..."
+                    value={answers[q.id] || ""}
+                    onChange={(e) => handleTextChange(q.id, e.target.value)}
+                    disabled={isPending}
+                    className="text-xs"
+                  />
+                )}
 
-      <div className="space-y-1.5">
-        <Label htmlFor="proofUrl" className="text-xs font-medium">
-          Link tài liệu minh chứng (Bảng điểm / Giấy xác nhận hoàn cảnh)
-        </Label>
-        <Input
-          id="proofUrl"
-          placeholder="Dán link Google Drive hoặc OneDrive chứa file PDF/ảnh scan minh chứng..."
-          value={proofUrl}
-          onChange={(e) => setProofUrl(e.target.value)}
-          required
-          disabled={isPending}
-          className="text-xs font-mono"
-        />
-        <p className="text-[11px] text-muted-foreground">
-          Đảm bảo link tài liệu ở chế độ xem được cấp quyền cho Khoa CNTT.
-        </p>
-      </div>
+                {q.questionType === "long_text" && (
+                  <Textarea
+                    placeholder="Nhập nội dung chi tiết..."
+                    rows={4}
+                    value={answers[q.id] || ""}
+                    onChange={(e) => handleTextChange(q.id, e.target.value)}
+                    disabled={isPending}
+                    className="text-xs leading-relaxed"
+                  />
+                )}
+
+                {q.questionType === "single_choice" && q.options && (
+                  <RadioGroup
+                    value={answers[q.id] || ""}
+                    onValueChange={(val) => handleSingleChoice(q.id, val)}
+                    disabled={isPending}
+                    className="space-y-2"
+                  >
+                    {q.options.map((opt) => (
+                      <div key={opt} className="flex items-center space-x-2">
+                        <RadioGroupItem value={opt} id={`${q.id}-${opt}`} />
+                        <Label
+                          htmlFor={`${q.id}-${opt}`}
+                          className="text-xs font-normal cursor-pointer"
+                        >
+                          {opt}
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                )}
+
+                {q.questionType === "multi_choice" && q.options && (
+                  <div className="space-y-2">
+                    {q.options.map((opt) => {
+                      const checked = (answers[q.id] || []).includes(opt);
+                      return (
+                        <div key={opt} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`${q.id}-${opt}`}
+                            checked={checked}
+                            onCheckedChange={(c) =>
+                              handleMultiChoice(q.id, opt, !!c)
+                            }
+                            disabled={isPending}
+                          />
+                          <Label
+                            htmlFor={`${q.id}-${opt}`}
+                            className="text-xs font-normal cursor-pointer"
+                          >
+                            {opt}
+                          </Label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {q.questionType === "file_upload" && (
+                  <FileUpload
+                    value={fileUrls[q.id] || ""}
+                    onChange={(url) =>
+                      setFileUrls((prev) => ({ ...prev, [q.id]: url }))
+                    }
+                    purpose="proof_document"
+                    disabled={isPending}
+                  />
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-4 pt-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="gpa" className="text-xs font-medium">
+              Điểm trung bình tích lũy (GPA) <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="gpa"
+              placeholder="Ví dụ: 3.65 (Thang điểm 4)"
+              value={gpa}
+              onChange={(e) => setGpa(e.target.value)}
+              required
+              disabled={isPending}
+              className="text-xs"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="circumstance" className="text-xs font-medium">
+              Mô tả hoàn cảnh và nguyện vọng hỗ trợ <span className="text-destructive">*</span>
+            </Label>
+            <Textarea
+              id="circumstance"
+              placeholder="Trình bày hoàn cảnh kinh tế gia đình, khó khăn gặp phải và mục tiêu sử dụng học bổng..."
+              rows={5}
+              value={circumstance}
+              onChange={(e) => setCircumstance(e.target.value)}
+              required
+              disabled={isPending}
+              className="text-xs leading-relaxed"
+            />
+          </div>
+
+          <FileUpload
+            value={proofUrl}
+            onChange={setProofUrl}
+            purpose="proof_document"
+            label="Tài liệu minh chứng (Bảng điểm / Giấy xác nhận) *"
+            helperText="Tải lên tài liệu minh chứng dạng PDF hoặc hình ảnh scan (Tối đa 10MB)"
+            disabled={isPending}
+          />
+        </div>
+      )}
 
       <div className="pt-2 flex justify-end">
         <Button

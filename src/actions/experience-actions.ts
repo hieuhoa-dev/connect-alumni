@@ -1,6 +1,6 @@
 "use server";
 
-import { eq, sql } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { experiencePosts } from "@/db/schema";
 import { getCurrentUser, requireRole } from "@/lib/permissions";
@@ -11,8 +11,8 @@ import {
 } from "@/validators/experience-schema";
 import { logAuditEvent } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications";
-
-import { sampleDLUExperiences } from "@/lib/dlu-sample-data";
+import { NotFoundError, InvalidStateError } from "@/lib/errors";
+import { validateStateTransition } from "@/lib/state-machine";
 
 /**
  * Public: Get published experience sharing posts
@@ -26,119 +26,53 @@ export const getPublishedExperiencePosts = async (params?: {
   const limit = params?.limit || 20;
   const offset = params?.offset || 0;
 
-  try {
-    const posts = await db.query.experiencePosts.findMany({
-      where: {
-        status: "published",
-        ...(params?.search ? { title: { ilike: `%${params.search}%` } } : {}),
-      },
-      with: {
-        author: {
-          with: {
-            profile: true,
-          },
+  const posts = await db.query.experiencePosts.findMany({
+    where: {
+      status: "published",
+      ...(params?.search ? { title: { ilike: `%${params.search}%` } } : {}),
+    },
+    with: {
+      author: {
+        with: {
+          profile: true,
         },
       },
-      orderBy: {
-        publishedAt: "desc",
-      },
-      limit,
-      offset,
-    });
-
-    if (posts && posts.length > 0) return posts;
-  } catch (err) {
-    // Database offline
-  }
-
-  let filtered = [...sampleDLUExperiences];
-  if (params?.search) {
-    const q = params.search.toLowerCase();
-    filtered = filtered.filter(
-      (p) =>
-        p.title.toLowerCase().includes(q) || p.content.toLowerCase().includes(q),
-    );
-  }
-
-  return filtered.map((p) => ({
-    id: p.id,
-    title: p.title,
-    content: p.content,
-    status: "published" as const,
-    publishedAt: new Date(p.publishedAt),
-    tags: p.tags,
-    viewCount: 128,
-    createdAt: new Date(p.publishedAt),
-    updatedAt: new Date(),
-    author: {
-      id: "author-" + p.id,
-      name: p.author.name,
-      profile: {
-        id: "prof-" + p.id,
-        fullName: p.author.profile?.fullName || p.author.name,
-        bio: p.author.profile?.bio,
-        avatarUrl: p.author.profile?.avatarUrl,
-        role: "alumni",
-      },
     },
-  }));
+    orderBy: {
+      publishedAt: "desc",
+    },
+    limit,
+    offset,
+  });
+
+  return posts || [];
 };
 
 /**
  * Get single post by ID and increment view count
  */
 export const getExperiencePostById = async (id: string) => {
-  try {
-    const post = await db.query.experiencePosts.findFirst({
-      where: {
-        id: id,
-      },
-      with: {
-        author: {
-          with: {
-            profile: true,
-          },
-        },
-      },
-    });
-
-    if (post && post.status === "published") {
-      try {
-        await db
-          .update(experiencePosts)
-          .set({ viewCount: sql`${experiencePosts.viewCount} + 1` })
-          .where(eq(experiencePosts.id, id));
-      } catch (e) {}
-      return post;
-    }
-  } catch (err) {
-    // Database offline
-  }
-
-  const sample = sampleDLUExperiences.find((p) => p.id === id);
-  if (sample) {
-    return {
-      id: sample.id,
-      title: sample.title,
-      content: sample.content,
-      status: "published" as const,
-      publishedAt: new Date(sample.publishedAt),
-      tags: sample.tags,
-      viewCount: 154,
-      createdAt: new Date(sample.publishedAt),
-      updatedAt: new Date(),
+  const post = await db.query.experiencePosts.findFirst({
+    where: {
+      id: id,
+    },
+    with: {
       author: {
-        id: "author-" + sample.id,
-        name: sample.author.name,
-        profile: {
-          id: "prof-" + sample.id,
-          fullName: sample.author.profile?.fullName || sample.author.name,
-          bio: sample.author.profile?.bio,
-          avatarUrl: sample.author.profile?.avatarUrl,
-          role: "alumni",
+        with: {
+          profile: true,
         },
       },
-    };
+    },
+  });
+
+  if (post && post.status === "published") {
+    try {
+      await db
+        .update(experiencePosts)
+        .set({ viewCount: sql`${experiencePosts.viewCount} + 1` })
+        .where(eq(experiencePosts.id, id));
+    } catch (e) {}
+    return post;
   }
 
   return null;
@@ -215,21 +149,47 @@ export const getMyExperiencePosts = async () => {
 export const reviewExperiencePost = async (
   postId: string,
   status: "published" | "rejected",
+  rejectedReason?: string,
 ) => {
   const current = await requireRole(["faculty_staff", "admin"]);
-  const validated = experienceReviewSchema.parse({ status });
+  const validated = experienceReviewSchema.parse({ status, rejectedReason });
+
+  const existing = await db.query.experiencePosts.findFirst({
+    where: {
+      id: postId,
+    },
+  });
+
+  if (!existing) {
+    throw new NotFoundError("Không tìm thấy bài viết");
+  }
+
+  validateStateTransition(
+    "experience",
+    existing.status,
+    validated.status,
+    current.role === "admin",
+  );
 
   const [updated] = await db
     .update(experiencePosts)
     .set({
       status: validated.status,
+      rejectedReason: validated.rejectedReason || null,
       publishedAt: validated.status === "published" ? new Date() : null,
     })
-    .where(eq(experiencePosts.id, postId))
+    .where(
+      and(
+        eq(experiencePosts.id, postId),
+        eq(experiencePosts.status, existing.status),
+      ),
+    )
     .returning();
 
   if (!updated) {
-    throw new Error("Không tìm thấy bài viết");
+    throw new InvalidStateError(
+      "Trạng thái bài viết đã thay đổi bởi thao tác khác. Vui lòng thử lại.",
+    );
   }
 
   // Notify author
@@ -243,7 +203,7 @@ export const reviewExperiencePost = async (
     body:
       validated.status === "published"
         ? "Cảm ơn bạn đã đóng góp chia sẻ kinh nghiệm quý báu cho cộng đồng sinh viên Khoa."
-        : "Vui lòng xem lại nội dung và chỉnh sửa phù hợp hơn.",
+        : `Lý do: ${validated.rejectedReason || "Vui lòng xem lại nội dung và chỉnh sửa phù hợp hơn."}`,
     linkUrl: `/student/experiences`,
     sendEmail: true,
   });
@@ -253,6 +213,7 @@ export const reviewExperiencePost = async (
     action: `review_experience_post_${validated.status}`,
     entityType: "experience_post",
     entityId: updated.id,
+    metadata: { status: validated.status, reason: validated.rejectedReason },
   });
 
   return updated;

@@ -138,6 +138,11 @@ const SidebarInner = ({
               icon: LayoutDashboard,
             },
             {
+              label: "Xác thực cựu SV",
+              href: "/faculty-admin/alumni-verification",
+              icon: ShieldCheck,
+            },
+            {
               label: "Duyệt doanh nghiệp",
               href: "/faculty-admin/companies/review",
               icon: Building2,
@@ -258,6 +263,7 @@ const SidebarInner = ({
             href: "/student/events",
             icon: Calendar,
           },
+          { label: "Mạng lưới Cựu SV", href: "/alumni", icon: Users },
           { label: "Tìm việc làm", href: "/jobs", icon: Briefcase },
           {
             label: "Biểu mẫu & Khảo sát",

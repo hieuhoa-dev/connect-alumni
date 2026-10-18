@@ -6,32 +6,40 @@ import { profiles, user, roleEnum } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { getCurrentUser, requireRole } from "@/lib/permissions";
 import { logAuditEvent } from "@/lib/audit";
+import { registerSchema, RegisterInput } from "@/validators/auth-schema";
 
-export interface SignUpProfileInput {
-  email: string;
-  password: string;
-  name: string;
-  role: (typeof roleEnum.enumValues)[number];
-  studentCode?: string;
-  faculty?: string;
-  batchYear?: number;
-  graduationYear?: number;
-  phone?: string;
-  bio?: string;
-}
+export type SignUpProfileInput = RegisterInput;
 
 /**
  * Register account and automatically create enriched profile
  */
 export const registerWithProfile = async (input: SignUpProfileInput) => {
-  // 1. Create user via Better-Auth API
-  const res = await auth.api.signUpEmail({
-    body: {
-      email: input.email,
-      password: input.password,
-      name: input.name,
+  // 1. Validate input strictly - role can only be student | alumni | employer
+  const validated = registerSchema.parse(input);
+
+  // 2. Check if email already exists
+  const existingUser = await db.query.user.findFirst({
+    where: {
+      email: validated.email.trim().toLowerCase(),
     },
   });
+  if (existingUser) {
+    throw new Error("Email này đã được sử dụng. Vui lòng đăng nhập hoặc dùng email khác.");
+  }
+
+  // 3. Create user via Better-Auth API
+  let res;
+  try {
+    res = await auth.api.signUpEmail({
+      body: {
+        email: validated.email,
+        password: validated.password,
+        name: validated.name,
+      },
+    });
+  } catch (err: any) {
+    throw new Error(err.message || "Không thể tạo tài khoản xác thực.");
+  }
 
   if (!res?.user?.id) {
     throw new Error(
@@ -39,21 +47,21 @@ export const registerWithProfile = async (input: SignUpProfileInput) => {
     );
   }
 
-  // 2. Insert vào bảng profiles — nếu thất bại phải xoá user vừa tạo để tránh orphaned account
+  // 4. Insert vào bảng profiles — nếu thất bại phải xoá user vừa tạo để tránh orphaned account
   let newProfile;
   try {
     const [inserted] = await db
       .insert(profiles)
       .values({
         userId: res.user.id,
-        role: input.role,
-        fullName: input.name,
-        studentCode: input.studentCode || null,
-        faculty: input.faculty || "Công nghệ Thông tin",
-        batchYear: input.batchYear || null,
-        graduationYear: input.graduationYear || null,
-        phone: input.phone || null,
-        bio: input.bio || null,
+        role: validated.role,
+        fullName: validated.name,
+        studentCode: validated.studentCode || null,
+        faculty: validated.faculty || "Công nghệ Thông tin",
+        batchYear: validated.batchYear || null,
+        graduationYear: validated.graduationYear || null,
+        phone: validated.phone || null,
+        bio: validated.bio || null,
         status: "active",
       })
       .returning();
@@ -180,107 +188,19 @@ export const adminUpdateUserRole = async (
 export const adminGetUsers = async () => {
   await requireRole("admin");
 
-  try {
-    const userList = await db.query.user.findMany({
-      with: {
-        profile: true,
-        companyMemberships: {
-          with: {
-            company: true,
-          },
+  const userList = await db.query.user.findMany({
+    with: {
+      profile: true,
+      companyMemberships: {
+        with: {
+          company: true,
         },
       },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
-    if (userList && userList.length > 0) return userList;
-  } catch (err) {
-    // Database offline
-  }
-
-  // Graceful fallback of active users for admin inspection
-  return [
-    {
-      id: "demo-user-admin",
-      name: "TS. Nguyễn Văn Quản Trị",
-      email: "admin@khoacntt.edu.vn",
-      createdAt: new Date("2026-01-10"),
-      profile: {
-        id: "prof-admin",
-        role: "admin",
-        fullName: "TS. Nguyễn Văn Quản Trị",
-        faculty: "Công nghệ Thông tin",
-        status: "active",
-        phone: "0901234567",
-        batchYear: 2005,
-      },
-      companyMemberships: [],
-    },
-    {
-      id: "demo-user-staff",
-      name: "ThS. Trần Thị Giáo Vụ",
-      email: "staff@khoacntt.edu.vn",
-      createdAt: new Date("2026-01-15"),
-      profile: {
-        id: "prof-staff",
-        role: "faculty_staff",
-        fullName: "ThS. Trần Thị Giáo Vụ",
-        faculty: "Công nghệ Thông tin",
-        status: "active",
-        phone: "0902345678",
-        batchYear: 2012,
-      },
-      companyMemberships: [],
-    },
-    {
-      id: "demo-user-alumni",
-      name: "Lê Hoàng Nam",
-      email: "alumni.le@gmail.com",
-      createdAt: new Date("2026-02-01"),
-      profile: {
-        id: "prof-alumni",
-        role: "alumni",
-        fullName: "Lê Hoàng Nam (Cựu SV K18)",
-        faculty: "Công nghệ Thông tin",
-        status: "active",
-        phone: "0903456789",
-        batchYear: 2018,
-      },
-      companyMemberships: [],
-    },
-    {
-      id: "demo-user-student",
-      name: "Nguyễn Tiến Hoa",
-      email: "student.hoa@khoacntt.edu.vn",
-      createdAt: new Date("2026-02-10"),
-      profile: {
-        id: "prof-student",
-        role: "student",
-        fullName: "Nguyễn Tiến Hoa (Sinh viên K21)",
-        faculty: "Công nghệ Thông tin",
-        status: "active",
-        phone: "0905678901",
-        batchYear: 2021,
-      },
-      companyMemberships: [],
-    },
-    {
-      id: "demo-user-employer",
-      name: "Phạm Thu Trang",
-      email: "hr@vng.com.vn",
-      createdAt: new Date("2026-02-20"),
-      profile: {
-        id: "prof-employer",
-        role: "employer",
-        fullName: "Phạm Thu Trang (HR VNG)",
-        faculty: "Đối tác Doanh nghiệp",
-        status: "active",
-        phone: "0906789012",
-        batchYear: null,
-      },
-      companyMemberships: [],
-    },
-  ];
+  return userList || [];
 };

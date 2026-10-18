@@ -1,19 +1,37 @@
 import * as React from "react";
-import { requireRole } from "@/lib/permissions";
+import { redirect } from "next/navigation";
+import { requireRole, UnauthorizedError, ForbiddenError } from "@/lib/permissions";
 import { db } from "@/db";
 import { notifications } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { Sidebar } from "@/components/shared/sidebar";
 
-const StudentLayout = async ({ children }: { children: React.ReactNode }) => {
-  const current = await requireRole([
-    "student",
-    "alumni",
-    "faculty_staff",
-    "admin",
-  ]);
+export const dynamic = "force-dynamic";
 
-  // Fetch recent in-app notifications
+const StudentLayout = async ({ children }: { children: React.ReactNode }) => {
+  let current;
+  try {
+    current = await requireRole([
+      "student",
+      "alumni",
+      "faculty_staff",
+      "admin",
+    ]);
+  } catch (err) {
+    if (err instanceof UnauthorizedError) {
+      redirect("/login?next=/student/dashboard");
+    }
+    if (err instanceof ForbiddenError) {
+      redirect("/403");
+    }
+    throw err;
+  }
+
+  if (current.profile?.status === "locked") {
+    redirect("/403");
+  }
+
+  // Fetch real notifications from database, no mock data fallbacks
   let userNotifications: any[] = [];
   try {
     userNotifications = await db
@@ -23,16 +41,8 @@ const StudentLayout = async ({ children }: { children: React.ReactNode }) => {
       .orderBy(desc(notifications.createdAt))
       .limit(10);
   } catch (err) {
-    userNotifications = [
-      {
-        id: "notif-s1",
-        title: "Chào mừng bạn đến với Mạng lưới Cựu sinh viên DLU!",
-        content: "Khám phá hàng chục cơ hội việc làm và sự kiện giao lưu kết nối tại trường.",
-        type: "system",
-        read: false,
-        createdAt: new Date(),
-      },
-    ];
+    console.error("Error fetching student notifications:", err);
+    userNotifications = [];
   }
 
   return (
