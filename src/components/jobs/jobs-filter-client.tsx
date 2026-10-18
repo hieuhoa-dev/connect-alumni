@@ -249,7 +249,7 @@ export const JobsFilterClient = ({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Tìm kiếm chức danh, kỹ năng, công ty, địa điểm... (Nhấn '/' để tìm)"
-              className="pl-9 pr-9 text-xs h-10 rounded-lg bg-background border-border/80 focus:border-[#1E4D2B]"
+              className="pl-9 pr-9 text-xs h-10 rounded-lg bg-background border-border/80 focus:border-primary"
             />
             {search ? (
               <button
@@ -269,20 +269,20 @@ export const JobsFilterClient = ({
 
           {/* Quick Sort Control */}
           <div className="flex items-center gap-1.5 shrink-0">
-            <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-medium mr-1">
-              <ArrowUpDown className="size-3.5" />
+            <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-semibold mr-1">
+              <ArrowUpDown className="size-3.5 text-primary" />
               <span>Sắp xếp:</span>
             </div>
-            <div className="flex items-center rounded-lg border border-border/70 p-0.5 bg-muted/30">
+            <div className="flex items-center rounded-lg border border-pine-200/80 p-0.5 bg-pine-100/70 dark:bg-pine-900/60 shadow-xs">
               {SORT_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => setSortBy(opt.value)}
-                  className={`px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors cursor-pointer ${
+                  className={`px-3 py-1 text-[11px] font-medium rounded-md transition-all duration-200 cursor-pointer ${
                     sortBy === opt.value
-                      ? "bg-background text-[#1E4D2B] font-semibold shadow-2xs"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-primary text-primary-foreground font-bold shadow-xs"
+                      : "text-pine-800/70 hover:text-pine-950 hover:bg-white/40 dark:text-pine-200/70 dark:hover:text-white"
                   }`}
                 >
                   {opt.label}
@@ -317,7 +317,7 @@ export const JobsFilterClient = ({
                   onClick={() => setJobType(jt.value)}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                     active
-                      ? "bg-[#1E4D2B] text-white shadow-xs font-semibold"
+                      ? "bg-primary text-primary-foreground shadow-xs font-semibold"
                       : "bg-muted/40 text-foreground/80 hover:bg-muted border border-border/60"
                   }`}
                 >
@@ -342,7 +342,7 @@ export const JobsFilterClient = ({
           {/* Location */}
           <div className="space-y-1.5">
             <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-              <MapPin className="size-3 text-[#1E4D2B]" />
+              <MapPin className="size-3 text-primary" />
               Địa điểm làm việc:
             </span>
             <div className="flex flex-wrap items-center gap-1">
@@ -353,9 +353,9 @@ export const JobsFilterClient = ({
                     key={loc.value}
                     type="button"
                     onClick={() => setLocation(loc.value)}
-                    className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all cursor-pointer ${
                       active
-                        ? "bg-[#1E4D2B]/15 text-[#1E4D2B] border border-[#1E4D2B]/40 font-semibold"
+                        ? "bg-primary text-primary-foreground border border-primary font-bold shadow-xs"
                         : "bg-background text-muted-foreground hover:text-foreground border border-border/60 hover:bg-muted/40"
                     }`}
                   >
@@ -369,7 +369,7 @@ export const JobsFilterClient = ({
           {/* Industry */}
           <div className="space-y-1.5">
             <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-              <Building2 className="size-3 text-[#1E4D2B]" />
+              <Building2 className="size-3 text-primary" />
               Lĩnh vực chuyên môn:
             </span>
             <div className="flex flex-wrap items-center gap-1">
@@ -380,9 +380,9 @@ export const JobsFilterClient = ({
                     key={ind.value}
                     type="button"
                     onClick={() => setIndustry(ind.value)}
-                    className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all cursor-pointer ${
                       active
-                        ? "bg-[#1E4D2B]/15 text-[#1E4D2B] border border-[#1E4D2B]/40 font-semibold"
+                        ? "bg-primary text-primary-foreground border border-primary font-bold shadow-xs"
                         : "bg-background text-muted-foreground hover:text-foreground border border-border/60 hover:bg-muted/40"
                     }`}
                   >
@@ -396,7 +396,7 @@ export const JobsFilterClient = ({
           {/* Salary Tier */}
           <div className="space-y-1.5">
             <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-              <DollarSign className="size-3 text-[#1E4D2B]" />
+              <DollarSign className="size-3 text-primary" />
               Mức lương mong muốn:
             </span>
             <div className="flex flex-wrap items-center gap-1">
@@ -407,9 +407,9 @@ export const JobsFilterClient = ({
                     key={sal.value}
                     type="button"
                     onClick={() => setSalaryTier(sal.value)}
-                    className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all cursor-pointer ${
                       active
-                        ? "bg-[#1E4D2B]/15 text-[#1E4D2B] border border-[#1E4D2B]/40 font-semibold"
+                        ? "bg-primary text-primary-foreground border border-primary font-bold shadow-xs"
                         : "bg-background text-muted-foreground hover:text-foreground border border-border/60 hover:bg-muted/40"
                     }`}
                   >
@@ -434,7 +434,7 @@ export const JobsFilterClient = ({
               </span>
             )}
             {jobType !== "all" && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1E4D2B]/10 text-[#1E4D2B] border border-[#1E4D2B]/20">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-pine-100 text-pine-800 border border-pine-200">
                 Hình thức: {JOB_TYPES.find((j) => j.value === jobType)?.label}
                 <button type="button" onClick={() => setJobType("all")} className="hover:opacity-75">
                   <X className="size-3" />
@@ -442,7 +442,7 @@ export const JobsFilterClient = ({
               </span>
             )}
             {location !== "all" && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1E4D2B]/10 text-[#1E4D2B] border border-[#1E4D2B]/20">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-pine-100 text-pine-800 border border-pine-200">
                 Khu vực: {LOCATIONS.find((l) => l.value === location)?.label}
                 <button type="button" onClick={() => setLocation("all")} className="hover:opacity-75">
                   <X className="size-3" />
@@ -450,7 +450,7 @@ export const JobsFilterClient = ({
               </span>
             )}
             {industry !== "all" && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1E4D2B]/10 text-[#1E4D2B] border border-[#1E4D2B]/20">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-pine-100 text-pine-800 border border-pine-200">
                 Ngành: {INDUSTRIES.find((i) => i.value === industry)?.label}
                 <button type="button" onClick={() => setIndustry("all")} className="hover:opacity-75">
                   <X className="size-3" />
@@ -458,7 +458,7 @@ export const JobsFilterClient = ({
               </span>
             )}
             {salaryTier !== "all" && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1E4D2B]/10 text-[#1E4D2B] border border-[#1E4D2B]/20">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-pine-100 text-pine-800 border border-pine-200">
                 Lương: {SALARY_TIERS.find((s) => s.value === salaryTier)?.label}
                 <button type="button" onClick={() => setSalaryTier("all")} className="hover:opacity-75">
                   <X className="size-3" />
@@ -508,18 +508,18 @@ export const JobsFilterClient = ({
           {filteredJobs.map((job) => (
             <Card
               key={job.id}
-              className="border border-border/80 hover:border-[#1E4D2B]/40 hover:shadow-xs transition-all bg-card group"
+              className="border border-border/80 hover:border-pine-300 hover:shadow-brand transition-all bg-card group"
             >
               <CardHeader className="pb-2.5 pt-4 px-4 sm:px-6">
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <CardTitle className="text-base sm:text-lg font-semibold hover:text-[#1E4D2B] transition-colors">
+                    <CardTitle className="text-base sm:text-lg font-semibold hover:text-primary transition-colors">
                       <Link
                         href={`/jobs/${job.id}`}
-                        className="inline-flex items-center gap-1.5 group-hover:text-[#1E4D2B]"
+                        className="inline-flex items-center gap-1.5 group-hover:text-primary"
                       >
                         {job.title}
-                        <ArrowUpRight className="size-4 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-[#1E4D2B]" />
+                        <ArrowUpRight className="size-4 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-primary" />
                       </Link>
                     </CardTitle>
                     <CardDescription className="flex flex-wrap items-center gap-2 text-xs font-medium text-foreground">
@@ -545,7 +545,7 @@ export const JobsFilterClient = ({
                       {formatJobTypeBadge(job.jobType)}
                     </span>
                     {job.salaryRange && (
-                      <span className="inline-flex items-center rounded-full border border-[#CDE3CB]/60 bg-[#EDF3EC] px-2.5 py-0.5 text-[11px] font-mono font-medium text-[#346538]">
+                      <span className="inline-flex items-center rounded-full border border-pine-200 bg-pine-50 px-2.5 py-0.5 text-[11px] font-mono font-medium text-pine-800">
                         {job.salaryRange}
                       </span>
                     )}
@@ -559,7 +559,7 @@ export const JobsFilterClient = ({
                 </p>
                 <div className="flex flex-wrap items-center gap-4 text-[11px] pt-1">
                   <span className="flex items-center gap-1 text-muted-foreground">
-                    <MapPin className="size-3.5 text-[#1E4D2B]" />
+                    <MapPin className="size-3.5 text-primary" />
                     {job.location}
                   </span>
                   <span className="flex items-center gap-1 text-muted-foreground font-mono">
@@ -574,8 +574,8 @@ export const JobsFilterClient = ({
                 <Link
                   href={`/jobs/${job.id}`}
                   className={cn(
-                    buttonVariants({ size: "sm" }),
-                    "text-xs font-medium cursor-pointer bg-[#1E4D2B] hover:bg-[#1E4D2B]/90 text-white inline-flex items-center gap-1",
+                    buttonVariants({ variant: "default", size: "sm" }),
+                    "text-xs font-semibold inline-flex items-center gap-1",
                   )}
                 >
                   Xem chi tiết & Ứng tuyển

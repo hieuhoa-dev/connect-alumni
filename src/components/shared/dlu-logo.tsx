@@ -9,7 +9,7 @@ interface DLULogoProps {
 export const DLULogo = ({ className = "", size = 42 }: DLULogoProps) => {
   return (
     <div
-      className={`relative inline-flex items-center justify-center shrink-0 rounded-full overflow-hidden bg-white p-0.5 ring-1 ring-[#1E4D2B]/20 shadow-xs transition-all duration-200 hover:ring-[#1E4D2B]/40 hover:scale-105 hover:shadow-sm ${className}`}
+      className={`relative inline-flex items-center justify-center shrink-0 rounded-full overflow-hidden bg-white p-0.5 ring-1 ring-pine-600/20 shadow-xs transition-all duration-200 hover:ring-pine-600/40 hover:scale-105 hover:shadow-sm ${className}`}
       style={{ width: size, height: size }}
       title="Trường Đại học Đà Lạt (DLU)"
     >

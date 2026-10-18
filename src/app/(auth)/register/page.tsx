@@ -82,7 +82,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <Card className="border-border shadow-sm">
+    <Card className="border-border/80 shadow-brand-lg backdrop-blur-md bg-white/95 dark:bg-card/95">
       <CardHeader className="space-y-1 text-center">
         <CardTitle className="text-2xl font-bold tracking-tight">
           Đăng ký tài khoản

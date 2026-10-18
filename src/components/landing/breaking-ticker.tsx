@@ -1,109 +1,161 @@
 "use client";
 
-import * as React from "react";
+import { ChevronRight, Sparkles, Volume2 } from "lucide-react";
+import { useReducedMotion } from "motion/react";
 import Link from "next/link";
-import { Bell, ChevronRight, Sparkles } from "lucide-react";
+import * as React from "react";
 
-interface BreakingTickerProps {
-  items?: {
-    id: string;
-    tag: string;
-    title: string;
-    href: string;
-    isHot?: boolean;
-  }[];
+interface TickerItem {
+  id: string;
+  tag: string;
+  title: string;
+  href: string;
+  date?: string;
+  isHot?: boolean;
 }
 
-const defaultItems = [
+const defaultItems: TickerItem[] = [
   {
     id: "1",
     tag: "QUỸ KHUYẾN HỌC",
-    title: "Tiếp nhận hồ sơ xin học bổng Tiếp sức Sinh viên CNTT K22 - Đợt 1 năm học 2026",
+    title:
+      "Tiếp nhận hồ sơ xin học bổng Tiếp sức Sinh viên CNTT K22 - Đợt 1 năm học 2026",
     href: "/scholarships",
+    date: "18/10",
     isHot: true,
   },
   {
     id: "2",
     tag: "SỰ KIỆN",
-    title: "Talkshow 'Lộ trình từ Lập trình viên đến Tech Lead & AI Architect' cùng Cựu sinh viên K12",
+    title:
+      "Talkshow 'Lộ trình từ Lập trình viên đến Tech Lead & AI Architect' cùng Cựu sinh viên K12",
     href: "/events",
+    date: "15/10",
   },
   {
     id: "3",
     tag: "TUYỂN DỤNG",
-    title: "Doanh nghiệp đối tác mở đợt tuyển thực tập sinh & kỹ sư phần mềm chính quy",
+    title:
+      "Doanh nghiệp đối tác mở đợt tuyển thực tập sinh & kỹ sư phần mềm chính quy",
     href: "/jobs",
+    date: "12/10",
   },
   {
     id: "4",
     tag: "KHẢO SÁT",
-    title: "Khoa CNTT phát động khảo sát đóng góp ý kiến hoàn thiện chương trình đào tạo",
-    href: "/#survey",
+    title:
+      "Khoa CNTT phát động khảo sát đóng góp ý kiến hoàn thiện chương trình đào tạo",
+    href: "/experiences",
+    date: "10/10",
   },
 ];
 
-export const BreakingTicker = ({ items = defaultItems }: BreakingTickerProps) => {
+export const BreakingTicker = ({
+  items = defaultItems,
+}: {
+  items?: TickerItem[];
+}) => {
+  const reduceMotion = useReducedMotion();
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
 
   React.useEffect(() => {
-    if (isPaused || items.length <= 1) return;
-    const interval = setInterval(() => {
+    if (!reduceMotion) return;
+    if (isPaused) return;
+    const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % items.length);
-    }, 4500);
-    return () => clearInterval(interval);
-  }, [isPaused, items.length]);
-
-  const currentItem = items[currentIndex] || items[0];
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [reduceMotion, isPaused, items.length]);
 
   return (
-    <div className="border-b border-border/70 bg-[#FBF3DB]/40 dark:bg-amber-950/20 text-foreground">
-      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2">
-        <div
-          className="flex items-center justify-between gap-3 text-xs"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-        >
-          {/* Label Tag */}
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="flex items-center gap-1 rounded bg-[#956400] text-white px-2 py-0.5 text-[10px] font-mono font-semibold uppercase tracking-wider">
-              <Sparkles className="size-2.5 animate-pulse" />
-              <span>BẢN TIN NÓNG</span>
-            </span>
+    <div
+      className="relative z-40 h-9 bg-pine-900 border-b border-pine-800 text-white flex items-center overflow-hidden text-xs"
+      role="region"
+      aria-label="Tin mới cập nhật"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onFocus={() => setIsPaused(true)}
+      onBlur={() => setIsPaused(false)}
+    >
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center h-full">
+        {/* Slanted Label on the left */}
+        <div className="relative flex items-center h-full shrink-0 z-20 pr-4">
+          <div className="flex items-center gap-1.5 bg-sun-500 text-ink font-bold text-[11px] px-3 py-1 uppercase tracking-wider rounded-l-md shadow-xs">
+            <Sparkles className="size-3 animate-pulse" />
+            <span>TIN MỚI</span>
           </div>
+          {/* Slanted edge */}
+          <div
+            className="w-0 h-0 border-y-[13px] border-y-transparent border-l-[10px] border-l-sun-500"
+            aria-hidden="true"
+          />
+        </div>
 
-          {/* Current Ticker Content */}
-          <div className="flex-1 overflow-hidden">
-            <div className="flex items-center gap-2 truncate transition-all duration-300">
-              <span className="hidden sm:inline-block font-mono text-[11px] font-semibold text-[#956400] dark:text-amber-400 shrink-0">
-                [{currentItem.tag}]
+        {/* Content */}
+        {reduceMotion ? (
+          // Static cycling mode for reduced motion
+          <div className="flex-1 flex items-center justify-between px-3 overflow-hidden">
+            <div className="flex items-center gap-2 truncate">
+              <span className="font-mono text-[10px] font-bold text-gold-300">
+                [{items[currentIndex].tag}]
               </span>
               <Link
-                href={currentItem.href}
-                className="truncate font-medium text-foreground hover:underline transition-colors"
+                href={items[currentIndex].href}
+                className="truncate font-medium hover:text-gold-300 transition-colors"
               >
-                {currentItem.title}
+                {items[currentIndex].title}
               </Link>
             </div>
+            <div className="flex items-center gap-1 shrink-0 ml-2">
+              <span className="font-mono text-[10px] text-pine-300">
+                {currentIndex + 1}/{items.length}
+              </span>
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrentIndex((prev) => (prev + 1) % items.length)
+                }
+                className="p-1 text-pine-300 hover:text-white"
+                aria-label="Tin tiếp theo"
+              >
+                <ChevronRight className="size-3.5" />
+              </button>
+            </div>
           </div>
-
-          {/* Controls */}
-          <div className="flex items-center gap-1 shrink-0">
-            <span className="font-mono text-[10px] text-muted-foreground mr-1">
-              {currentIndex + 1}/{items.length}
-            </span>
-            <button
-              type="button"
-              onClick={() =>
-                setCurrentIndex((prev) => (prev + 1) % items.length)
-              }
-              aria-label="Next notice"
-              className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground hover:text-foreground transition-colors"
+        ) : (
+          // Continuous marquee stream
+          <div className="relative flex-1 overflow-hidden h-full flex items-center mask-radial-fade-none">
+            <div
+              className={`flex items-center whitespace-nowrap gap-12 ${
+                isPaused ? "[animation-play-state:paused]" : ""
+              } animate-marquee-slow`}
             >
-              <ChevronRight className="size-3.5" />
-            </button>
+              {[...items, ...items].map((item, idx) => (
+                <div
+                  key={`${item.id}-${idx}`}
+                  className="flex items-center gap-2 shrink-0 group"
+                >
+                  <span className="font-mono text-[11px] font-bold text-gold-300">
+                    [{item.tag}]
+                  </span>
+                  <Link
+                    href={item.href}
+                    className="font-medium text-white/95 group-hover:text-gold-300 group-hover:underline transition-colors"
+                  >
+                    {item.title}
+                  </Link>
+                  {item.date && (
+                    <span className="font-mono text-[10px] text-pine-300">
+                      ({item.date})
+                    </span>
+                  )}
+                  <span className="text-pine-600 ml-4">•</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

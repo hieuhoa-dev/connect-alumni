@@ -250,7 +250,7 @@ export const NewsFeedSection = ({
             className={cn(
               "px-3.5 py-1.5 text-xs font-medium rounded-md border transition-all duration-200 cursor-pointer flex items-center gap-2",
               activeTab === t.id
-                ? "bg-foreground text-background border-foreground font-semibold shadow-xs"
+                ? "bg-primary text-primary-foreground border-primary font-bold shadow-xs"
                 : "bg-background text-muted-foreground border-border hover:bg-muted/70 hover:text-foreground",
             )}
           >
@@ -259,7 +259,7 @@ export const NewsFeedSection = ({
               className={cn(
                 "text-[10px] font-mono px-1.5 py-0.2 rounded",
                 activeTab === t.id
-                  ? "bg-background/20 text-background"
+                  ? "bg-white/20 text-white"
                   : "bg-muted text-muted-foreground",
               )}
             >

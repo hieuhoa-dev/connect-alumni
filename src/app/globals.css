@@ -5,55 +5,105 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Base palette */
-  --background: oklch(90 0 0);
-  --foreground: oklch(15% 0 0);
-  --card: oklch(97% 0 0);
-  --muted-foreground: oklch(50% 0 0);
-  --border: oklch(15% 0 0 / 0.06);
-  --input: oklch(1 0 0);
-  /* beUI extensions */
-  --border-strong: oklch(15% 0 0 / 0.12);
-  --accent-fg: oklch(15% 0 0);
-  --neon: oklch(80% 0.22 145);
-  --violet: oklch(68% 0.22 295);
-  --danger: oklch(62% 0.22 25);
-  --success: oklch(70% 0.18 155);
-  --warning: oklch(78% 0.18 75);
-  --glass-bg: oklch(99% 0 0 / 0.55);
-  --glass-border: oklch(15% 0 0 / 0.08);
-  --glass-strong-bg: rgb(255 255 255 / 0.7);
-  --glass-thin-bg: rgb(255 255 255 / 0.45);
-  /* shadcn semantic tokens */
+  /* Thương hiệu DLU & Đà Lạt */
+  --pine-50: #EEF7EC;
+  --pine-100: #DCEFD8;
+  --pine-200: #BEE0B8;
+  --pine-300: #8CCB85;
+  --pine-400: #4FB063;
+  --pine-500: #2C9650;
+  --pine-600: #1B7A3E;
+  --pine-700: #176232;
+  --pine-800: #124D28;
+  --pine-900: #0F3D22;
+  --pine-950: #0A1F14;
+
+  --sun-50: #FFF1E0;
+  --sun-100: #FFDDB3;
+  --sun-500: #F28A1B;
+  --sun-600: #E67300;
+  --sun-700: #B84F00;
+
+  --sky-50: #E4EDFF;
+  --sky-600: #1D4FD7;
+  --sky-800: #1A4DB0;
+
+  --blossom-50: #FDEEF4;
+  --blossom-700: #C2185B;
+  --blossom-800: #9D1450;
+
+  --gold-50: #FFF3CC;
+  --gold-300: #FFD166;
+  --gold-800: #8A4B00;
+
+  --star-50: #FDE8E8;
+  --star-600: #D42B2B;
+  --star-800: #A31D1D;
+
+  --lime-300: #C8F169;
+
+  /* Ngữ nghĩa shadcn chuẩn v2 "Đà Lạt Rực Rỡ" */
+  --background: #F4F9F1;
+  --foreground: #0E2217;
+  --card: #FFFFFF;
   --card-foreground: var(--foreground);
-  --popover: var(--card);
+  --popover: #FFFFFF;
   --popover-foreground: var(--foreground);
-  --primary: var(--foreground);
-  --primary-foreground: var(--background);
-  --secondary: var(--card);
-  --secondary-foreground: var(--foreground);
-  --muted: var(--card);
-  --accent: oklch(72% 0.18 195);
-  --accent-foreground: var(--accent-fg);
-  --destructive: var(--danger);
-  --input: var(--border);
-  --ring: var(--border-strong);
+  --primary: var(--pine-600);
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--pine-50);
+  --secondary-foreground: var(--pine-800);
+  --muted: var(--pine-50);
+  --muted-foreground: #4A5F52;
+  --accent: var(--pine-100);
+  --accent-foreground: var(--pine-900);
+  --destructive: var(--star-600);
+  --border: rgb(15 61 34 / 0.12);
+  --border-strong: rgb(15 61 34 / 0.22);
+  --input: rgb(15 61 34 / 0.22);
+  --ring: var(--pine-500);
+  --radius: 0.75rem;
+
+  --shadow-brand: 0 1px 2px rgb(15 61 34 / 0.06), 0 8px 24px -12px rgb(23 98 50 / 0.28);
+  --shadow-brand-lg: 0 2px 4px rgb(15 61 34 / 0.06), 0 20px 40px -16px rgb(23 98 50 / 0.38);
+  --shadow-sun: 0 10px 24px -10px rgb(242 138 27 / 0.55);
+
+  /* Glass accents */
+  --glass-bg: rgb(244 249 241 / 0.85);
+  --glass-border: rgb(15 61 34 / 0.12);
+  --glass-strong-bg: rgb(255 255 255 / 0.9);
+  --glass-thin-bg: rgb(255 255 255 / 0.55);
 }
 
 .dark {
-  --background: #151515;
-  --foreground: oklch(96% 0 0);
-  --card: #1c1c1c;
-  --input: oklch(0 0 0);
-  --muted-foreground: oklch(62% 0 0);
-  --border: rgb(255 255 255 / 0.05);
-  --border-strong: rgb(255 255 255 / 0.1);
-  --accent: oklch(80% 0.18 195);
-  --accent-fg: #151515;
-  --glass-bg: rgb(28 28 28 / 0.55);
-  --glass-border: rgb(255 255 255 / 0.08);
-  --glass-strong-bg: rgb(28 28 28 / 0.6);
-  --glass-thin-bg: rgb(21 21 21 / 0.45);
+  --background: #0A1F14;
+  --foreground: #EAF4EC;
+  --card: #10291B;
+  --card-foreground: #EAF4EC;
+  --popover: #10291B;
+  --popover-foreground: #EAF4EC;
+  --primary: #4ADE80;
+  --primary-foreground: #0A1F14;
+  --secondary: #163524;
+  --secondary-foreground: #CFE8D5;
+  --muted: #163524;
+  --muted-foreground: #9FB5A8;
+  --accent: #1C4530;
+  --accent-foreground: #EAF4EC;
+  --destructive: #F87171;
+  --border: rgb(255 255 255 / 0.10);
+  --border-strong: rgb(255 255 255 / 0.20);
+  --input: rgb(255 255 255 / 0.20);
+  --ring: #4ADE80;
+
+  --shadow-brand: 0 1px 2px rgb(0 0 0 / 0.2), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+  --shadow-brand-lg: 0 2px 4px rgb(0 0 0 / 0.3), 0 20px 40px -16px rgb(0 0 0 / 0.6);
+  --shadow-sun: 0 10px 24px -10px rgb(242 138 27 / 0.35);
+
+  --glass-bg: rgb(10 31 20 / 0.85);
+  --glass-border: rgb(255 255 255 / 0.12);
+  --glass-strong-bg: rgb(16 41 27 / 0.9);
+  --glass-thin-bg: rgb(10 31 20 / 0.55);
 }
 
 @theme inline {
@@ -61,12 +111,12 @@
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
+
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
-  --color-neon: var(--neon);
-  --color-violet: var(--violet);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -83,12 +133,53 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
-  --color-input: var(--input);
   --color-ring: var(--ring);
+
+  /* Semantic Brand Tokens for direct utility use */
+  --color-pine-50: var(--pine-50);
+  --color-pine-100: var(--pine-100);
+  --color-pine-200: var(--pine-200);
+  --color-pine-300: var(--pine-300);
+  --color-pine-400: var(--pine-400);
+  --color-pine-500: var(--pine-500);
+  --color-pine-600: var(--pine-600);
+  --color-pine-700: var(--pine-700);
+  --color-pine-800: var(--pine-800);
+  --color-pine-900: var(--pine-900);
+  --color-pine-950: var(--pine-950);
+
+  --color-sun-50: var(--sun-50);
+  --color-sun-100: var(--sun-100);
+  --color-sun-500: var(--sun-500);
+  --color-sun-600: var(--sun-600);
+  --color-sun-700: var(--sun-700);
+
+  --color-sky-50: var(--sky-50);
+  --color-sky-600: var(--sky-600);
+  --color-sky-800: var(--sky-800);
+
+  --color-blossom-50: var(--blossom-50);
+  --color-blossom-700: var(--blossom-700);
+  --color-blossom-800: var(--blossom-800);
+
+  --color-gold-50: var(--gold-50);
+  --color-gold-300: var(--gold-300);
+  --color-gold-800: var(--gold-800);
+
+  --color-star-50: var(--star-50);
+  --color-star-600: var(--star-600);
+  --color-star-800: var(--star-800);
+
+  --color-lime-300: var(--lime-300);
+
+  --color-canvas: var(--background);
+  --color-surface: var(--card);
+  --color-ink: var(--foreground);
 }
 
 @theme {
-  --animate-marquee: marquee 30s linear infinite;
+  --animate-marquee: marquee 35s linear infinite;
+  --animate-marquee-slow: marquee 45s linear infinite;
   --animate-marquee-vertical: marquee-vertical 30s linear infinite;
   --animate-shimmer: shimmer 2.5s linear infinite;
 
@@ -119,6 +210,42 @@
 }
 
 @layer utilities {
+  .bg-hero {
+    background-image:
+      radial-gradient(circle at 85% 10%, rgb(242 138 27 / 0.35), transparent 45%),
+      linear-gradient(135deg, #0F3D22 0%, #124D28 45%, #1B7A3E 100%);
+  }
+
+  .bg-photo-scrim {
+    background: linear-gradient(90deg, rgb(10 31 20 / 0.88) 0%, rgb(15 61 34 / 0.55) 55%, transparent 100%);
+  }
+
+  .bg-photo-tint {
+    background: linear-gradient(180deg, rgb(15 61 34 / 0.78), rgb(10 31 20 / 0.92));
+  }
+
+  .bg-section-title {
+    background: linear-gradient(90deg, #EEF7EC, transparent 70%);
+  }
+
+  .text-gradient-sun {
+    background: linear-gradient(90deg, #FFD166, #F28A1B);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .shadow-brand {
+    box-shadow: var(--shadow-brand);
+  }
+
+  .shadow-brand-lg {
+    box-shadow: var(--shadow-brand-lg);
+  }
+
+  .shadow-sun {
+    box-shadow: var(--shadow-sun);
+  }
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
@@ -137,9 +264,6 @@
     background: var(--glass-bg);
     backdrop-filter: blur(20px) saturate(160%);
     border: 1px solid var(--glass-border);
-    box-shadow:
-      0 1px 0 0 rgb(255 255 255 / 0.06) inset,
-      0 24px 60px -24px rgb(0 0 0 / 0.45);
   }
   .glass-strong {
     background: var(--glass-strong-bg);

@@ -39,7 +39,7 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-1.5">
-          <h1 className="font-serif text-3xl font-bold tracking-tight text-[#1E4D2B]">
+          <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-pine-800">
             Góc chia sẻ kinh nghiệm — Cựu sinh viên Đại học Đà Lạt
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -50,7 +50,6 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
           render={<Link href="/student/experiences/new" />}
           nativeButton={false}
           size="sm"
-          className="bg-[#1E4D2B] hover:bg-[#1E4D2B]/90 text-white"
         >
           Viết bài chia sẻ mới
         </Button>

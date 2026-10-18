@@ -38,7 +38,7 @@ const ScholarshipsPage = async () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-2">
-          <h1 className="text-3xl font-extrabold tracking-tight text-[#1E4D2B]">
+          <h1 className="font-serif text-3xl sm:text-4xl font-extrabold tracking-tight text-pine-800">
             Quỹ Khuyến học & Tiếp sức Tài năng Trẻ — Đại học Đà Lạt
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -49,11 +49,11 @@ const ScholarshipsPage = async () => {
         <Link
           href="/employer/scholarships/pledge"
           className={buttonVariants({
+            variant: "sun",
             size: "sm",
-            className: "bg-[#1E4D2B] hover:bg-[#1E4D2B]/90 text-white",
           })}
         >
-          <HeartHandshake className="h-4 w-4 mr-2" />
+          <HeartHandshake className="h-4 w-4 mr-1.5" />
           Đồng hành tài trợ
         </Link>
       </div>

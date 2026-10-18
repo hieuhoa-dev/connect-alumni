@@ -95,7 +95,7 @@ const LoginForm = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="border-border shadow-sm">
+      <Card className="border-border/80 shadow-brand-lg backdrop-blur-md bg-white/95 dark:bg-card/95">
         <CardHeader className="space-y-2 text-center pb-3">
           <div className="flex justify-center">
             <Link href="/" title="Về trang chủ">
@@ -177,14 +177,14 @@ const LoginForm = () => {
       </Card>
 
       {/* Demo Fast Login Box for Reviewers */}
-      <Card className="border-[#1E4D2B]/30 bg-[#1E4D2B]/5 shadow-xs">
+      <Card className="border-pine-400/40 bg-white/95 dark:bg-card/95 shadow-brand backdrop-blur-md">
         <CardHeader className="py-3 px-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1E4D2B]">
-              <Sparkles className="h-4 w-4" />
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-pine-800">
+              <Sparkles className="h-4 w-4 text-sun-600" />
               <span>Tài khoản demo sẵn dùng (Bấm vào để vào ngay)</span>
             </div>
-            {isLoading && <Loader2 className="h-3.5 w-3.5 animate-spin text-[#1E4D2B]" />}
+            {isLoading && <Loader2 className="h-3.5 w-3.5 animate-spin text-pine-600" />}
           </div>
         </CardHeader>
         <CardContent className="px-4 pb-4 pt-0 space-y-2">
@@ -196,7 +196,7 @@ const LoginForm = () => {
               type="button"
               disabled={isLoading}
               onClick={() => handleQuickLogin("staff@khoacntt.edu.vn")}
-              className="flex items-center justify-between rounded-lg p-2.5 text-left text-xs bg-card hover:bg-muted/80 border border-border transition-all hover:border-[#1E4D2B]/50 shadow-2xs cursor-pointer active:scale-[0.99]"
+              className="flex items-center justify-between rounded-lg p-2.5 text-left text-xs bg-card hover:bg-muted/80 border border-border transition-all hover:border-pine-400 shadow-2xs cursor-pointer active:scale-[0.99]"
             >
               <div>
                 <div className="font-semibold text-foreground">
@@ -234,7 +234,7 @@ const LoginForm = () => {
               type="button"
               disabled={isLoading}
               onClick={() => handleQuickLogin("student.hoa@khoacntt.edu.vn")}
-              className="flex items-center justify-between rounded-lg p-2.5 text-left text-xs bg-card hover:bg-muted/80 border border-border transition-all hover:border-[#1E4D2B]/50 shadow-2xs cursor-pointer active:scale-[0.99]"
+              className="flex items-center justify-between rounded-lg p-2.5 text-left text-xs bg-card hover:bg-muted/80 border border-border transition-all hover:border-pine-400 shadow-2xs cursor-pointer active:scale-[0.99]"
             >
               <div>
                 <div className="font-semibold text-foreground">

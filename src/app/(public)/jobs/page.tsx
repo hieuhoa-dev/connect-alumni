@@ -32,7 +32,7 @@ const JobsPage = async ({ searchParams }: JobsPageProps) => {
     <div className="container mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
       {/* Header */}
       <div className="space-y-1.5">
-        <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-[#1E4D2B]">
+        <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-pine-800">
           Cơ hội nghề nghiệp & Thực tập — Đại học Đà Lạt
         </h1>
         <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">

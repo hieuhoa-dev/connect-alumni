@@ -34,7 +34,7 @@ const EventsPage = async () => {
     <div className="container mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-extrabold tracking-tight text-[#1E4D2B]">
+        <h1 className="font-serif text-3xl sm:text-4xl font-extrabold tracking-tight text-pine-800">
           Talkshow, Hội thảo & Sự kiện — Đại học Đà Lạt
         </h1>
         <p className="text-sm text-muted-foreground">

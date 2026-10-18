@@ -14,7 +14,18 @@ import {
   Loader2Icon,
 } from "lucide-react";
 
-const toast = ToastPrimitive.createToastManager();
+const baseToast = ToastPrimitive.createToastManager();
+
+const toast = Object.assign(baseToast, {
+  success: (title: string, description?: string) =>
+    baseToast.add({ title, description }),
+  error: (title: string, description?: string) =>
+    baseToast.add({ title, description }),
+  info: (title: string, description?: string) =>
+    baseToast.add({ title, description }),
+  warning: (title: string, description?: string) =>
+    baseToast.add({ title, description }),
+});
 
 function ToastProvider({ ...props }: ToastPrimitive.Provider.Props) {
   return <ToastPrimitive.Provider {...props} />;

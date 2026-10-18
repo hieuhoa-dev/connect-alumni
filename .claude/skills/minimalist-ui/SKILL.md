@@ -3,11 +3,8 @@ name: minimalist-ui
 description: Clean editorial-style interfaces. Warm monochrome palette, typographic contrast, flat bento grids, muted pastels. No gradients, no heavy shadows.
 ---
 
-# Protocol: Premium Utilitarian Minimalism UI Architect
-
-## 1. Protocol Overview
-Name: Premium Utilitarian Minimalism & Editorial UI
-Description: An advanced frontend engineering directive for generating highly refined, ultra-minimalist, "document-style" web interfaces analogous to top-tier workspace platforms. This protocol strictly enforces a high-contrast warm monochrome palette, bespoke typographic hierarchies, meticulous structural macro-whitespace, bento-grid layouts, and an ultra-flat component architecture with deliberate muted pastel accents. It actively rejects standard generic SaaS design trends.
+# Protocol: [DEPRECATED - ĐÃ THAY THẾ BỞI DESIGN.md v2 "ĐÀ LẠT RỰC RỠ"]
+> **LƯU Ý QUAN TRỌNG:** Protocol v1 (Minimalist UI) đã chính thức được thay thế hoàn toàn bởi Design System v2 trong `DESIGN.md`. Dự án sử dụng hệ màu thương hiệu Đà Lạt Rực Rỡ (Xanh Thông, Cam Hoàng Hôn, bóng brand có sắc xanh, gradient có kiểm soát, chuyển động có nhịp). Vui lòng tham khảo trực tiếp `DESIGN.md`.
 
 ## 2. Absolute Negative Constraints (Banned Elements)
 The AI must strictly avoid the following generic web development defaults:

@@ -77,7 +77,7 @@ export const JobApplyModal = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button className="w-full font-medium cursor-pointer bg-[#1E4D2B] hover:bg-[#1E4D2B]/90 text-white shadow-xs">
+          <Button variant="default" className="w-full font-semibold shadow-xs">
             Nộp đơn ứng tuyển ngay
             <ExternalLink data-icon="inline-end" className="size-4 ml-1" />
           </Button>
@@ -86,7 +86,7 @@ export const JobApplyModal = ({
 
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader className="space-y-1">
-          <div className="flex items-center gap-2 text-[#1E4D2B] text-xs font-semibold">
+          <div className="flex items-center gap-2 text-pine-800 text-xs font-semibold">
             <Building2 className="size-3.5" />
             <span>{companyName}</span>
           </div>
@@ -100,7 +100,7 @@ export const JobApplyModal = ({
 
         {isSuccess ? (
           <div className="py-6 text-center space-y-4">
-            <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-emerald-100 text-[#1E4D2B] dark:bg-emerald-950/50">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-emerald-100 text-pine-600 dark:bg-emerald-950/50">
               <CheckCircle2 className="size-7" />
             </div>
             <div className="space-y-1">
@@ -116,7 +116,8 @@ export const JobApplyModal = ({
             <div className="pt-2">
               <Button
                 onClick={handleReset}
-                className="w-full text-xs font-medium cursor-pointer bg-[#1E4D2B] hover:bg-[#1E4D2B]/90 text-white"
+                variant="default"
+                className="w-full text-xs font-semibold"
               >
                 Hoàn tất & Đóng
               </Button>
@@ -215,7 +216,8 @@ export const JobApplyModal = ({
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full text-xs font-medium cursor-pointer bg-[#1E4D2B] hover:bg-[#1E4D2B]/90 text-white"
+                variant="default"
+                className="w-full text-xs font-semibold"
               >
                 {isSubmitting ? (
                   <>
