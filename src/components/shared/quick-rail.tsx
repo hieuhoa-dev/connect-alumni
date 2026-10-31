@@ -1,7 +1,8 @@
 "use client";
 
+import { ArrowUp, MessageCircle, Plus, Share2, X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
-import { ArrowUp, MessageCircle, Share2, Plus, X } from "lucide-react";
 import type { SiteSettingsDto } from "@/types/settings";
 
 interface QuickRailProps {
@@ -10,11 +11,19 @@ interface QuickRailProps {
 
 export const QuickRail = ({ settings }: QuickRailProps) => {
   const [scrollY, setScrollY] = React.useState(0);
+  const [scrollProgress, setScrollProgress] = React.useState(0);
   const [mobileExpanded, setMobileExpanded] = React.useState(false);
 
   React.useEffect(() => {
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      const currentScrollY = window.scrollY;
+      setScrollY(currentScrollY);
+
+      const totalHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
+      if (totalHeight > 0) {
+        setScrollProgress((currentScrollY / totalHeight) * 100);
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -148,24 +157,59 @@ export const QuickRail = ({ settings }: QuickRailProps) => {
             className="flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-brand-lg"
             aria-label="Mở liên kết nhanh"
           >
-            {mobileExpanded ? <X className="size-5" /> : <Plus className="size-5" />}
+            {mobileExpanded ? (
+              <X className="size-5" />
+            ) : (
+              <Plus className="size-5" />
+            )}
           </button>
         </div>
       )}
 
       {/* 2. Scroll to Top Button (Right) */}
-      {showBackToTop && (
-        <div className="fixed bottom-6 right-6 z-40">
-          <button
-            type="button"
-            onClick={scrollToTop}
-            className="group relative flex size-11 items-center justify-center rounded-full bg-card border border-border text-foreground shadow-brand-lg hover:border-primary hover:text-primary transition-all duration-300"
-            aria-label="Cuộn lên đầu trang"
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 10 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-6 right-6 z-40"
           >
-            <ArrowUp className="size-5 group-hover:-translate-y-0.5 transition-transform" />
-          </button>
-        </div>
-      )}
+            <button
+              type="button"
+              onClick={scrollToTop}
+              className="relative flex size-11 items-center justify-center rounded-full bg-pine-700 text-white shadow-brand hover:bg-pine-600 transition-all duration-200 active:scale-95 cursor-pointer"
+              aria-label="Cuộn lên đầu trang"
+            >
+              {/* Circular progress SVG */}
+              <svg className="absolute inset-0 size-11 -rotate-90">
+                <circle
+                  cx="22"
+                  cy="22"
+                  r="20"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  fill="none"
+                  className="text-white/20"
+                />
+                <circle
+                  cx="22"
+                  cy="22"
+                  r="20"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  fill="none"
+                  strokeDasharray={125.6}
+                  strokeDashoffset={125.6 - (125.6 * scrollProgress) / 100}
+                  className="text-sun-500 transition-all duration-100"
+                />
+              </svg>
+              <ArrowUp className="size-5 relative z-10" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
