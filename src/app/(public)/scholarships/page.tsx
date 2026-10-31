@@ -1,7 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { getScholarshipCampaigns } from "@/actions/scholarship-actions";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -21,17 +21,9 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-import { sampleDLUScholarships } from "@/lib/dlu-sample-data";
-
 const ScholarshipsPage = async () => {
-  let campaigns: any[] = [];
-  try {
-    campaigns = await getScholarshipCampaigns();
-  } catch (err) {
-    console.error("Failed to fetch scholarships:", err);
-  }
-
-  const displayCampaigns = campaigns.length > 0 ? campaigns : sampleDLUScholarships;
+  const campaigns = await getScholarshipCampaigns();
+  const displayCampaigns = campaigns;
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
@@ -39,7 +31,7 @@ const ScholarshipsPage = async () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-2">
           <h1 className="font-serif text-3xl sm:text-4xl font-extrabold tracking-tight text-pine-800">
-            Quỹ Khuyến học & Tiếp sức Tài năng Trẻ — Đại học Đà Lạt
+            Quỹ Khuyến học &amp; Tiếp sức Tài năng Trẻ — Đại học Đà Lạt
           </h1>
           <p className="text-sm text-muted-foreground">
             Cầu nối tài trợ từ Cựu sinh viên DLU và các Doanh nghiệp đối tác nhằm
@@ -118,47 +110,54 @@ const ScholarshipsPage = async () => {
                     <Progress value={percent} className="h-2" />
                     <div className="flex justify-between text-[11px] text-muted-foreground pt-1">
                       <span>
-                        Đã nhận:{" "}
+                        Đã vận động:{" "}
                         <strong className="text-foreground">
                           {current.toLocaleString("vi-VN")} đ
                         </strong>
                       </span>
                       <span>
-                        Mục tiêu:{" "}
-                        <strong className="text-foreground">
-                          {target.toLocaleString("vi-VN")} đ
-                        </strong>
+                        Mục tiêu: {target.toLocaleString("vi-VN")} đ
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2 border-t border-border">
-                    <span className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2 border-t">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span>
+                        Đóng quỹ:{" "}
+                        {new Date(camp.applicationDeadline).toLocaleDateString("vi-VN")}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
                       <Users className="h-3.5 w-3.5" />
-                      {camp.pledges.length} lượt tài trợ
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <GraduationCap className="h-3.5 w-3.5" />
-                      {camp.applications.length} hồ sơ đã nộp
-                    </span>
+                      <span>
+                        {camp.pledges?.length || 0} lượt cam kết tài trợ
+                      </span>
+                    </div>
                   </div>
                 </CardContent>
 
-                <CardFooter className="pt-3 border-t border-border/40 flex items-center justify-between gap-2">
+                <CardFooter className="pt-0 flex gap-2">
                   <Link
-                    href="/employer/scholarships/pledge"
+                    href={`/scholarships/${camp.id}`}
                     className={buttonVariants({
                       variant: "outline",
                       size: "sm",
+                      className: "w-full",
                     })}
                   >
-                    Tài trợ
+                    Xem chi tiết quỹ
                   </Link>
                   <Link
-                    href={`/scholarships/${camp.id}`}
-                    className={buttonVariants({ size: "sm" })}
+                    href={`/student/scholarships/${camp.id}/apply`}
+                    className={buttonVariants({
+                      variant: "default",
+                      size: "sm",
+                      className: "w-full",
+                    })}
                   >
-                    Nộp hồ sơ học bổng
+                    Nộp đơn xét học bổng
                   </Link>
                 </CardFooter>
               </Card>

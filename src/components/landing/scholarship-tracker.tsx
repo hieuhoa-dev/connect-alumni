@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { HeartHandshake, ArrowRight, TrendingUp, Sparkles, Gift } from "lucide-react";
+import { HeartHandshake, ArrowRight, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/motion/reveal";
 
@@ -19,19 +19,22 @@ interface ScholarshipTrackerProps {
 }
 
 export const ScholarshipTracker = ({ campaign }: ScholarshipTrackerProps) => {
-  const current = Number(campaign?.currentAmount || 365000000);
-  const target = Number(campaign?.targetAmount || 500000000);
+  if (!campaign) {
+    return null;
+  }
+
+  const current = Number(campaign.currentAmount || 0);
+  const target = Number(campaign.targetAmount || 1);
   const percent = Math.min(100, Math.round((current / (target || 1)) * 100));
 
-  const campaignTitle =
-    campaign?.title ||
-    "Quỹ Khuyến Học DLU: Tiếp Sức Tài Năng Trẻ Xứ Hoa";
+  const campaignTitle = campaign.title;
   const campaignDescription =
-    campaign?.description ||
+    campaign.description ||
     "Chương trình đồng hành thường niên của Mạng lưới Cựu Sinh Viên và các Doanh nghiệp đối tác. 100% nguồn quỹ được trao tận tay cho sinh viên vượt khó hiếu học và khen thưởng các đề tài nghiên cứu khoa học xuất sắc.";
-  const campaignHref = campaign?.id
-    ? `/scholarships/${campaign.id}`
-    : "/scholarships";
+  const campaignHref = `/scholarships/${campaign.id}`;
+
+  const pledgeCount = campaign.pledges?.length || 0;
+  const applicationCount = campaign.applications?.length || 0;
 
   return (
     <section className="w-full bg-gradient-to-b from-blossom-50/70 via-white to-canvas py-14 sm:py-20 border-t border-border">
@@ -48,7 +51,7 @@ export const ScholarshipTracker = ({ campaign }: ScholarshipTrackerProps) => {
               <div className="lg:col-span-7 space-y-4">
                 <div className="inline-flex items-center gap-1.5 rounded-full border border-blossom-700/30 bg-blossom-50 px-3.5 py-1 text-xs font-mono font-semibold text-blossom-800">
                   <HeartHandshake className="size-3.5 text-blossom-700" />
-                  <span>QUỸ PHÁT TRIỂN TÀI NĂNG & KHUYẾN HỌC DLU</span>
+                  <span>QUỸ PHÁT TRIỂN TÀI NĂNG &amp; KHUYẾN HỌC DLU</span>
                 </div>
 
                 <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground leading-snug">
@@ -59,24 +62,24 @@ export const ScholarshipTracker = ({ campaign }: ScholarshipTrackerProps) => {
                   {campaignDescription}
                 </p>
 
-                {/* Direct Action Buttons */}
                 <div className="flex flex-wrap items-center gap-3 pt-2">
                   <Button
                     render={<Link href="/employer/scholarships/pledge" />}
                     nativeButton={false}
                     variant="sun"
-                    size="lg"
-                    className="font-bold text-xs sm:text-sm h-11 px-6 shadow-sun"
+                    size="default"
+                    className="font-bold text-xs shadow-sun"
                   >
-                    <Gift className="size-4 mr-1.5" />
-                    Đóng góp quỹ học bổng
+                    <HeartHandshake className="size-4 mr-1.5" />
+                    Đồng hành tài trợ ngay
                   </Button>
+
                   <Button
                     render={<Link href={campaignHref} />}
                     nativeButton={false}
                     variant="outline"
-                    size="lg"
-                    className="font-semibold text-xs sm:text-sm h-11 px-6 border-pine-600/30 text-pine-800 hover:bg-pine-50"
+                    size="default"
+                    className="font-semibold text-xs border-blossom-700/30 text-blossom-900 hover:bg-blossom-50"
                   >
                     Nộp hồ sơ xin học bổng
                     <ArrowRight className="size-4 ml-1.5" />
@@ -96,7 +99,7 @@ export const ScholarshipTracker = ({ campaign }: ScholarshipTrackerProps) => {
                   </span>
                 </div>
 
-                {/* Progress bar (blossom-700 to sun-500) */}
+                {/* Progress bar */}
                 <div className="space-y-2">
                   <div className="h-3.5 w-full bg-white rounded-full overflow-hidden border border-blossom-700/20 shadow-inner">
                     <div
@@ -129,18 +132,18 @@ export const ScholarshipTracker = ({ campaign }: ScholarshipTrackerProps) => {
                 <div className="grid grid-cols-2 gap-3 pt-3 border-t border-blossom-700/15 text-center">
                   <div className="p-3 rounded-xl bg-white border border-border shadow-xs">
                     <div className="font-mono text-base font-bold text-pine-800">
-                      48 Suất
+                      {applicationCount} Hồ Sơ
                     </div>
                     <div className="text-[11px] text-muted-foreground font-medium">
-                      Học bổng đã trao đợt 1
+                      Đã nộp xét duyệt
                     </div>
                   </div>
                   <div className="p-3 rounded-xl bg-white border border-border shadow-xs">
                     <div className="font-mono text-base font-bold text-sun-700">
-                      32 Đối Tác
+                      {pledgeCount} Lượt
                     </div>
                     <div className="text-[11px] text-muted-foreground font-medium">
-                      Cựu SV & Doanh nghiệp
+                      Cam kết tài trợ
                     </div>
                   </div>
                 </div>

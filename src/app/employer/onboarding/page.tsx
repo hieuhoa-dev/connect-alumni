@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { FileUpload } from "@/components/ui/file-upload";
+import { FileUploader } from "@/components/shared/file-uploader";
 import {
   Card,
   CardContent,
@@ -27,6 +27,7 @@ const CompanyOnboardingPage = () => {
   );
   const [website, setWebsite] = React.useState("");
   const [logoUrl, setLogoUrl] = React.useState("");
+  const [logoFileId, setLogoFileId] = React.useState<string | null>(null);
   const [roleInCompany, setRoleInCompany] = React.useState(
     "Lead HR / Talent Acquisition",
   );
@@ -47,6 +48,7 @@ const CompanyOnboardingPage = () => {
         industry,
         website: website || undefined,
         logoUrl: logoUrl || null,
+        logoFileId: logoFileId || null,
         roleInCompany,
       });
 
@@ -158,12 +160,15 @@ const CompanyOnboardingPage = () => {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <FileUpload
-                    value={logoUrl}
-                    onChange={setLogoUrl}
+                  <FileUploader
+                    value={{ fileId: logoFileId || undefined, url: logoUrl || undefined }}
+                    onChange={(val) => {
+                      setLogoUrl(val?.url || "");
+                      setLogoFileId(val?.fileId || null);
+                    }}
                     purpose="company_logo"
                     label="Logo công ty"
-                    helperText="Tải lên logo doanh nghiệp (JPG, PNG, WEBP, SVG tối đa 2MB)"
+                    helperText="Logo chính thức (JPG, PNG, WEBP tối đa 2MB)"
                     disabled={isLoading}
                   />
                 </div>

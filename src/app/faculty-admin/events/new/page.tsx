@@ -8,7 +8,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
-import { FileUpload } from "@/components/ui/file-upload";
+import { FileUploader } from "@/components/shared/file-uploader";
 import {
   Card,
   CardContent,
@@ -32,6 +32,7 @@ const NewEventPage = () => {
     "Hội trường A, Tòa nhà Trung tâm",
   );
   const [coverImageUrl, setCoverImageUrl] = React.useState("");
+  const [coverFileId, setCoverFileId] = React.useState<string | null>(null);
   const [capacity, setCapacity] = React.useState("200");
 
   const [startTime, setStartTime] = React.useState(() => {
@@ -67,6 +68,7 @@ const NewEventPage = () => {
         endTime: new Date(endTime),
         capacity: capacity ? Number(capacity) : null,
         coverImageUrl: coverImageUrl || null,
+        coverFileId: coverFileId || null,
         status: "published",
       });
 
@@ -226,9 +228,12 @@ const NewEventPage = () => {
               />
             </div>
 
-            <FileUpload
-              value={coverImageUrl}
-              onChange={setCoverImageUrl}
+            <FileUploader
+              value={{ fileId: coverFileId || undefined, url: coverImageUrl || undefined }}
+              onChange={(val) => {
+                setCoverImageUrl(val?.url || "");
+                setCoverFileId(val?.fileId || null);
+              }}
               purpose="event_cover"
               label="Ảnh bìa sự kiện"
               helperText="Tải lên ảnh bìa giới thiệu sự kiện (JPG, PNG, WEBP tối đa 5MB)"

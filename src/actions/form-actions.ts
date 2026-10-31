@@ -183,6 +183,7 @@ export const submitFormResponse = async (input: FormResponseSubmitInput) => {
       questionId,
       answerValue: data.answerValue !== undefined ? data.answerValue : null,
       fileUrl: data.fileUrl || null,
+      fileId: data.fileId || null,
     }));
 
     await db.insert(formAnswers).values(answerValues);
@@ -241,7 +242,7 @@ export const getFormResponsesAndAnalytics = async (formId: string) => {
       .map((r) => r.answers.find((a) => a.questionId === q.id))
       .filter(Boolean);
 
-    let summaryData: any = null;
+    let summaryData: Array<{ name: string; count: number }> | { average: number; total: number } | null = null;
 
     if (
       q.questionType === "single_choice" ||

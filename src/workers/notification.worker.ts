@@ -2,39 +2,38 @@ import { Worker, Job } from "bullmq";
 import { and, eq, lt } from "drizzle-orm";
 import { getRedisClient } from "../lib/redis";
 import { db } from "../db";
-import { jobPosts } from "../db/schema";
+import { jobPosts, uploadedFiles } from "../db/schema";
+import { deleteFile } from "../lib/storage";
 import {
   NOTIFICATION_QUEUE_NAME,
   JOB_EXPIRE_QUEUE_NAME,
+  FILE_CLEANUP_QUEUE_NAME,
   NotificationPayload,
   scheduleJobExpiryCheck,
+  scheduleFileCleanupJob,
 } from "../lib/notifications";
 
 const connection = getRedisClient();
 
 console.log("🚀 Starting Alumni Notification & Background Worker...");
 
-// Initialize repeatable job schedule
+// Initialize repeatable job schedules
 scheduleJobExpiryCheck()
   .then(() => console.log("✅ Scheduled recurring job post expiry check."))
   .catch((err) => console.error("❌ Failed to schedule recurring job expiry:", err));
 
-// 1. Notification Worker
+scheduleFileCleanupJob()
+  .then(() => console.log("✅ Scheduled recurring file cleanup job."))
+  .catch((err) => console.error("❌ Failed to schedule file cleanup job:", err));
+
+// 1. In-App Notification Worker (no email dispatching)
 const notificationWorker = new Worker(
   NOTIFICATION_QUEUE_NAME,
   async (job: Job<NotificationPayload & { notificationId: string }>) => {
-    const { userId, type, title, body, linkUrl, sendEmail } = job.data;
+    const { userId, type, title } = job.data;
     console.log(
-      `[Notification Worker] Processing job ${job.id} for user ${userId}:`,
-      title,
+      `[Notification Worker] Processed in-app notification ${job.id} for user ${userId} [${type}]: ${title}`,
     );
-
-    if (sendEmail) {
-      // Simulate/integrate email sending service (Resend / Nodemailer / SMTP)
-      console.log(
-        `[Email Dispatcher] Simulating email to user ${userId}: "${title}" - "${body}"`,
-      );
-    }
 
     return { success: true, processedAt: new Date().toISOString() };
   },
@@ -58,37 +57,98 @@ const jobExpiryWorker = new Worker(
     );
     const now = new Date();
 
-    const expiredResult = await db
-      .update(jobPosts)
-      .set({ status: "expired" })
-      .where(and(eq(jobPosts.status, "approved"), lt(jobPosts.expiresAt, now)))
-      .returning({ id: jobPosts.id, title: jobPosts.title });
+    try {
+      // Find all active/pending job posts where expiresAt < now
+      const expiredJobs = await db
+        .select({ id: jobPosts.id, title: jobPosts.title })
+        .from(jobPosts)
+        .where(
+          and(
+            eq(jobPosts.status, "approved"),
+            lt(jobPosts.expiresAt, now),
+          ),
+        );
 
-    console.log(
-      `[Job Expiry Worker] Found and updated ${expiredResult.length} expired job posts.`,
-      expiredResult.map((j) => j.title),
-    );
+      if (expiredJobs.length > 0) {
+        console.log(`Found ${expiredJobs.length} expired jobs to update.`);
 
-    return { expiredCount: expiredResult.length };
+        for (const j of expiredJobs) {
+          await db
+            .update(jobPosts)
+            .set({ status: "expired" })
+            .where(eq(jobPosts.id, j.id));
+          console.log(`  - Marked job "${j.title}" (${j.id}) as expired.`);
+        }
+      } else {
+        console.log("No expired jobs found.");
+      }
+
+      return { expiredCount: expiredJobs.length };
+    } catch (err) {
+      console.error("[Job Expiry Worker] Error updating expired jobs:", err);
+      throw err;
+    }
   },
   { connection },
 );
 
 jobExpiryWorker.on("completed", (job) => {
-  console.log(`[Job Expiry Worker] Expiry check ${job.id} completed.`);
+  console.log(`[Job Expiry Worker] Job ${job.id} finished successfully.`);
 });
 
 jobExpiryWorker.on("failed", (job, err) => {
-  console.error(`[Job Expiry Worker] Failed with error:`, err);
+  console.error(`[Job Expiry Worker] Job ${job?.id} failed with error:`, err);
 });
 
-// Graceful shutdown
-const shutdown = async () => {
-  console.log("Shutting down workers gracefully...");
-  await notificationWorker.close();
-  await jobExpiryWorker.close();
-  process.exit(0);
-};
+// 3. File Cleanup Worker (deletes pending uploads older than 24h)
+const fileCleanupWorker = new Worker(
+  FILE_CLEANUP_QUEUE_NAME,
+  async (job: Job) => {
+    console.log(`[File Cleanup Worker] Scanning for abandoned pending uploads... (${job.name})`);
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
 
-process.on("SIGINT", shutdown);
-process.on("SIGTERM", shutdown);
+    try {
+      const abandonedFiles = await db
+        .select({ id: uploadedFiles.id, fileKey: uploadedFiles.fileKey })
+        .from(uploadedFiles)
+        .where(
+          and(
+            eq(uploadedFiles.status, "pending"),
+            lt(uploadedFiles.createdAt, cutoff),
+          ),
+        );
+
+      if (abandonedFiles.length > 0) {
+        console.log(`Found ${abandonedFiles.length} abandoned pending files.`);
+        for (const file of abandonedFiles) {
+          try {
+            await deleteFile(file.fileKey);
+          } catch (storageErr) {
+            console.warn(`Could not delete storage key ${file.fileKey}:`, storageErr);
+          }
+          await db
+            .update(uploadedFiles)
+            .set({ status: "removed" })
+            .where(eq(uploadedFiles.id, file.id));
+          console.log(`  - Cleaned up abandoned file: ${file.id}`);
+        }
+      } else {
+        console.log("No abandoned pending files found.");
+      }
+
+      return { cleanedCount: abandonedFiles.length };
+    } catch (err) {
+      console.error("[File Cleanup Worker] Error cleaning up files:", err);
+      throw err;
+    }
+  },
+  { connection },
+);
+
+fileCleanupWorker.on("completed", (job) => {
+  console.log(`[File Cleanup Worker] Job ${job.id} finished successfully.`);
+});
+
+fileCleanupWorker.on("failed", (job, err) => {
+  console.error(`[File Cleanup Worker] Job ${job?.id} failed with error:`, err);
+});

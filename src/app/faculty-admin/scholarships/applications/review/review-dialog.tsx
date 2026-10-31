@@ -92,7 +92,7 @@ export const ReviewDialog = ({
         }
       />
 
-      <DialogContent className="max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-serif">
             Xét duyệt hồ sơ học bổng

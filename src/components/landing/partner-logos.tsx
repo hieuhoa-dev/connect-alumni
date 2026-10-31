@@ -4,19 +4,20 @@ import * as React from "react";
 import Link from "next/link";
 import { Building2, ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
+import { ContentImage } from "@/components/shared/content-image";
+import type { PartnerCompanyDto } from "@/types/partners";
 
-export const PartnerLogos = () => {
-  const partners = [
-    { name: "VNG Corporation", domain: "Gaming & Fintech", tag: "Chiến Lược" },
-    { name: "FPT Software", domain: "Enterprise AI & Cloud", tag: "Chiến Lược" },
-    { name: "Viettel Solutions", domain: "Telecom & Cyber Security", tag: "Đối Tác" },
-    { name: "MoMo Fintech", domain: "Digital Payments", tag: "Đối Tác" },
-    { name: "KMS Technology", domain: "Software Engineering", tag: "Đối Tác" },
-    { name: "NashTech Global", domain: "Consulting & Tech", tag: "Chiến Lược" },
-    { name: "TMA Solutions", domain: "Software R&D", tag: "Đối Tác" },
-    { name: "Zalo Group", domain: "Social & AI Platform", tag: "Chiến Lược" },
-    { name: "VNPT Group", domain: "Digital Transformation", tag: "Chiến Lược" },
-  ];
+interface PartnerLogosProps {
+  partners?: PartnerCompanyDto[];
+}
+
+export const PartnerLogos = ({ partners = [] }: PartnerLogosProps) => {
+  if (!partners || partners.length === 0) {
+    return null;
+  }
+
+  // Duplicate for smooth marquee effect
+  const trackItems = partners.length < 8 ? [...partners, ...partners, ...partners] : [...partners, ...partners];
 
   return (
     <section className="w-full bg-white py-12 sm:py-16 border-y border-border/80 overflow-hidden">
@@ -29,7 +30,7 @@ export const PartnerLogos = () => {
               </div>
               <div>
                 <h2 className="font-sans text-sm sm:text-base font-extrabold uppercase tracking-tight text-pine-800">
-                  MẠNG LƯỚI DOANH NGHIỆP ĐỐI TÁC CHIẾN LƯỢC
+                  MẠNG LƯỚI DOANH NGHIỆP ĐỐI TÁC
                 </h2>
                 <p className="text-xs text-muted-foreground">
                   Đồng hành cùng Đại học Đà Lạt trong đào tạo, thực tập và phát triển nghề nghiệp
@@ -51,22 +52,36 @@ export const PartnerLogos = () => {
       {/* Marquee Track with gradient fade mask */}
       <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
         <div className="flex items-center whitespace-nowrap gap-6 animate-marquee hover:[animation-play-state:paused] py-2">
-          {[...partners, ...partners].map((p, idx) => (
+          {trackItems.map((p, idx) => (
             <div
-              key={`${p.name}-${idx}`}
-              className="shrink-0 w-52 sm:w-60 p-4 rounded-xl border border-border bg-canvas/60 hover:bg-white hover:border-pine-300 hover:shadow-brand transition-all duration-300 flex flex-col justify-between group cursor-default"
+              key={`${p.id}-${idx}`}
+              className="shrink-0 w-60 sm:w-64 p-4 rounded-xl border border-border bg-canvas/60 hover:bg-white hover:border-pine-300 hover:shadow-brand transition-all duration-300 flex items-center gap-3.5 group cursor-default"
             >
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <span className="font-mono text-sm font-bold text-foreground group-hover:text-primary transition-colors truncate">
-                  {p.name}
-                </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-pine-100 text-pine-800 font-semibold">
-                  {p.tag}
+              <div className="size-12 rounded-lg bg-white border border-border/70 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                <ContentImage
+                  file={p.logoUrl}
+                  alt={p.name}
+                  width={48}
+                  height={48}
+                  fallbackType="avatar"
+                  className="object-contain size-full"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-sans text-sm font-bold text-foreground group-hover:text-primary transition-colors truncate">
+                    {p.name}
+                  </span>
+                  {p.isFeaturedPartner && (
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold shrink-0">
+                      Chiến Lược
+                    </span>
+                  )}
+                </div>
+                <span className="text-xs text-muted-foreground truncate block mt-0.5">
+                  {p.industry}
                 </span>
               </div>
-              <span className="text-xs text-muted-foreground truncate">
-                {p.domain}
-              </span>
             </div>
           ))}
         </div>

@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { getDemoAccount, DEMO_COOKIE_NAME, isDemoEnabled } from "@/lib/demo-accounts";
+import {
+  getDemoAccount,
+  DEMO_COOKIE_NAME,
+  isDemoEnabled,
+  signDemoCookie,
+} from "@/lib/demo-accounts";
 
 export const POST = async (request: Request) => {
   if (!isDemoEnabled()) {
@@ -20,7 +25,9 @@ export const POST = async (request: Request) => {
     }
 
     const cookieStore = await cookies();
-    cookieStore.set(DEMO_COOKIE_NAME, demoUser.email, {
+    const signedToken = signDemoCookie(demoUser.email);
+
+    cookieStore.set(DEMO_COOKIE_NAME, signedToken, {
       httpOnly: true,
       path: "/",
       maxAge: 30 * 24 * 60 * 60, // 30 days

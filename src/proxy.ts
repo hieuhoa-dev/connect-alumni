@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { DEMO_COOKIE_NAME, isDemoEnabled, verifyDemoCookie } from "@/lib/demo-accounts";
 
 const PROTECTED_PREFIXES = ["/student", "/employer", "/faculty-admin", "/dashboard"];
 
@@ -15,12 +16,13 @@ export function proxy(request: NextRequest) {
       request.cookies.has("better-auth.session_token") ||
       request.cookies.has("__Secure-better-auth.session_token");
 
-    const hasDemoToken =
-      process.env.ENABLE_DEMO_LOGIN === "true" &&
-      process.env.NODE_ENV !== "production" &&
-      request.cookies.has("demo_user_email");
+    let hasValidDemoToken = false;
+    if (isDemoEnabled()) {
+      const demoCookie = request.cookies.get(DEMO_COOKIE_NAME)?.value;
+      hasValidDemoToken = Boolean(verifyDemoCookie(demoCookie));
+    }
 
-    if (!hasAuthToken && !hasDemoToken) {
+    if (!hasAuthToken && !hasValidDemoToken) {
       const loginUrl = new URL("/login", request.url);
       const nextParam = `${pathname}${search}`;
       loginUrl.searchParams.set("next", nextParam);

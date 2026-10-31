@@ -22,6 +22,9 @@ const StudentLayout = async ({ children }: { children: React.ReactNode }) => {
       redirect("/login?next=/student/dashboard");
     }
     if (err instanceof ForbiddenError) {
+      if (err.message?.includes("PROFILE_REQUIRED")) {
+        redirect("/complete-profile?next=/student/dashboard");
+      }
       redirect("/403");
     }
     throw err;

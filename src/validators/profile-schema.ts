@@ -4,7 +4,8 @@ export const profileUpdateSchema = z.object({
   fullName: z.string().min(2, "Họ và tên tối thiểu 2 ký tự").max(100).optional(),
   phone: z.string().max(20).optional().nullable(),
   bio: z.string().max(1000).optional().nullable(),
-  avatarUrl: z.string().url().max(1000).optional().nullable(),
+  avatarUrl: z.string().max(1000).optional().nullable(),
+  avatarFileId: z.string().uuid().optional().nullable(),
   studentCode: z.string().max(20).optional().nullable(),
   faculty: z.string().max(100).optional().nullable(),
   major: z.string().max(100).optional().nullable(),
@@ -90,3 +91,7 @@ export const alumniSearchFilterSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(50).default(20),
 });
+
+export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
+export type WorkExperienceInput = z.infer<typeof workExperienceSchema>;
+export type AlumniSearchFilterInput = z.infer<typeof alumniSearchFilterSchema>;

@@ -6,55 +6,55 @@
 
 :root {
   /* Thương hiệu DLU & Đà Lạt */
-  --pine-50: #EEF7EC;
-  --pine-100: #DCEFD8;
-  --pine-200: #BEE0B8;
-  --pine-300: #8CCB85;
-  --pine-400: #4FB063;
-  --pine-500: #2C9650;
-  --pine-600: #1B7A3E;
+  --pine-50: #eef7ec;
+  --pine-100: #dcefd8;
+  --pine-200: #bee0b8;
+  --pine-300: #8ccb85;
+  --pine-400: #4fb063;
+  --pine-500: #2c9650;
+  --pine-600: #1b7a3e;
   --pine-700: #176232;
-  --pine-800: #124D28;
-  --pine-900: #0F3D22;
-  --pine-950: #0A1F14;
+  --pine-800: #124d28;
+  --pine-900: #0f3d22;
+  --pine-950: #0a1f14;
 
-  --sun-50: #FFF1E0;
-  --sun-100: #FFDDB3;
-  --sun-500: #F28A1B;
-  --sun-600: #E67300;
-  --sun-700: #B84F00;
+  --sun-50: #fff1e0;
+  --sun-100: #ffddb3;
+  --sun-500: #f28a1b;
+  --sun-600: #e67300;
+  --sun-700: #b84f00;
 
-  --sky-50: #E4EDFF;
-  --sky-600: #1D4FD7;
-  --sky-800: #1A4DB0;
+  --sky-50: #e4edff;
+  --sky-600: #1d4fd7;
+  --sky-800: #1a4db0;
 
-  --blossom-50: #FDEEF4;
-  --blossom-700: #C2185B;
-  --blossom-800: #9D1450;
+  --blossom-50: #fdeef4;
+  --blossom-700: #c2185b;
+  --blossom-800: #9d1450;
 
-  --gold-50: #FFF3CC;
-  --gold-300: #FFD166;
-  --gold-800: #8A4B00;
+  --gold-50: #fff3cc;
+  --gold-300: #ffd166;
+  --gold-800: #8a4b00;
 
-  --star-50: #FDE8E8;
-  --star-600: #D42B2B;
-  --star-800: #A31D1D;
+  --star-50: #fde8e8;
+  --star-600: #d42b2b;
+  --star-800: #a31d1d;
 
-  --lime-300: #C8F169;
+  --lime-300: #c8f169;
 
   /* Ngữ nghĩa shadcn chuẩn v2 "Đà Lạt Rực Rỡ" */
-  --background: #F4F9F1;
-  --foreground: #0E2217;
-  --card: #FFFFFF;
+  --background: #f4f9f1;
+  --foreground: #0e2217;
+  --card: #ffffff;
   --card-foreground: var(--foreground);
-  --popover: #FFFFFF;
+  --popover: #ffffff;
   --popover-foreground: var(--foreground);
   --primary: var(--pine-600);
-  --primary-foreground: #FFFFFF;
+  --primary-foreground: #ffffff;
   --secondary: var(--pine-50);
   --secondary-foreground: var(--pine-800);
   --muted: var(--pine-50);
-  --muted-foreground: #4A5F52;
+  --muted-foreground: #4a5f52;
   --accent: var(--pine-100);
   --accent-foreground: var(--pine-900);
   --destructive: var(--star-600);
@@ -64,8 +64,10 @@
   --ring: var(--pine-500);
   --radius: 0.75rem;
 
-  --shadow-brand: 0 1px 2px rgb(15 61 34 / 0.06), 0 8px 24px -12px rgb(23 98 50 / 0.28);
-  --shadow-brand-lg: 0 2px 4px rgb(15 61 34 / 0.06), 0 20px 40px -16px rgb(23 98 50 / 0.38);
+  --shadow-brand:
+    0 1px 2px rgb(15 61 34 / 0.06), 0 8px 24px -12px rgb(23 98 50 / 0.28);
+  --shadow-brand-lg:
+    0 2px 4px rgb(15 61 34 / 0.06), 0 20px 40px -16px rgb(23 98 50 / 0.38);
   --shadow-sun: 0 10px 24px -10px rgb(242 138 27 / 0.55);
 
   /* Glass accents */
@@ -76,28 +78,29 @@
 }
 
 .dark {
-  --background: #0A1F14;
-  --foreground: #EAF4EC;
-  --card: #10291B;
-  --card-foreground: #EAF4EC;
-  --popover: #10291B;
-  --popover-foreground: #EAF4EC;
-  --primary: #4ADE80;
-  --primary-foreground: #0A1F14;
+  --background: #0a1f14;
+  --foreground: #eaf4ec;
+  --card: #10291b;
+  --card-foreground: #eaf4ec;
+  --popover: #10291b;
+  --popover-foreground: #eaf4ec;
+  --primary: #4ade80;
+  --primary-foreground: #0a1f14;
   --secondary: #163524;
-  --secondary-foreground: #CFE8D5;
+  --secondary-foreground: #cfe8d5;
   --muted: #163524;
-  --muted-foreground: #9FB5A8;
-  --accent: #1C4530;
-  --accent-foreground: #EAF4EC;
-  --destructive: #F87171;
-  --border: rgb(255 255 255 / 0.10);
-  --border-strong: rgb(255 255 255 / 0.20);
-  --input: rgb(255 255 255 / 0.20);
-  --ring: #4ADE80;
+  --muted-foreground: #9fb5a8;
+  --accent: #1c4530;
+  --accent-foreground: #eaf4ec;
+  --destructive: #f87171;
+  --border: rgb(255 255 255 / 0.1);
+  --border-strong: rgb(255 255 255 / 0.2);
+  --input: rgb(255 255 255 / 0.2);
+  --ring: #4ade80;
 
   --shadow-brand: 0 1px 2px rgb(0 0 0 / 0.2), 0 8px 24px -12px rgb(0 0 0 / 0.5);
-  --shadow-brand-lg: 0 2px 4px rgb(0 0 0 / 0.3), 0 20px 40px -16px rgb(0 0 0 / 0.6);
+  --shadow-brand-lg:
+    0 2px 4px rgb(0 0 0 / 0.3), 0 20px 40px -16px rgb(0 0 0 / 0.6);
   --shadow-sun: 0 10px 24px -10px rgb(242 138 27 / 0.35);
 
   --glass-bg: rgb(10 31 20 / 0.85);
@@ -177,6 +180,44 @@
   --color-ink: var(--foreground);
 }
 
+@layer base {
+  /* Scrollbar: mảnh, bo tròn, màu theo theme, hover đổi sang màu ring */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* Viền trong suốt + background-clip tạo khoảng đệm quanh thanh kéo */
+  ::-webkit-scrollbar-thumb {
+    border-radius: 100px;
+    border: 3px solid transparent;
+    background-color: color-mix(in oklab, var(--foreground) 22%, transparent);
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklab, var(--foreground) 50%, transparent);
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background-color: color-mix(in oklab, var(--foreground) 75%, transparent);
+  }
+
+  /* Firefox (và trình duyệt không hỗ trợ ::-webkit-scrollbar) */
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: color-mix(in oklab, var(--foreground) 22%, transparent)
+        transparent;
+    }
+  }
+}
+
 @theme {
   --animate-marquee: marquee 35s linear infinite;
   --animate-marquee-slow: marquee 45s linear infinite;
@@ -212,24 +253,37 @@
 @layer utilities {
   .bg-hero {
     background-image:
-      radial-gradient(circle at 85% 10%, rgb(242 138 27 / 0.35), transparent 45%),
-      linear-gradient(135deg, #0F3D22 0%, #124D28 45%, #1B7A3E 100%);
+      radial-gradient(
+        circle at 85% 10%,
+        rgb(242 138 27 / 0.35),
+        transparent 45%
+      ),
+      linear-gradient(135deg, #0f3d22 0%, #124d28 45%, #1b7a3e 100%);
   }
 
   .bg-photo-scrim {
-    background: linear-gradient(90deg, rgb(10 31 20 / 0.88) 0%, rgb(15 61 34 / 0.55) 55%, transparent 100%);
+    background: linear-gradient(
+      90deg,
+      rgb(10 31 20 / 0.88) 0%,
+      rgb(15 61 34 / 0.55) 55%,
+      transparent 100%
+    );
   }
 
   .bg-photo-tint {
-    background: linear-gradient(180deg, rgb(15 61 34 / 0.78), rgb(10 31 20 / 0.92));
+    background: linear-gradient(
+      180deg,
+      rgb(15 61 34 / 0.78),
+      rgb(10 31 20 / 0.92)
+    );
   }
 
   .bg-section-title {
-    background: linear-gradient(90deg, #EEF7EC, transparent 70%);
+    background: linear-gradient(90deg, #eef7ec, transparent 70%);
   }
 
   .text-gradient-sun {
-    background: linear-gradient(90deg, #FFD166, #F28A1B);
+    background: linear-gradient(90deg, #ffd166, #f28a1b);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }

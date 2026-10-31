@@ -1,34 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/permissions";
 import { getUploadPresignedUrl } from "@/lib/storage";
+import { getUploadPolicy, MIME_TO_EXTENSION } from "@/lib/upload-policy";
+import { db } from "@/db";
+import { uploadedFiles } from "@/db/schema";
 import { randomUUID } from "crypto";
-
-const MAX_SIZES: Record<string, number> = {
-  avatar: 2 * 1024 * 1024, // 2MB
-  company_logo: 2 * 1024 * 1024, // 2MB
-  event_cover: 5 * 1024 * 1024, // 5MB
-  proof_document: 10 * 1024 * 1024, // 10MB
-};
-
-const ALLOWED_MIME_TYPES: Record<string, string[]> = {
-  avatar: ["image/jpeg", "image/png", "image/webp"],
-  company_logo: ["image/jpeg", "image/png", "image/webp", "image/svg+xml"],
-  event_cover: ["image/jpeg", "image/png", "image/webp"],
-  proof_document: [
-    "image/jpeg",
-    "image/png",
-    "image/webp",
-    "application/pdf",
-  ],
-};
-
-const MIME_EXTENSIONS: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/svg+xml": "svg",
-  "application/pdf": "pdf",
-};
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,55 +17,80 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { filename, contentType, size, purpose } = body;
+    const { contentType, size, purpose, relatedType, relatedId } = body;
 
-    if (!purpose || !MAX_SIZES[purpose]) {
+    const policy = getUploadPolicy(purpose);
+    if (!policy) {
+      return NextResponse.json(
+        { error: "Mục đích tải tệp (purpose) không hợp lệ." },
+        { status: 400 }
+      );
+    }
+
+    // Role check if policy specifies allowed roles
+    if (
+      policy.allowedRoles &&
+      (!current.role || !policy.allowedRoles.includes(current.role))
+    ) {
+      return NextResponse.json(
+        { error: "Bạn không có quyền tải tệp cho mục đích này." },
+        { status: 403 }
+      );
+    }
+
+    // Size check
+    if (typeof size !== "number" || size <= 0 || size > policy.maxSizeBytes) {
+      const maxMb = Math.round(policy.maxSizeBytes / (1024 * 1024));
+      return NextResponse.json(
+        { error: `Kích thước tệp vượt quá giới hạn tối đa (${maxMb}MB)` },
+        { status: 400 }
+      );
+    }
+
+    // MIME type check
+    if (!contentType || !policy.allowedMimeTypes.includes(contentType)) {
       return NextResponse.json(
         {
-          error:
-            "Mục đích tải tệp (purpose) không hợp lệ. Cho phép: avatar, company_logo, event_cover, proof_document",
+          error: `Định dạng tệp không được hỗ trợ. Cho phép: ${policy.allowedMimeTypes.join(", ")}`,
         },
         { status: 400 }
       );
     }
 
-    const maxSize = MAX_SIZES[purpose];
-    if (typeof size !== "number" || size <= 0 || size > maxSize) {
-      return NextResponse.json(
-        {
-          error: `Kích thước tệp vượt quá giới hạn tối đa (${Math.round(maxSize / (1024 * 1024))}MB)`,
-        },
-        { status: 400 }
-      );
-    }
+    const ext = MIME_TO_EXTENSION[contentType] || "bin";
+    const fileUuid = randomUUID();
+    const key = `uploads/${purpose}/${fileUuid}.${ext}`;
 
-    const allowedTypes = ALLOWED_MIME_TYPES[purpose];
-    if (!contentType || !allowedTypes.includes(contentType)) {
-      return NextResponse.json(
-        {
-          error: `Định dạng tệp không được hỗ trợ. Cho phép: ${allowedTypes.join(", ")}`,
-        },
-        { status: 400 }
-      );
-    }
+    // Create entry in uploaded_files in 'pending' status
+    const [fileRecord] = await db
+      .insert(uploadedFiles)
+      .values({
+        id: fileUuid,
+        ownerId: current.user.id,
+        purpose,
+        status: "pending",
+        visibility: policy.visibility,
+        relatedType: relatedType || null,
+        relatedId: relatedId || null,
+        fileKey: key,
+        fileUrl: `/api/v1/files/${key}`,
+        mimeType: contentType,
+        sizeBytes: size,
+      })
+      .returning();
 
-    // Generate random UUID key with mapped extension to prevent path traversal
-    const ext = MIME_EXTENSIONS[contentType] || "bin";
-    const secureKey = `uploads/${purpose}/${randomUUID()}.${ext}`;
-
-    const { uploadUrl, key } = await getUploadPresignedUrl({
-      key: secureKey,
+    const { uploadUrl } = await getUploadPresignedUrl({
+      key,
       contentType,
-      expiresInSeconds: 900, // 15 mins
+      expiresInSeconds: 900,
     });
-
-    const fileUrl = `/api/v1/files/${key}`;
 
     return NextResponse.json({
       success: true,
+      fileId: fileRecord.id,
       uploadUrl,
-      fileUrl,
       key,
+      fileUrl: fileRecord.fileUrl,
     });
   } catch (error: any) {
     console.error("Presign upload error:", error);

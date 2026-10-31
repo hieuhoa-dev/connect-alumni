@@ -7,12 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 export const dynamic = "force-dynamic";
 
 const AlumniVerificationPage = async () => {
-  let pendingList: any[] = [];
-  try {
-    pendingList = await getPendingAlumniVerifications();
-  } catch (err) {
-    console.error("Error fetching pending alumni:", err);
-  }
+  const pendingList = await getPendingAlumniVerifications();
 
   return (
     <div className="space-y-6">
@@ -52,7 +47,7 @@ const AlumniVerificationPage = async () => {
               <thead className="border-b border-neutral-200 bg-neutral-50/50 dark:border-neutral-800 dark:bg-neutral-950/50 text-xs font-semibold uppercase text-neutral-500">
                 <tr>
                   <th className="px-6 py-4">Cựu sinh viên</th>
-                  <th className="px-6 py-4">MSSV & Khóa</th>
+                  <th className="px-6 py-4">MSSV &amp; Khóa</th>
                   <th className="px-6 py-4">Nơi làm việc hiện tại</th>
                   <th className="px-6 py-4">Thời gian đăng ký</th>
                   <th className="px-6 py-4 text-right">Thao tác</th>

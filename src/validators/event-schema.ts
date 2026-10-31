@@ -16,6 +16,7 @@ export const eventCreateSchema = z.object({
     .transform((val) => new Date(val)),
   capacity: z.coerce.number().int().positive().optional().nullable(),
   coverImageUrl: z.string().optional().nullable(),
+  coverFileId: z.string().uuid().optional().nullable(),
   status: z.enum(["draft", "published"]).default("published"),
 });
 

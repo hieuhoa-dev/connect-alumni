@@ -147,22 +147,32 @@ const JobDetailPage = async ({ params }: JobDetailPageProps) => {
                 </p>
               </div>
 
-              <div className="space-y-1.5 pt-2 border-t border-border/60">
-                <span className="text-muted-foreground">
-                  Phương thức ứng tuyển:
-                </span>
-                <p className="font-mono text-xs break-all bg-muted/60 p-2.5 rounded-lg border border-border/70">
-                  {job.applyUrlOrEmail || "tuyendung@dlu-partner.vn"}
-                </p>
-              </div>
+              {job.applyUrlOrEmail ? (
+                <>
+                  <div className="space-y-1.5 pt-2 border-t border-border/60">
+                    <span className="text-muted-foreground">
+                      Phương thức ứng tuyển:
+                    </span>
+                    <p className="font-mono text-xs break-all bg-muted/60 p-2.5 rounded-lg border border-border/70">
+                      {job.applyUrlOrEmail}
+                    </p>
+                  </div>
 
-              {!isExpired && (
-                <JobApplyModal
-                  jobId={job.id}
-                  jobTitle={job.title}
-                  companyName={job.company?.name}
-                  applyContact={job.applyUrlOrEmail || "tuyendung@dlu-partner.vn"}
-                />
+                  {!isExpired && (
+                    <JobApplyModal
+                      jobId={job.id}
+                      jobTitle={job.title}
+                      companyName={job.company?.name}
+                      applyContact={job.applyUrlOrEmail}
+                    />
+                  )}
+                </>
+              ) : (
+                <div className="pt-2 border-t border-border/60">
+                  <p className="text-xs text-muted-foreground italic">
+                    Vui lòng liên hệ nhà tuyển dụng qua thông tin công ty.
+                  </p>
+                </div>
               )}
             </CardContent>
           </Card>

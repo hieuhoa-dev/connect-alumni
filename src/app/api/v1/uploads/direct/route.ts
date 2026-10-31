@@ -1,34 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/permissions";
 import { uploadFile } from "@/lib/storage";
+import { getUploadPolicy, MIME_TO_EXTENSION } from "@/lib/upload-policy";
+import { db } from "@/db";
+import { uploadedFiles } from "@/db/schema";
 import { randomUUID } from "crypto";
-
-const MAX_SIZES: Record<string, number> = {
-  avatar: 2 * 1024 * 1024,
-  company_logo: 2 * 1024 * 1024,
-  event_cover: 5 * 1024 * 1024,
-  proof_document: 10 * 1024 * 1024,
-};
-
-const ALLOWED_MIME_TYPES: Record<string, string[]> = {
-  avatar: ["image/jpeg", "image/png", "image/webp"],
-  company_logo: ["image/jpeg", "image/png", "image/webp", "image/svg+xml"],
-  event_cover: ["image/jpeg", "image/png", "image/webp"],
-  proof_document: [
-    "image/jpeg",
-    "image/png",
-    "image/webp",
-    "application/pdf",
-  ],
-};
-
-const MIME_EXTENSIONS: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/svg+xml": "svg",
-  "application/pdf": "pdf",
-};
+import sharp from "sharp";
 
 export async function POST(req: NextRequest) {
   try {
@@ -42,7 +19,7 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
-    const purpose = (formData.get("purpose") as string) || "event_cover";
+    const purpose = (formData.get("purpose") as string) || "avatar";
 
     if (!file) {
       return NextResponse.json(
@@ -51,52 +28,107 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!MAX_SIZES[purpose]) {
+    const policy = getUploadPolicy(purpose);
+    if (!policy) {
       return NextResponse.json(
         { error: "Mục đích tải tệp không hợp lệ." },
         { status: 400 }
       );
     }
 
-    const maxSize = MAX_SIZES[purpose];
-    if (file.size > maxSize) {
+    if (file.size > policy.maxSizeBytes) {
+      const maxMb = Math.round(policy.maxSizeBytes / (1024 * 1024));
       return NextResponse.json(
-        {
-          error: `Dung lượng tệp vượt quá giới hạn (${Math.round(maxSize / (1024 * 1024))}MB).`,
-        },
+        { error: `Kích thước tệp vượt quá giới hạn cho phép (${maxMb}MB).` },
         { status: 400 }
       );
     }
 
-    const allowedTypes = ALLOWED_MIME_TYPES[purpose];
-    if (!allowedTypes.includes(file.type)) {
+    if (!policy.allowedMimeTypes.includes(file.type)) {
       return NextResponse.json(
-        {
-          error: `Định dạng tệp không được hỗ trợ. Cho phép: ${allowedTypes.join(", ")}`,
-        },
+        { error: `Định dạng tệp không được hỗ trợ. Cho phép: ${policy.allowedMimeTypes.join(", ")}` },
         { status: 400 }
       );
     }
 
-    const ext = MIME_EXTENSIONS[file.type] || "bin";
-    const key = `uploads/${purpose}/${randomUUID()}.${ext}`;
+    const ext = MIME_TO_EXTENSION[file.type] || "bin";
+    const fileUuid = randomUUID();
+    const key = `uploads/${purpose}/${fileUuid}.${ext}`;
+    const rawBuffer = Buffer.from(await file.arrayBuffer());
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const { url } = await uploadFile({
+    let width: number | undefined;
+    let height: number | undefined;
+    const variants: Record<string, { key: string; url: string; width: number; height: number }> = {};
+
+    if (file.type.startsWith("image/")) {
+      const image = sharp(rawBuffer);
+      const metadata = await image.metadata();
+      width = metadata.width;
+      height = metadata.height;
+
+      if (policy.visibility === "public") {
+        for (const config of [
+          { name: "thumb", width: 400 },
+          { name: "md", width: 960 },
+          { name: "lg", width: 1600 },
+        ] as const) {
+          const processedBuffer = await sharp(rawBuffer)
+            .resize({ width: config.width, withoutEnlargement: true })
+            .webp({ quality: 85 })
+            .toBuffer();
+
+          const vKey = `uploads/${purpose}/${fileUuid}-${config.name}.webp`;
+          const { url } = await uploadFile({
+            key: vKey,
+            body: processedBuffer,
+            contentType: "image/webp",
+          });
+
+          variants[config.name] = {
+            key: vKey,
+            url,
+            width: config.width,
+            height: 0,
+          };
+        }
+      }
+    }
+
+    const { url: primaryUrl } = await uploadFile({
       key,
-      body: buffer,
+      body: rawBuffer,
       contentType: file.type,
     });
 
+    const [record] = await db
+      .insert(uploadedFiles)
+      .values({
+        id: fileUuid,
+        ownerId: current.user.id,
+        purpose,
+        status: "ready",
+        visibility: policy.visibility,
+        fileKey: key,
+        fileUrl: primaryUrl,
+        mimeType: file.type,
+        sizeBytes: file.size,
+        width: width || null,
+        height: height || null,
+        variants: Object.keys(variants).length > 0 ? variants : null,
+      })
+      .returning();
+
     return NextResponse.json({
       success: true,
-      fileUrl: url,
+      fileId: record.id,
+      fileUrl: record.fileUrl,
       key,
+      variants: record.variants,
     });
   } catch (error: any) {
     console.error("Direct upload error:", error);
     return NextResponse.json(
-      { error: error.message || "Tải tệp lên máy chủ thất bại." },
+      { error: "Không thể xử lý và lưu trữ tệp tin." },
       { status: 500 }
     );
   }

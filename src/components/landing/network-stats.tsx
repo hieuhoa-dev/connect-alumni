@@ -5,6 +5,7 @@ import Image from "next/image";
 import { animate, useInView, useMotionValue, useReducedMotion } from "motion/react";
 import { EASE_OUT } from "@/lib/ease";
 import { Reveal } from "@/components/motion/reveal";
+import type { NetworkStatItem } from "@/types/stats";
 
 interface CounterProps {
   value: number;
@@ -50,32 +51,25 @@ const CountUp = ({ value, suffix = "", prefix = "" }: CounterProps) => {
   );
 };
 
-export const NetworkStats = () => {
-  const stats = [
+export const NetworkStats = ({ stats }: { stats?: NetworkStatItem[] }) => {
+  const displayStats = stats && stats.length > 0 ? stats : [
     {
-      value: 5000,
-      suffix: "+",
+      value: 0,
+      suffix: "",
       label: "Cựu Sinh Viên DLU",
-      desc: "Trải dài trên khắp các tỉnh thành & quốc tế",
+      desc: "Hệ thống đang đồng bộ danh bạ cựu sinh viên",
     },
     {
-      value: 50,
-      suffix: "+",
+      value: 0,
+      suffix: "",
       label: "Doanh Nghiệp Đối Tác",
-      desc: "Hợp tác tuyển dụng, đào tạo & thực tập",
+      desc: "Mạng lưới doanh nghiệp đang được mở rộng",
     },
     {
-      value: 500,
-      suffix: "M+",
-      prefix: "₫",
-      label: "Quỹ Học Bổng Đồng Hành",
-      desc: "Trao hàng năm cho sinh viên khó khăn",
-    },
-    {
-      value: 98,
-      suffix: "%",
-      label: "Sinh Viên Có Việc Làm",
-      desc: "Sau 6 tháng kể từ khi tốt nghiệp",
+      value: 0,
+      suffix: "",
+      label: "Sự Kiện Kết Nối",
+      desc: "Các buổi tọa đàm và workshop đang được cập nhật",
     },
   ];
 
@@ -84,7 +78,7 @@ export const NetworkStats = () => {
       {/* Background image: Dalat campus with bg-photo-tint */}
       <div className="absolute inset-0 overflow-hidden">
         <Image
-          src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1600&q=80"
+          src="/dlu_1.jpg"
           alt="Trường Đại học Đà Lạt giảng đường và hội trường"
           fill
           className="object-cover"
@@ -108,7 +102,7 @@ export const NetworkStats = () => {
         </Reveal>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          {stats.map((item, idx) => (
+          {displayStats.map((item, idx) => (
             <Reveal
               key={item.label}
               index={idx}

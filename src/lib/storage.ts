@@ -3,6 +3,7 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   DeleteObjectCommand,
+  HeadObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl as awsGetSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -10,7 +11,7 @@ const endpoint = process.env.AWS_ENDPOINT_URL_S3;
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID || "";
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY || "";
 const region = process.env.AWS_REGION || "us-east-2";
-const bucketName = process.env.S3_BUCKET_NAME || "alumni";
+export const bucketName = process.env.S3_BUCKET_NAME || "alumni";
 
 export const s3Client = new S3Client({
   region,
@@ -21,6 +22,50 @@ export const s3Client = new S3Client({
   },
   forcePathStyle: true,
 });
+
+/**
+ * Check if object exists and get metadata
+ */
+export const headObject = async (
+  key: string,
+): Promise<{ contentLength?: number; contentType?: string } | null> => {
+  try {
+    const res = await s3Client.send(
+      new HeadObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+      }),
+    );
+    return {
+      contentLength: res.ContentLength,
+      contentType: res.ContentType,
+    };
+  } catch (_err) {
+    return null;
+  }
+};
+
+/**
+ * Fetch object data as Buffer
+ */
+export const getObjectBuffer = async (key: string): Promise<Buffer> => {
+  const command = new GetObjectCommand({
+    Bucket: bucketName,
+    Key: key,
+  });
+
+  const res = await s3Client.send(command);
+  if (!res.Body) {
+    throw new Error(`S3 object body is empty for key: ${key}`);
+  }
+
+  const chunks: Uint8Array[] = [];
+  // @ts-expect-error - web stream / node stream compatibility
+  for await (const chunk of res.Body) {
+    chunks.push(chunk instanceof Uint8Array ? chunk : Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
+};
 
 /**
  * Upload a file directly to Object Storage

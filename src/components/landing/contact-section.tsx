@@ -14,25 +14,33 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/motion/reveal";
+import { DEFAULT_SITE_SETTINGS, type SiteSettingsDto } from "@/types/settings";
 
-const GOOGLE_MAPS_LINK =
-  "https://www.google.com/maps/place/A7+Khoa+C%C3%B4ng+ngh%E1%BB%87+Th%C3%B4ng+tin/@11.9558816,108.4465096,17z/data=!3m1!4b1!4m6!3m5!1s0x317112db826dc281:0x7a577a72a3694368!8m2!3d11.9558816!4d108.4465096!16s%2Fg%2F11c1skb09z?entry=ttu&g_ep=EgoyMDI2MTAxMy4wIKXMDSoASAFQAw%3D%3D";
+const DEFAULT_EMBED_MAP_SRC =
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3903.2878486518774!2d108.44432097585093!3d11.955881588276602!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317112d959f88991%3A0x9d4b584d416b0df1!2zVHLGsOG7nW5nIMSQ4bqhaSBI4buNYyDEkMOgIEzhuqF0!5e0!3m2!1svi!2s!4v1700000000000!5m2!1svi!2s";
 
-const EMBED_MAP_SRC =
-  "https://maps.google.com/maps?q=11.9558816,108.4465096&hl=vi&z=17&output=embed";
+interface ContactSectionProps {
+  settings?: SiteSettingsDto;
+}
 
-export const ContactSection = () => {
+export const ContactSection = ({ settings = DEFAULT_SITE_SETTINGS }: ContactSectionProps) => {
   const [copiedPhone, setCopiedPhone] = React.useState(false);
   const [copiedEmail, setCopiedEmail] = React.useState(false);
 
+  const phone = settings.contactPhone || DEFAULT_SITE_SETTINGS.contactPhone;
+  const email = settings.contactEmail || DEFAULT_SITE_SETTINGS.contactEmail;
+  const address = settings.address || DEFAULT_SITE_SETTINGS.address;
+  const mapLink = settings.mapUrl || DEFAULT_SITE_SETTINGS.mapUrl;
+  const embedMapSrc = DEFAULT_EMBED_MAP_SRC;
+
   const handleCopyPhone = () => {
-    navigator.clipboard.writeText("(+84) 91 184 39 62");
+    navigator.clipboard.writeText(phone);
     setCopiedPhone(true);
     setTimeout(() => setCopiedPhone(false), 2000);
   };
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText("it@dlu.edu.vn");
+    navigator.clipboard.writeText(email);
     setCopiedEmail(true);
     setTimeout(() => setCopiedEmail(false), 2000);
   };
@@ -100,7 +108,7 @@ export const ContactSection = () => {
                         Địa chỉ văn phòng
                       </p>
                       <p className="font-medium text-foreground leading-snug mt-0.5">
-                        Tầng 2 Tòa nhà A7, 01 Phù Đổng Thiên Vương, Phường 8, TP. Đà Lạt, Tỉnh Lâm Đồng
+                        {address}
                       </p>
                     </div>
                   </div>
@@ -116,10 +124,10 @@ export const ContactSection = () => {
                           Hotline hỗ trợ
                         </p>
                         <a
-                          href="tel:+84911843962"
+                          href={`tel:${phone.replace(/\s+/g, "")}`}
                           className="font-bold text-foreground hover:text-primary transition-colors text-base"
                         >
-                          (+84) 91 184 39 62
+                          {phone}
                         </a>
                       </div>
                     </div>
@@ -148,10 +156,10 @@ export const ContactSection = () => {
                           Hộp thư điện tử
                         </p>
                         <a
-                          href="mailto:it@dlu.edu.vn"
+                          href={`mailto:${email}`}
                           className="font-bold text-foreground hover:text-primary transition-colors font-mono text-sm"
                         >
-                          it@dlu.edu.vn
+                          {email}
                         </a>
                       </div>
                     </div>
@@ -196,7 +204,7 @@ export const ContactSection = () => {
                     className="w-full justify-center gap-2 shadow-sun py-2.5 font-bold cursor-pointer"
                     render={
                       <a
-                        href={GOOGLE_MAPS_LINK}
+                        href={mapLink}
                         target="_blank"
                         rel="noopener noreferrer"
                       />
@@ -228,7 +236,7 @@ export const ContactSection = () => {
                     </div>
                   </div>
                   <a
-                    href={GOOGLE_MAPS_LINK}
+                    href={mapLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-colors"
@@ -242,7 +250,7 @@ export const ContactSection = () => {
                 <div className="relative flex-1 w-full min-h-[320px] bg-muted/40">
                   <iframe
                     title="Vị trí Khoa Công nghệ Thông tin Tòa nhà A7 - Đại học Đà Lạt"
-                    src={EMBED_MAP_SRC}
+                    src={embedMapSrc}
                     width="100%"
                     height="100%"
                     className="w-full h-full border-0 absolute inset-0 filter saturate-105"
@@ -259,7 +267,7 @@ export const ContactSection = () => {
                     Tòa nhà A7 nằm tại cổng số 1 đường Phù Đổng Thiên Vương
                   </span>
                   <a
-                    href={GOOGLE_MAPS_LINK}
+                    href={mapLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:underline font-medium font-sans inline-flex items-center gap-1"

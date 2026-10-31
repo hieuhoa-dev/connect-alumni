@@ -7,7 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
-import { FileUpload } from "@/components/ui/file-upload";
+import { FileUploader } from "@/components/shared/file-uploader";
 import {
   Card,
   CardContent,
@@ -24,6 +24,7 @@ const NewExperiencePage = () => {
   const [title, setTitle] = React.useState("");
   const [content, setContent] = React.useState("");
   const [coverImageUrl, setCoverImageUrl] = React.useState("");
+  const [coverFileId, setCoverFileId] = React.useState<string | null>(null);
   const [tagsInput, setTagsInput] = React.useState(
     "Kinh nghiệm, Phỏng vấn, Kỹ năng mềm",
   );
@@ -54,6 +55,7 @@ const NewExperiencePage = () => {
         title,
         content,
         coverImageUrl: coverImageUrl || null,
+        coverFileId: coverFileId || null,
         tags,
       });
 
@@ -145,10 +147,13 @@ const NewExperiencePage = () => {
                 />
               </div>
 
-              <FileUpload
-                value={coverImageUrl}
-                onChange={setCoverImageUrl}
-                purpose="event_cover"
+              <FileUploader
+                value={{ fileId: coverFileId || undefined, url: coverImageUrl || undefined }}
+                onChange={(val) => {
+                  setCoverImageUrl(val?.url || "");
+                  setCoverFileId(val?.fileId || null);
+                }}
+                purpose="experience_cover"
                 label="Ảnh bìa bài viết (tùy chọn)"
                 helperText="Tải lên ảnh bìa đại diện cho bài viết chia sẻ (JPG, PNG, WEBP tối đa 5MB)"
                 disabled={isLoading}

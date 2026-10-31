@@ -1,9 +1,33 @@
 import type { NextConfig } from "next";
 
+const getStorageRemotePattern = () => {
+  const rawUrl =
+    process.env.S3_PUBLIC_BASE_URL ||
+    process.env.NEXT_PUBLIC_S3_BASE_URL ||
+    process.env.AWS_ENDPOINT_URL_S3;
+
+  if (!rawUrl) return [];
+
+  try {
+    const parsed = new URL(rawUrl);
+    return [
+      {
+        protocol: parsed.protocol.replace(":", "") as "http" | "https",
+        hostname: parsed.hostname,
+        port: parsed.port || undefined,
+        pathname: "/**",
+      },
+    ];
+  } catch (_e) {
+    return [];
+  }
+};
+
 const nextConfig: NextConfig = {
   reactCompiler: true,
   images: {
-    unoptimized: true,
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: getStorageRemotePattern(),
   },
   async redirects() {
     return [

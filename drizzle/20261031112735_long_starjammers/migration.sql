@@ -1,0 +1,1 @@
+ALTER TABLE "site_settings" DROP COLUMN "unit_founded_year";

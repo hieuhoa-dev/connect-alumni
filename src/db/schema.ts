@@ -11,6 +11,7 @@ import {
   uuid,
   pgEnum,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 // ─── AUTH ENUMS ─────────────────────────────────────────────────────────────
 export const roleEnum = pgEnum("user_role", [
@@ -138,6 +139,34 @@ export const applicationStatusEnum = pgEnum("application_status", [
   "rejected",
 ]);
 
+export const uploadedFileStatusEnum = pgEnum("uploaded_file_status", [
+  "pending",
+  "ready",
+  "removed",
+]);
+
+export const heroSlideStatusEnum = pgEnum("hero_slide_status", [
+  "draft",
+  "published",
+]);
+
+export const albumStatusEnum = pgEnum("album_status", [
+  "draft",
+  "published",
+  "archived",
+]);
+
+export const photoStatusEnum = pgEnum("photo_status", [
+  "published",
+  "removed",
+]);
+
+export const takedownStatusEnum = pgEnum("takedown_status", [
+  "open",
+  "accepted",
+  "rejected",
+]);
+
 // ─── BETTER-AUTH TABLES ─────────────────────────────────────────────────────
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -211,6 +240,37 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
+// ─── UPLOADED FILES ────────────────────────────────────────────────────────
+export const uploadedFiles = pgTable(
+  "uploaded_files",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    ownerId: text("owner_id")
+      .notNull()
+      .references(() => user.id),
+    purpose: text("purpose"),
+    status: uploadedFileStatusEnum("status").notNull().default("pending"),
+    visibility: text("visibility").notNull().default("public"),
+    relatedType: text("related_type"),
+    relatedId: text("related_id"),
+    fileKey: text("file_key").notNull(),
+    fileUrl: text("file_url"),
+    mimeType: text("mime_type").notNull(),
+    sizeBytes: integer("size_bytes").notNull(),
+    width: integer("width"),
+    height: integer("height"),
+    variants: jsonb("variants").$type<
+      Record<string, { key: string; url?: string; width?: number; height?: number }>
+    >(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("uploaded_files_ownerId_idx").on(table.ownerId),
+    index("uploaded_files_related_idx").on(table.relatedType, table.relatedId),
+    index("uploaded_files_purpose_status_idx").on(table.purpose, table.status),
+  ],
+);
+
 // ─── PROFILES ───────────────────────────────────────────────────────────────
 export const profiles = pgTable(
   "profiles",
@@ -230,6 +290,9 @@ export const profiles = pgTable(
     graduationYear: integer("graduation_year"),
     phone: text("phone"),
     avatarUrl: text("avatar_url"),
+    avatarFileId: uuid("avatar_file_id").references(() => uploadedFiles.id, {
+      onDelete: "set null",
+    }),
     bio: text("bio"),
     employmentStatus: employmentStatusEnum("employment_status"),
     currentTitle: text("current_title"),
@@ -261,6 +324,9 @@ export const profiles = pgTable(
     index("profiles_major_idx").on(table.major),
     index("profiles_province_idx").on(table.province),
     index("profiles_alumni_verified_idx").on(table.alumniVerifiedAt),
+    uniqueIndex("profiles_student_code_unique_idx")
+      .on(table.studentCode)
+      .where(sql`student_code IS NOT NULL`),
   ],
 );
 
@@ -346,6 +412,10 @@ export const companies = pgTable(
     name: text("name").notNull(),
     description: text("description").notNull(),
     logoUrl: text("logo_url"),
+    logoFileId: uuid("logo_file_id").references(() => uploadedFiles.id, {
+      onDelete: "set null",
+    }),
+    isFeaturedPartner: boolean("is_featured_partner").notNull().default(false),
     website: text("website"),
     industry: text("industry").notNull(),
     verificationStatus: verificationStatusEnum("verification_status")
@@ -439,6 +509,9 @@ export const events = pgTable(
     capacity: integer("capacity"),
     status: eventStatusEnum("status").default("draft").notNull(),
     coverImageUrl: text("cover_image_url"),
+    coverFileId: uuid("cover_file_id").references(() => uploadedFiles.id, {
+      onDelete: "set null",
+    }),
     createdBy: text("created_by")
       .notNull()
       .references(() => user.id),
@@ -515,6 +588,9 @@ export const experiencePosts = pgTable(
     title: text("title").notNull(),
     content: text("content").notNull(),
     coverImageUrl: text("cover_image_url"),
+    coverFileId: uuid("cover_file_id").references(() => uploadedFiles.id, {
+      onDelete: "set null",
+    }),
     tags: jsonb("tags").$type<string[]>().default([]).notNull(),
     status: postStatusEnum("status").default("draft").notNull(),
     rejectedReason: text("rejected_reason"),
@@ -610,6 +686,9 @@ export const formAnswers = pgTable(
       .references(() => formQuestions.id, { onDelete: "cascade" }),
     answerValue: jsonb("answer_value").$type<any>(),
     fileUrl: text("file_url"),
+    fileId: uuid("file_id").references(() => uploadedFiles.id, {
+      onDelete: "set null",
+    }),
   },
   (table) => [index("form_answers_responseId_idx").on(table.responseId)],
 );
@@ -742,23 +821,144 @@ export const auditLogs = pgTable(
   ],
 );
 
-export const uploadedFiles = pgTable(
-  "uploaded_files",
+export const heroSlides = pgTable(
+  "hero_slides",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    ownerId: text("owner_id")
+    status: heroSlideStatusEnum("status").notNull().default("draft"),
+    sortOrder: integer("sort_order").notNull().default(0),
+    badge: text("badge"),
+    title: text("title"),
+    highlightText: text("highlight_text"),
+    description: text("description"),
+    primaryLabel: text("primary_label"),
+    primaryHref: text("primary_href"),
+    secondaryLabel: text("secondary_label"),
+    secondaryHref: text("secondary_href"),
+    linkHref: text("link_href"),
+    imageFileId: uuid("image_file_id")
       .notNull()
-      .references(() => user.id),
-    relatedType: text("related_type").notNull(),
-    relatedId: text("related_id").notNull(),
-    fileKey: text("file_key").notNull(),
-    fileUrl: text("file_url"),
-    mimeType: text("mime_type").notNull(),
-    sizeBytes: integer("size_bytes").notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+      .references(() => uploadedFiles.id),
+    imageMobileFileId: uuid("image_mobile_file_id").references(
+      () => uploadedFiles.id,
+    ),
+    imageAlt: text("image_alt").notNull(),
+    overlayEnabled: boolean("overlay_enabled").notNull().default(true),
+    startsAt: timestamp("starts_at", { withTimezone: true }),
+    endsAt: timestamp("ends_at", { withTimezone: true }),
+    seedKey: text("seed_key").unique(),
+    createdBy: text("created_by").references(() => user.id),
+    updatedBy: text("updated_by").references(() => user.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
   },
   (table) => [
-    index("uploaded_files_ownerId_idx").on(table.ownerId),
-    index("uploaded_files_related_idx").on(table.relatedType, table.relatedId),
+    index("hero_slides_status_sortOrder_idx").on(table.status, table.sortOrder),
+  ],
+);
+
+export const siteSettings = pgTable("site_settings", {
+  id: text("id").primaryKey().default("default"),
+  contactPhone: text("contact_phone"),
+  contactEmail: text("contact_email"),
+  websiteUrl: text("website_url"),
+  address: text("address"),
+  mapUrl: text("map_url"),
+  facebookUrl: text("facebook_url"),
+  youtubeUrl: text("youtube_url"),
+  zaloUrl: text("zalo_url"),
+  aiSurveySummaryEnabled: boolean("ai_survey_summary_enabled").notNull().default(false),
+  aiWritingAssistantEnabled: boolean("ai_writing_assistant_enabled").notNull().default(false),
+  updatedBy: text("updated_by").references(() => user.id),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+export const eventAlbums = pgTable(
+  "event_albums",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    eventId: uuid("event_id").references(() => events.id, { onDelete: "set null" }),
+    title: text("title").notNull(),
+    description: text("description"),
+    coverPhotoId: uuid("cover_photo_id"),
+    status: albumStatusEnum("status").notNull().default("draft"),
+    createdBy: text("created_by")
+      .notNull()
+      .references(() => user.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+  },
+  (table) => [
+    index("event_albums_status_idx").on(table.status),
+    index("event_albums_eventId_idx").on(table.eventId),
+  ],
+);
+
+export const albumPhotos = pgTable(
+  "album_photos",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    albumId: uuid("album_id")
+      .notNull()
+      .references(() => eventAlbums.id, { onDelete: "cascade" }),
+    fileId: uuid("file_id")
+      .notNull()
+      .references(() => uploadedFiles.id),
+    caption: text("caption"),
+    takenAt: timestamp("taken_at", { withTimezone: true }),
+    sortOrder: integer("sort_order").notNull().default(0),
+    status: photoStatusEnum("status").notNull().default("published"),
+    removedReason: text("removed_reason"),
+    removedBy: text("removed_by").references(() => user.id),
+    uploadedBy: text("uploaded_by")
+      .notNull()
+      .references(() => user.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("album_photos_album_status_sort_idx").on(
+      table.albumId,
+      table.status,
+      table.sortOrder,
+    ),
+  ],
+);
+
+export const photoTakedownRequests = pgTable(
+  "photo_takedown_requests",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    photoId: uuid("photo_id")
+      .notNull()
+      .references(() => albumPhotos.id, { onDelete: "cascade" }),
+    requesterUserId: text("requester_user_id").references(() => user.id, {
+      onDelete: "set null",
+    }),
+    requesterName: text("requester_name").notNull(),
+    requesterContact: text("requester_contact").notNull(),
+    reason: text("reason").notNull(),
+    status: takedownStatusEnum("status").notNull().default("open"),
+    handlerNote: text("handler_note"),
+    handledBy: text("handled_by").references(() => user.id),
+    handledAt: timestamp("handled_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("photo_takedown_requests_status_idx").on(table.status),
+    index("photo_takedown_requests_photoId_idx").on(table.photoId),
   ],
 );

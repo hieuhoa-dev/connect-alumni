@@ -271,7 +271,6 @@ export const reviewJobPost = async (data: {
           ? "Tin hiện đã hiển thị công khai cho toàn thể sinh viên và cựu sinh viên."
           : `Lý do: ${validated.rejectedReason || "Nội dung chưa phù hợp tiêu chí."}`,
       linkUrl: `/employer/jobs`,
-      sendEmail: true,
     });
   }
 

@@ -4,56 +4,12 @@ import { ChevronRight, Sparkles, Volume2 } from "lucide-react";
 import { useReducedMotion } from "motion/react";
 import Link from "next/link";
 import * as React from "react";
-
-interface TickerItem {
-  id: string;
-  tag: string;
-  title: string;
-  href: string;
-  date?: string;
-  isHot?: boolean;
-}
-
-const defaultItems: TickerItem[] = [
-  {
-    id: "1",
-    tag: "QUỸ KHUYẾN HỌC",
-    title:
-      "Tiếp nhận hồ sơ xin học bổng Tiếp sức Sinh viên CNTT K22 - Đợt 1 năm học 2026",
-    href: "/scholarships",
-    date: "18/10",
-    isHot: true,
-  },
-  {
-    id: "2",
-    tag: "SỰ KIỆN",
-    title:
-      "Talkshow 'Lộ trình từ Lập trình viên đến Tech Lead & AI Architect' cùng Cựu sinh viên K12",
-    href: "/events",
-    date: "15/10",
-  },
-  {
-    id: "3",
-    tag: "TUYỂN DỤNG",
-    title:
-      "Doanh nghiệp đối tác mở đợt tuyển thực tập sinh & kỹ sư phần mềm chính quy",
-    href: "/jobs",
-    date: "12/10",
-  },
-  {
-    id: "4",
-    tag: "KHẢO SÁT",
-    title:
-      "Khoa CNTT phát động khảo sát đóng góp ý kiến hoàn thiện chương trình đào tạo",
-    href: "/experiences",
-    date: "10/10",
-  },
-];
+import type { TickerItemDto } from "@/types/ticker";
 
 export const BreakingTicker = ({
-  items = defaultItems,
+  items = [],
 }: {
-  items?: TickerItem[];
+  items?: TickerItemDto[];
 }) => {
   const reduceMotion = useReducedMotion();
   const [currentIndex, setCurrentIndex] = React.useState(0);
@@ -61,12 +17,16 @@ export const BreakingTicker = ({
 
   React.useEffect(() => {
     if (!reduceMotion) return;
-    if (isPaused) return;
+    if (isPaused || !items || items.length === 0) return;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % items.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, [reduceMotion, isPaused, items.length]);
+  }, [reduceMotion, isPaused, items?.length]);
+
+  if (!items || items.length === 0) {
+    return null;
+  }
 
   return (
     <div

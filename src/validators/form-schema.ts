@@ -57,6 +57,7 @@ export const formResponseSubmitSchema = z.object({
     z.object({
       answerValue: z.any().optional(),
       fileUrl: z.string().optional().nullable(),
+      fileId: z.string().uuid().optional().nullable(),
     }),
   ),
 });

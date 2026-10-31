@@ -186,7 +186,6 @@ export const reviewCompany = async (data: {
           ? "Doanh nghiệp của bạn hiện có thể đăng tin tuyển dụng và tham gia các hoạt động kết nối."
           : `Lý do: ${validated.rejectedReason || "Chưa đạt tiêu chuẩn kết nối của Khoa."}`,
       linkUrl: "/employer/dashboard",
-      sendEmail: true,
     });
   }
 

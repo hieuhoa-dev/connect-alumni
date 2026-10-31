@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { sampleDLUExperiences } from "@/lib/dlu-sample-data";
+import { ContentImage } from "@/components/shared/content-image";
 import { stripHtml, truncateText } from "@/lib/utils";
 
 interface ExperiencesPageProps {
@@ -22,17 +22,12 @@ interface ExperiencesPageProps {
 
 const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
   const params = await searchParams;
-  let posts: any[] = [];
-  try {
-    posts = await getPublishedExperiencePosts({
-      search: params.search,
-      limit: 30,
-    });
-  } catch (err) {
-    console.error("Failed to fetch experiences:", err);
-  }
+  const posts = await getPublishedExperiencePosts({
+    search: params.search,
+    limit: 30,
+  });
 
-  const displayPosts = posts.length > 0 ? posts : sampleDLUExperiences;
+  const displayPosts = posts;
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
@@ -91,19 +86,19 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
                 className="flex flex-col justify-between overflow-hidden border border-border/80 hover:border-pine-400 dark:hover:border-pine-600 transition-all duration-300 shadow-xs hover:shadow-md group"
               >
                 {/* Cover Image thumbnail */}
-                {post.coverImageUrl && (
-                  <div
-                    data-slot="card-image"
-                    className="relative w-full h-44 overflow-hidden bg-muted"
-                  >
-                    <img
-                      src={post.coverImageUrl}
-                      alt={post.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                  </div>
-                )}
+                <div
+                  data-slot="card-image"
+                  className="relative w-full h-44 overflow-hidden bg-muted"
+                >
+                  <ContentImage
+                    file={post.coverImageUrl}
+                    alt={post.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                </div>
 
                 <CardHeader className="pb-2.5">
                   <div className="flex flex-wrap gap-1 mb-2">
@@ -118,44 +113,44 @@ const ExperiencesPage = async ({ searchParams }: ExperiencesPageProps) => {
                         </span>
                       ))}
                   </div>
-                  <CardTitle className="text-base font-bold leading-snug line-clamp-2 text-foreground group-hover:text-primary transition-colors">
+
+                  <CardTitle className="text-base font-bold leading-snug line-clamp-2 group-hover:text-pine-700 dark:group-hover:text-pine-300 transition-colors">
                     <Link href={`/experiences/${post.id}`}>{post.title}</Link>
                   </CardTitle>
-                  <CardDescription className="text-[11px] pt-1 flex items-center gap-1.5 font-mono text-muted-foreground">
-                    <User className="size-3" />
-                    <span>
-                      {author?.fullName || post.author?.name || "Tác giả"}
-                    </span>
-                    {author?.batchYear && <span>· K{author.batchYear}</span>}
-                  </CardDescription>
                 </CardHeader>
 
-                <CardContent className="text-xs text-muted-foreground line-clamp-3 pb-3 leading-relaxed">
-                  {snippet}
+                <CardContent className="space-y-3 pb-3">
+                  <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
+                    {snippet}
+                  </p>
+
+                  <div className="flex items-center gap-2 pt-2 border-t border-border/50 text-[11px] text-muted-foreground">
+                    <User className="size-3.5 text-pine-600 shrink-0" />
+                    <span className="font-medium text-foreground truncate">
+                      {author?.fullName || post.author?.name || "Cựu sinh viên DLU"}
+                    </span>
+                    {author?.batchYear && (
+                      <span className="text-muted-foreground font-mono">
+                        · K{author.batchYear}
+                      </span>
+                    )}
+                  </div>
                 </CardContent>
 
-                <CardFooter className="pt-3 border-t border-border/50 flex items-center justify-between text-[11px] text-muted-foreground font-mono">
-                  <span className="flex items-center gap-3">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="size-3" />
+                <CardFooter className="pt-0 text-[11px] text-muted-foreground flex items-center justify-between border-t border-border/40 py-2.5 px-4 bg-muted/20">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="size-3" />
+                    <span>
                       {new Date(
                         post.publishedAt || post.createdAt,
                       ).toLocaleDateString("vi-VN")}
                     </span>
-                    <span className="flex items-center gap-1">
-                      <Eye className="size-3" />
-                      {post.viewCount || 0}
-                    </span>
-                  </span>
-                  <Button
-                    render={<Link href={`/experiences/${post.id}`} />}
-                    nativeButton={false}
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 text-xs font-semibold text-primary hover:text-primary/90"
-                  >
-                    Đọc tiếp
-                  </Button>
+                  </div>
+
+                  <div className="flex items-center gap-1 font-mono">
+                    <Eye className="size-3" />
+                    <span>{post.viewCount || 0} lượt xem</span>
+                  </div>
                 </CardFooter>
               </Card>
             );

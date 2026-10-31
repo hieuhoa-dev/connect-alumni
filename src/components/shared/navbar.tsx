@@ -34,6 +34,7 @@ import {
   Menu,
   User,
   ArrowRight,
+  Image as ImageIcon,
 } from "lucide-react";
 import { cn } from "cn";
 
@@ -76,6 +77,7 @@ export const Navbar = () => {
     { href: "/", label: "Trang chủ", icon: null },
     { href: "/jobs", label: "Việc làm", icon: Briefcase },
     { href: "/events", label: "Sự kiện", icon: Calendar },
+    { href: "/gallery", label: "Thư viện ảnh", icon: ImageIcon },
     { href: "/experiences", label: "Góc chia sẻ", icon: BookOpen },
     { href: "/scholarships", label: "Quỹ học bổng", icon: HeartHandshake },
   ];

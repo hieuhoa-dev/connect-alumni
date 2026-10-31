@@ -3,7 +3,12 @@ import { eq, and } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { profiles, companyMembers } from "@/db/schema";
-import { getDemoAccount, DEMO_COOKIE_NAME, isDemoEnabled } from "@/lib/demo-accounts";
+import {
+  getDemoAccount,
+  DEMO_COOKIE_NAME,
+  isDemoEnabled,
+  verifyDemoCookie,
+} from "@/lib/demo-accounts";
 
 export type UserRole =
   | "student"
@@ -22,7 +27,8 @@ export const getCurrentUser = async () => {
   if (isDemoEnabled()) {
     try {
       const cookieStore = await cookies();
-      const demoUserEmail = cookieStore.get(DEMO_COOKIE_NAME)?.value;
+      const rawCookie = cookieStore.get(DEMO_COOKIE_NAME)?.value;
+      const demoUserEmail = verifyDemoCookie(rawCookie);
 
       if (demoUserEmail) {
         const demo = getDemoAccount(demoUserEmail);
@@ -58,6 +64,7 @@ export const getCurrentUser = async () => {
               studentCode: demo.studentCode || null,
               batchYear: demo.batchYear || null,
               graduationYear: demo.graduationYear || null,
+              alumniVerifiedAt: demo.role === "alumni" ? new Date() : null,
               createdAt: new Date(),
               updatedAt: new Date(),
             },
@@ -189,4 +196,3 @@ export const requireCompanyContext = async (companyId?: string) => {
     "Bạn chưa tham gia hoặc chưa kích hoạt công ty nào. Vui lòng truy cập trang thiết lập doanh nghiệp.",
   );
 };
-

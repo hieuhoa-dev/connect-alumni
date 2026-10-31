@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Send, CheckCircle2 } from "lucide-react";
-import { FileUpload } from "@/components/ui/file-upload";
+import { FileUploader } from "@/components/shared/file-uploader";
 
 interface FormQuestion {
   id: string;
@@ -36,6 +36,7 @@ export const SurveyFormRenderer = ({ form, isExpired }: FormRendererProps) => {
   const router = useRouter();
   const [answers, setAnswers] = React.useState<Record<string, any>>({});
   const [fileUrls, setFileUrls] = React.useState<Record<string, string>>({});
+  const [fileIds, setFileIds] = React.useState<Record<string, string>>({});
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -94,13 +95,14 @@ export const SurveyFormRenderer = ({ form, isExpired }: FormRendererProps) => {
     try {
       const payloadAnswers: Record<
         string,
-        { answerValue?: any; fileUrl?: string }
+        { answerValue?: any; fileUrl?: string; fileId?: string }
       > = {};
 
       for (const q of form.questions) {
         payloadAnswers[q.id] = {
           answerValue: answers[q.id] !== undefined ? answers[q.id] : null,
           fileUrl: fileUrls[q.id] || undefined,
+          fileId: fileIds[q.id] || undefined,
         };
       }
 
@@ -288,11 +290,15 @@ export const SurveyFormRenderer = ({ form, isExpired }: FormRendererProps) => {
 
             {/* 6. File Upload */}
             {q.questionType === "file_upload" && (
-              <FileUpload
-                value={fileUrls[q.id] || ""}
-                onChange={(url) =>
-                  setFileUrls((prev) => ({ ...prev, [q.id]: url }))
-                }
+              <FileUploader
+                value={{
+                  fileId: fileIds[q.id] || undefined,
+                  url: fileUrls[q.id] || undefined,
+                }}
+                onChange={(val) => {
+                  setFileUrls((prev) => ({ ...prev, [q.id]: val?.url || "" }));
+                  setFileIds((prev) => ({ ...prev, [q.id]: val?.fileId || "" }));
+                }}
                 purpose="proof_document"
                 disabled={isLoading}
               />

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { updateMyProfile, saveMyWorkExperience, deleteMyWorkExperience } from "@/actions/profile-actions";
-import { FileUpload } from "@/components/ui/file-upload";
+import { FileUploader } from "@/components/shared/file-uploader";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -52,6 +52,7 @@ export const ProfileEditor = ({
   const [province, setProvince] = React.useState(initialProfile?.province || "");
   const [bio, setBio] = React.useState(initialProfile?.bio || "");
   const [avatarUrl, setAvatarUrl] = React.useState(initialProfile?.avatarUrl || "");
+  const [avatarFileId, setAvatarFileId] = React.useState<string | null>(initialProfile?.avatarFileId || null);
   const [skillsText, setSkillsText] = React.useState((initialProfile?.skills || []).join(", "));
   const [linkedinUrl, setLinkedinUrl] = React.useState(initialProfile?.linkedinUrl || "");
   const [githubUrl, setGithubUrl] = React.useState(initialProfile?.githubUrl || "");
@@ -101,6 +102,7 @@ export const ProfileEditor = ({
         province: province || null,
         bio: bio || null,
         avatarUrl: avatarUrl || null,
+        avatarFileId: avatarFileId || null,
         skills: skillsArray,
         linkedinUrl: linkedinUrl || null,
         githubUrl: githubUrl || null,
@@ -242,12 +244,14 @@ export const ProfileEditor = ({
                     Ảnh đại diện
                   </label>
                   <div className="max-w-xs">
-                    <FileUpload
+                    <FileUploader
                       purpose="avatar"
-                      accept="image/*"
-                      value={avatarUrl}
-                      onChange={(url) => setAvatarUrl(url)}
-                      helperText="Tải ảnh chân dung (≤ 5MB)"
+                      value={{ fileId: avatarFileId || undefined, url: avatarUrl || undefined }}
+                      onChange={(val) => {
+                        setAvatarUrl(val?.url || "");
+                        setAvatarFileId(val?.fileId || null);
+                      }}
+                      helperText="Tải ảnh chân dung tỉ lệ 1:1 (tối đa 2MB)"
                     />
                   </div>
                 </div>
@@ -670,17 +674,6 @@ export const ProfileEditor = ({
                     <Switch checked={showPhone} onCheckedChange={setShowPhone} />
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">
-                        Nhận thông báo qua Email
-                      </div>
-                      <div className="text-[11px] text-neutral-500">
-                        Nhận email khi có tin tuyển dụng, sự kiện hoặc lời mời kết nối mới
-                      </div>
-                    </div>
-                    <Switch checked={emailNotifications} onCheckedChange={setEmailNotifications} />
-                  </div>
                 </div>
 
                 <div className="flex justify-end pt-2">

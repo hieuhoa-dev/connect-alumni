@@ -1,10 +1,11 @@
 import { Queue } from "bullmq";
-import { redis } from "@/lib/redis";
 import { db } from "@/db";
 import { notifications } from "@/db/schema";
+import { redis } from "@/lib/redis";
 
 export const NOTIFICATION_QUEUE_NAME = "alumni-notifications";
 export const JOB_EXPIRE_QUEUE_NAME = "alumni-job-expiry";
+export const FILE_CLEANUP_QUEUE_NAME = "alumni-file-cleanup";
 
 export interface NotificationPayload {
   userId: string;
@@ -12,7 +13,6 @@ export interface NotificationPayload {
   title: string;
   body: string;
   linkUrl?: string;
-  sendEmail?: boolean;
 }
 
 // BullMQ queue instance
@@ -41,8 +41,19 @@ jobExpiryQueue.on("error", (err) => {
   console.error("[JobExpiryQueue] Queue error:", err);
 });
 
+export const fileCleanupQueue = new Queue(FILE_CLEANUP_QUEUE_NAME, {
+  connection: redis,
+  defaultJobOptions: {
+    removeOnComplete: true,
+  },
+});
+fileCleanupQueue.on("error", (err) => {
+  console.error("[FileCleanupQueue] Queue error:", err);
+});
+
 /**
- * Enqueue notification + save immediately to in-app DB
+ * Task A7: Enqueue notification + save immediately to in-app DB.
+ * DB record is the single source of truth; queue failures do not drop the in-app notification.
  */
 export const sendNotification = async (payload: NotificationPayload) => {
   try {
@@ -59,38 +70,68 @@ export const sendNotification = async (payload: NotificationPayload) => {
       })
       .returning();
 
-    // 2. Enqueue background job (for email/push delivery)
+    // 2. Enqueue background job (for in-app push delivery / processing)
     try {
       await notificationQueue.add("send-notification", {
         ...payload,
         notificationId: created?.id,
       });
-    } catch (e) {
-      // Redis offline, ignore background delivery
+    } catch (queueErr) {
+      // Redis offline: log warning, DB record is safe and retained
+      console.warn(
+        `[NotificationQueue] Could not enqueue background notification for user ${payload.userId} (Redis offline):`,
+        queueErr,
+      );
     }
+
     return created;
   } catch (err) {
-    // DB or queue offline, continue gracefully
-    return null;
+    console.error(
+      `[Notifications] Failed to save in-app notification in DB for user ${payload.userId}:`,
+      err,
+    );
+    throw err;
   }
 };
 
 /**
- * Setup hourly job to mark expired job posts
+ * Task A8: Setup hourly job to mark expired job posts using proper BullMQ 6 API
  */
 export const scheduleJobExpiryCheck = async () => {
   try {
-    await jobExpiryQueue.add(
-      "check-expired-jobs",
-      {},
+    await jobExpiryQueue.upsertJobScheduler(
+      "repeat-check-expired-jobs",
+      { pattern: "0 * * * *" },
       {
-        jobId: "repeat-check-expired-jobs",
-        repeat: {
-          pattern: "0 * * * *", // Every hour at minute 0
-        },
-      } as any,
+        name: "check-expired-jobs",
+        data: {},
+      },
     );
   } catch (err) {
-    console.warn("Could not schedule job expiry queue repeat pattern", err);
+    console.warn(
+      "[JobExpiryQueue] Could not schedule job expiry queue repeat pattern:",
+      err,
+    );
+  }
+};
+
+/**
+ * Task B1: Setup daily job to clean up uploaded_files in 'pending' status older than 24 hours
+ */
+export const scheduleFileCleanupJob = async () => {
+  try {
+    await fileCleanupQueue.upsertJobScheduler(
+      "repeat-cleanup-pending-files",
+      { pattern: "0 2 * * *" }, // Run daily at 02:00 AM
+      {
+        name: "cleanup-pending-files",
+        data: {},
+      },
+    );
+  } catch (err) {
+    console.warn(
+      "[FileCleanupQueue] Could not schedule file cleanup repeat pattern:",
+      err,
+    );
   }
 };

@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { getPublishedEvents } from "@/actions/event-actions";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -17,25 +18,18 @@ import {
   Users,
   Video,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { sampleDLUEvents } from "@/lib/dlu-sample-data";
+import { ContentImage } from "@/components/shared/content-image";
 
 const EventsPage = async () => {
-  let events: any[] = [];
-  try {
-    events = await getPublishedEvents();
-  } catch (err) {
-    console.error("Failed to fetch published events:", err);
-  }
-
-  const displayEvents = events.length > 0 ? events : sampleDLUEvents;
+  const events = await getPublishedEvents();
+  const displayEvents = events;
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-8">
       {/* Header */}
       <div className="space-y-2">
         <h1 className="font-serif text-3xl sm:text-4xl font-extrabold tracking-tight text-pine-800">
-          Talkshow, Hội thảo & Sự kiện — Đại học Đà Lạt
+          Talkshow, Hội thảo &amp; Sự kiện — Đại học Đà Lạt
         </h1>
         <p className="text-sm text-muted-foreground">
           Các chương trình kết nối định kỳ giữa Cựu sinh viên, Trường Đại học Đà Lạt và Sinh viên
@@ -59,87 +53,81 @@ const EventsPage = async () => {
           displayEvents.map((event) => (
             <Card
               key={event.id}
-              className="group flex flex-col justify-between overflow-hidden rounded-[24px] border border-border/70 bg-card p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-foreground/20 hover:shadow-lg"
+              className="flex flex-col justify-between overflow-hidden hover:border-primary/50 transition shadow-sm group"
             >
-              <div>
-                {/* Khung ảnh tỷ lệ cố định 16:10 hoặc 16:9 bo góc riêng biệt */}
-                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[18px] bg-gradient-to-br from-muted/60 to-muted">
-                  {event.coverImageUrl ? (
-                    <img
-                      src={event.coverImageUrl}
-                      alt={event.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 text-muted-foreground/60">
-                      <CalendarDays className="size-7" />
-                      <span className="text-[11px] font-medium">Sự kiện</span>
-                    </div>
-                  )}
-
-                  {/* Badges đè trên ảnh với nền mờ có viền để luôn đọc rõ trên mọi nền */}
-                  <div className="absolute left-2.5 top-2.5 flex items-center gap-1.5">
-                    <span className="rounded-full border border-black/5 bg-background/85 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-foreground shadow-sm backdrop-blur-md dark:border-white/10">
-                      {event.type}
-                    </span>
-                    <span
-                      className={cn(
-                        "rounded-full px-2.5 py-0.5 text-[10px] font-medium shadow-sm backdrop-blur-md",
-                        event.format === "online"
-                          ? "bg-blue-600/90 text-white"
-                          : "bg-emerald-600/90 text-white",
-                      )}
-                    >
-                      {event.format === "online" ? "Trực tuyến" : "Trực tiếp"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Nội dung thông tin bên dưới */}
-                <div className="px-1.5 pt-3.5">
-                  <h3 className="line-clamp-2 text-base font-semibold leading-snug tracking-tight text-foreground transition-colors group-hover:text-primary">
-                    <Link href={`/events/${event.id}`}>{event.title}</Link>
-                  </h3>
-
-                  <p className="mt-1.5 line-clamp-2 break-all text-xs leading-relaxed text-muted-foreground">
-                    {event.description || "Chưa có mô tả cho sự kiện này."}
-                  </p>
-
-                  {/* Meta info: Ngày giờ & Địa điểm */}
-                  <div className="mt-3 space-y-1.5 text-[11px] text-muted-foreground">
-                    <div className="flex items-center gap-2 font-medium text-foreground">
-                      <Clock className="size-3.5 shrink-0 text-muted-foreground" />
-                      <span className="font-mono">
-                        {new Date(event.startTime).toLocaleString("vi-VN", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="size-3.5 shrink-0 text-muted-foreground" />
-                      <span className="truncate">
-                        {event.locationOrLink || "Chưa cập nhật"}
-                      </span>
-                    </div>
-                  </div>
+              {/* Cover image */}
+              <div
+                data-slot="card-image"
+                className="relative aspect-video w-full bg-muted overflow-hidden"
+              >
+                <ContentImage
+                  file={event.coverImageUrl}
+                  alt={event.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover group-hover:scale-105 transition duration-300"
+                />
+                <div className="absolute top-2 right-2">
+                  <Badge variant="outline" className="bg-background/80 backdrop-blur-sm">
+                    {event.type}
+                  </Badge>
                 </div>
               </div>
 
-              {/* Footer chứa nút bo cong kiểu Capsule */}
-              <div className="mt-4 border-t border-border/40 px-1 pt-3">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                  <CalendarDays className="h-3.5 w-3.5" />
+                  <span>
+                    {new Date(event.startTime).toLocaleDateString("vi-VN", {
+                      weekday: "long",
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+                <CardTitle className="text-base font-bold leading-snug line-clamp-2">
+                  <Link href={`/events/${event.id}`}>{event.title}</Link>
+                </CardTitle>
+              </CardHeader>
+
+              <CardContent className="space-y-2 pb-4 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 shrink-0" />
+                  <span>
+                    {new Date(event.startTime).toLocaleTimeString("vi-VN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+                <div className="flex items-start gap-1.5">
+                  {event.format === "online" ? (
+                    <Video className="h-3.5 w-3.5 shrink-0 text-blue-500 mt-0.5" />
+                  ) : (
+                    <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-600 mt-0.5" />
+                  )}
+                  <span className="line-clamp-1">
+                    {event.locationOrLink || "Đại học Đà Lạt"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Users className="h-3.5 w-3.5 shrink-0" />
+                  <span>{event.registrations?.length || 0} người tham gia</span>
+                </div>
+              </CardContent>
+
+              <CardFooter className="pt-0">
                 <Link
                   href={`/events/${event.id}`}
                   className={cn(
-                    buttonVariants({ variant: "default", size: "sm" }),
-                    "w-full h-9 rounded-full font-medium text-xs shadow-none transition active:scale-[0.98]",
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "w-full",
                   )}
                 >
-                  Đăng ký tham gia{" "}
-                  {event.registrations?.length > 0 &&
-                    `(${event.registrations.length})`}
+                  Xem chi tiết &amp; Đăng ký
                 </Link>
-              </div>
+              </CardFooter>
             </Card>
           ))
         )}

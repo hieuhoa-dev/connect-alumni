@@ -1,3 +1,5 @@
+import crypto from "node:crypto";
+
 export interface DemoUser {
   id: string;
   email: string;
@@ -24,7 +26,7 @@ export const DEMO_ACCOUNTS: Record<string, DemoUser> = {
     faculty: "Công nghệ Thông tin",
     phone: "0902345678",
     bio: "Phó Trưởng Bộ môn - Phụ trách Quan hệ Doanh nghiệp & Hoạt động Cựu sinh viên",
-    avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200",
+    avatarUrl: "/placeholder-avatar.svg",
     redirectUrl: "/faculty-admin/dashboard",
     roleLabel: "Giáo vụ Khoa",
     badgeVariant: "default",
@@ -37,7 +39,7 @@ export const DEMO_ACCOUNTS: Record<string, DemoUser> = {
     faculty: "Công nghệ Thông tin",
     phone: "0901234567",
     bio: "Trưởng Khoa kiêm Quản trị viên hệ thống Mạng lưới Cựu sinh viên Khoa CNTT",
-    avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200",
+    avatarUrl: "/placeholder-avatar.svg",
     redirectUrl: "/faculty-admin/dashboard",
     roleLabel: "Quản trị Khoa",
     badgeVariant: "destructive",
@@ -52,7 +54,7 @@ export const DEMO_ACCOUNTS: Record<string, DemoUser> = {
     faculty: "Công nghệ Thông tin",
     phone: "0905678901",
     bio: "Sinh viên năm cuối ngành Kỹ thuật Phần mềm (K21), GPA 3.65/4.0, đam mê Fullstack Web & AI Agent",
-    avatarUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200",
+    avatarUrl: "/placeholder-avatar.svg",
     redirectUrl: "/student/dashboard",
     roleLabel: "Sinh viên",
     badgeVariant: "secondary",
@@ -67,7 +69,7 @@ export const DEMO_ACCOUNTS: Record<string, DemoUser> = {
     faculty: "Công nghệ Thông tin",
     phone: "0903456789",
     bio: "Tech Lead tại FPT Software | Cựu sinh viên K18 | Chuyên môn Cloud & Kiến trúc Microservices",
-    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200",
+    avatarUrl: "/placeholder-avatar.svg",
     redirectUrl: "/student/dashboard",
     roleLabel: "Cựu sinh viên",
     badgeVariant: "default",
@@ -80,7 +82,7 @@ export const DEMO_ACCOUNTS: Record<string, DemoUser> = {
     faculty: "Đối tác Doanh nghiệp",
     phone: "0906789012",
     bio: "Lead Talent Acquisition - VNG Corporation",
-    avatarUrl: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=200",
+    avatarUrl: "/placeholder-avatar.svg",
     redirectUrl: "/employer/dashboard",
     roleLabel: "Doanh nghiệp",
     badgeVariant: "outline",
@@ -102,37 +104,43 @@ export const isDemoEnabled = (): boolean => {
   );
 };
 
-export const sampleDemoNotifications = [
-  {
-    id: "notif-1",
-    userId: "demo-user",
-    title: "Chào mừng bạn đến với Mạng lưới Cựu sinh viên Đại học Đà Lạt!",
-    content: "Tài khoản của bạn đã được kết nối vào hệ thống. Chúc bạn có trải nghiệm tuyệt vời.",
-    type: "system",
-    read: false,
-    createdAt: new Date(),
-  },
-  {
-    id: "notif-2",
-    userId: "demo-user",
-    title: "Sự kiện sắp diễn ra: DLU Reunion 2026",
-    content: "Hội ngộ cựu sinh viên các thế hệ tại Hội trường Thư viện DLU. Hãy xem chi tiết sự kiện.",
-    type: "event",
-    read: true,
-    createdAt: new Date(Date.now() - 3600000 * 24),
-  },
-];
+const getDemoSecret = (): string => {
+  return (
+    process.env.BETTER_AUTH_SECRET || "dlu-connect-alumni-demo-secret-key-32b"
+  );
+};
 
-export const sampleDemoCompanies = [
-  {
-    id: "company-vng-dlu",
-    name: "Tập đoàn VNG Corporation",
-    description: "Kỳ lân công nghệ hàng đầu Việt Nam, đối tác chiến lược đào tạo và tuyển dụng chính thức của Trường Đại học Đà Lạt.",
-    industry: "Công nghệ thông tin & Game",
-    website: "https://vng.com.vn",
-    logoUrl: "https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=200",
-    verificationStatus: "verified" as const,
-    isActiveContext: true,
-    membershipRole: "admin",
-  },
-];
+export const signDemoCookie = (email: string): string => {
+  const hmac = crypto.createHmac("sha256", getDemoSecret());
+  hmac.update(email);
+  const signature = hmac.digest("hex");
+  return `${email}.${signature}`;
+};
+
+export const verifyDemoCookie = (
+  cookieValue: string | undefined | null,
+): string | null => {
+  if (!cookieValue || !isDemoEnabled()) return null;
+  const lastDot = cookieValue.lastIndexOf(".");
+  if (lastDot === -1) return null;
+  const email = cookieValue.substring(0, lastDot);
+  const signature = cookieValue.substring(lastDot + 1);
+
+  const hmac = crypto.createHmac("sha256", getDemoSecret());
+  hmac.update(email);
+  const expectedSignature = hmac.digest("hex");
+
+  try {
+    const sigBuffer = Buffer.from(signature, "hex");
+    const expectedBuffer = Buffer.from(expectedSignature, "hex");
+    if (
+      sigBuffer.length === expectedBuffer.length &&
+      crypto.timingSafeEqual(sigBuffer, expectedBuffer)
+    ) {
+      return email;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+};

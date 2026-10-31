@@ -341,7 +341,6 @@ export const confirmFulfillPledge = async (pledgeId: string) => {
       title: "Xác nhận nhận tiền tài trợ Quỹ Khuyến học",
       body: `Khoa đã nhận được số tiền ${Number(updatedPledge.amount).toLocaleString("vi-VN")} VNĐ từ bạn. Trân trọng cảm ơn tấm lòng hảo tâm!`,
       linkUrl: "/scholarships",
-      sendEmail: true,
     });
   }
 
@@ -393,7 +392,7 @@ export const submitScholarshipApplication = async (data: {
   campaignId: string;
   answers?: Array<{
     questionId: string;
-    answerValue?: any;
+    answerValue?: unknown;
     fileUrl?: string;
   }>;
 }) => {
@@ -517,8 +516,9 @@ export const submitScholarshipApplication = async (data: {
     });
 
     return application;
-  } catch (err: any) {
-    if (err.code === "23505" || err.message?.includes("unique")) {
+  } catch (err: unknown) {
+    const error = err as { code?: string; message?: string };
+    if (error.code === "23505" || error.message?.includes("unique")) {
       throw new ConflictError(
         "Bạn đã nộp hồ sơ cho chiến dịch học bổng này rồi.",
       );
@@ -644,7 +644,6 @@ export const reviewScholarshipApplication = async (
         ? `Điểm đánh giá: ${scoreText}. ${validated.awardedAmount ? `Số tiền trao: ${Number(validated.awardedAmount).toLocaleString("vi-VN")} VNĐ. ` : ""}Ghi chú: ${validated.reviewNote || "Chúc mừng bạn!"}`
         : `Nhận xét: ${validated.reviewNote || "Chưa đạt điều kiện đợt này."}`,
     linkUrl: "/student/scholarships",
-    sendEmail: true,
   });
 
   await logAuditEvent({

@@ -6,16 +6,47 @@ export const dynamic = "force-dynamic";
 
 const bucketName = process.env.S3_BUCKET_NAME || "alumni";
 
+const ALLOWED_PUBLIC_PREFIXES = [
+  "uploads/avatar/",
+  "uploads/company_logo/",
+  "uploads/event_cover/",
+  "uploads/experience_cover/",
+  "uploads/hero_banner/",
+  "uploads/album_photo/",
+];
+
+function isPublicFile(key: string): boolean {
+  if (key.includes("..") || key.includes("//")) return false;
+  return ALLOWED_PUBLIC_PREFIXES.some((prefix) => key.startsWith(prefix));
+}
+
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ path: string[] }> }
+  { params }: { params: Promise<{ path: string[] }> },
 ) {
   try {
     const resolvedParams = await params;
     const key = resolvedParams.path.join("/");
 
     if (!key) {
-      return new NextResponse("Not Found", { status: 404 });
+      return new NextResponse("Not Found", {
+        status: 404,
+        headers: { "Cache-Control": "private, no-store" },
+      });
+    }
+
+    // Task A4: Private files are strictly prohibited through this route.
+    if (!isPublicFile(key)) {
+      return new NextResponse(
+        "Forbidden: Tệp này thuộc diện riêng tư và không thể truy cập công khai.",
+        {
+          status: 403,
+          headers: {
+            "Cache-Control": "private, no-store",
+            "Content-Type": "text/plain; charset=utf-8",
+          },
+        },
+      );
     }
 
     const command = new GetObjectCommand({
@@ -26,7 +57,10 @@ export async function GET(
     const response = await s3Client.send(command);
 
     if (!response.Body) {
-      return new NextResponse("Not Found", { status: 404 });
+      return new NextResponse("Not Found", {
+        status: 404,
+        headers: { "Cache-Control": "public, max-age=60" },
+      });
     }
 
     // Convert AWS SDK stream to Web ReadableStream
@@ -43,7 +77,7 @@ export async function GET(
       headers.set("ETag", response.ETag);
     }
 
-    // Cache static assets in browser for 7 days
+    // Cache static public assets in browser for 7 days
     headers.set("Cache-Control", "public, max-age=604800, immutable");
 
     return new NextResponse(stream as any, {
@@ -52,9 +86,15 @@ export async function GET(
     });
   } catch (error: any) {
     if (error.name === "NoSuchKey" || error.$metadata?.httpStatusCode === 404) {
-      return new NextResponse("Not Found", { status: 404 });
+      return new NextResponse("Not Found", {
+        status: 404,
+        headers: { "Cache-Control": "private, no-store" },
+      });
     }
     console.error("Error serving uploaded file:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return new NextResponse("Internal Server Error", {
+      status: 500,
+      headers: { "Cache-Control": "private, no-store" },
+    });
   }
 }

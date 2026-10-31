@@ -10,6 +10,7 @@ export const companyCreateSchema = z.object({
     .optional()
     .or(z.literal("")),
   logoUrl: z.string().optional().nullable(),
+  logoFileId: z.string().uuid().optional().nullable(),
   roleInCompany: z
     .string()
     .min(2, "Chức vụ của bạn trong công ty (ví dụ: HR Lead, Recruiter)"),

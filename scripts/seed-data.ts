@@ -40,8 +40,7 @@ export const SEED_USERS = [
     faculty: "Công nghệ Thông tin",
     phone: "0901234567",
     bio: "Trưởng Khoa kiêm Quản trị viên hệ thống Mạng lưới Cựu sinh viên Khoa CNTT",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200",
+    avatarUrl: null,
   },
   {
     email: "staff@khoacntt.edu.vn",
@@ -51,8 +50,7 @@ export const SEED_USERS = [
     faculty: "Công nghệ Thông tin",
     phone: "0902345678",
     bio: "Phó Trưởng Bộ môn - Phụ trách Quan hệ Doanh nghiệp & Hoạt động Cựu sinh viên",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200",
+    avatarUrl: null,
   },
   {
     email: "staff.haidang@khoacntt.edu.vn",
@@ -62,8 +60,7 @@ export const SEED_USERS = [
     faculty: "Công nghệ Thông tin",
     phone: "0902345699",
     bio: "Giảng viên phụ trách Công tác Sinh viên & Quản lý Quỹ Học bổng Tài năng",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200",
+    avatarUrl: null,
   },
 
   // 2. Mạng lưới Cựu sinh viên (Alumni qua các thế hệ)
@@ -77,8 +74,7 @@ export const SEED_USERS = [
     graduationYear: 2022,
     phone: "0903456789",
     bio: "Tech Lead tại FPT Software | Cựu sinh viên K18 | Chuyên môn Cloud & Kiến trúc Microservices",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200",
+    avatarUrl: null,
   },
   {
     email: "alumni.mai@gmail.com",
@@ -90,8 +86,7 @@ export const SEED_USERS = [
     graduationYear: 2021,
     phone: "0904567890",
     bio: "Senior Product Manager tại VNG Corporation | Cựu sinh viên K17",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200",
+    avatarUrl: null,
   },
   {
     email: "alumni.quoc@gmail.com",
@@ -103,8 +98,7 @@ export const SEED_USERS = [
     graduationYear: 2020,
     phone: "0908889999",
     bio: "Principal Software Engineer tại MoMo | Cựu sinh viên K16 | Speaker System Design",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200",
+    avatarUrl: null,
   },
   {
     email: "alumni.linh@gmail.com",
@@ -116,8 +110,7 @@ export const SEED_USERS = [
     graduationYear: 2023,
     phone: "0907778888",
     bio: "AI Research Engineer tại Viettel AI | Cựu sinh viên K19 | Tác giả bài báo khoa học quốc tế",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200",
+    avatarUrl: null,
   },
   {
     email: "alumni.khang@techstartup.vn",
@@ -129,8 +122,7 @@ export const SEED_USERS = [
     graduationYear: 2019,
     phone: "0906665555",
     bio: "Co-Founder & CTO tại NextGen Solutions | Cựu sinh viên K15",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200",
+    avatarUrl: null,
   },
 
   // 2.1. Danh sách Ban Liên Lạc Cựu Sinh Viên DLU (Dữ liệu thực tế từ csv.dlu.edu.vn)
@@ -144,7 +136,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "Công ty cổ phần Mạnh Đan",
     bio: "Ủy viên Ban liên lạc cấp trường | Công ty cổ phần Mạnh Đan",
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
+    avatarUrl: null,
   },
   {
     email: "bui.thi.thoa@dlu.alumni.vn",
@@ -156,7 +148,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "Trường Đại học Đà Lạt",
     bio: "Ủy viên Ban liên lạc cấp trường · Phó Trưởng khoa Quốc tế học, Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
+    avatarUrl: null,
   },
   {
     email: "bui.truong.giang@dlu.alumni.vn",
@@ -168,7 +160,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban Chấp hành",
     currentCompanyName: "Công ty CP Thiên Phúc Đức",
     bio: "Ủy viên Ban Chấp hành cấp trường · Công ty CP Thiên Phúc Đức",
-    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
+    avatarUrl: null,
   },
   {
     email: "chu.van.binh@dlu.alumni.vn",
@@ -181,7 +173,7 @@ export const SEED_USERS = [
     currentTitle: "Phó trưởng ban BLL Khoa Luật học",
     currentCompanyName: "Tòa án khu vực 1 - Lâm Đồng",
     bio: "Ủy viên Ban liên lạc cấp trường · Phó trưởng ban BLL Khoa Luật học · Tòa án khu vực 1 - Lâm Đồng",
-    avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300",
+    avatarUrl: null,
   },
   {
     email: "dao.vinh.loc@dlu.alumni.vn",
@@ -193,7 +185,7 @@ export const SEED_USERS = [
     currentTitle: "Phó trưởng ban BLL Khoa Hóa học và Môi trường",
     currentCompanyName: "Tổ chức BNI",
     bio: "Giám đốc BNI · Phó trưởng ban BLL Khoa Hóa học và Môi trường DLU",
-    avatarUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300",
+    avatarUrl: null,
   },
   {
     email: "dinh.giang.hai@dlu.alumni.vn",
@@ -205,7 +197,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban Chấp hành",
     currentCompanyName: "BLL Cựu sinh viên Lai Châu",
     bio: "Ủy viên Ban Chấp hành cấp trường · Trưởng BLL Cựu sinh viên Lai Châu",
-    avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300",
+    avatarUrl: null,
   },
   {
     email: "dinh.tien.hai@dlu.alumni.vn",
@@ -217,7 +209,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "BLL Cựu sinh viên Hải Phòng",
     bio: "Ủy viên Ban liên lạc cấp trường · Trưởng BLL Cựu sinh viên Hải Phòng",
-    avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300",
+    avatarUrl: null,
   },
   {
     email: "dinh.van.phuc@dlu.alumni.vn",
@@ -229,7 +221,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên BLL Khoa Công nghệ Thông tin",
     currentCompanyName: "Khoa Công nghệ Thông tin - Trường ĐH Đà Lạt",
     bio: "Ủy viên Ban liên lạc Khoa Công nghệ Thông tin Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300",
+    avatarUrl: null,
   },
   {
     email: "do.phan.anh@dlu.alumni.vn",
@@ -241,7 +233,7 @@ export const SEED_USERS = [
     currentTitle: "Thư ký BLL Khoa Quốc tế học",
     currentCompanyName: "Khoa Quốc tế học - Trường ĐH Đà Lạt",
     bio: "Thư ký Ban liên lạc Khoa Quốc tế học Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=300",
+    avatarUrl: null,
   },
   {
     email: "duong.ngoc.lang@dlu.alumni.vn",
@@ -252,7 +244,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban Chấp hành",
     currentCompanyName: "Trường ĐH Yersin Đà Lạt",
     bio: "Ủy viên Ban Chấp hành BLL cấp trường · Giảng viên Trường ĐH Yersin Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=300",
+    avatarUrl: null,
   },
   {
     email: "duong.van.hai@dlu.alumni.vn",
@@ -264,7 +256,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "Trường Đại học Đà Lạt",
     bio: "Ủy viên Ban liên lạc cấp trường · Trưởng khoa Toán - Tin học, Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300",
+    avatarUrl: null,
   },
   {
     email: "hoang.thi.binh@dlu.alumni.vn",
@@ -276,7 +268,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "Trường Đại học Đà Lạt",
     bio: "Ủy viên Ban liên lạc cấp trường · Trưởng khoa Sinh học, Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300",
+    avatarUrl: null,
   },
   {
     email: "hoang.thi.kim.ngan@dlu.alumni.vn",
@@ -288,7 +280,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên BLL Khoa Công nghệ Thông tin",
     currentCompanyName: "Khoa Công nghệ Thông tin - Trường ĐH Đà Lạt",
     bio: "Ủy viên Ban liên lạc Khoa Công nghệ Thông tin Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300",
+    avatarUrl: null,
   },
   {
     email: "ho.tang.an@dlu.alumni.vn",
@@ -300,7 +292,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban Chấp hành",
     currentCompanyName: "BLL Cựu sinh viên Hà Tĩnh",
     bio: "Ủy viên Ban Chấp hành BLL cấp trường · Ban liên lạc Cựu sinh viên Hà Tĩnh",
-    avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300",
+    avatarUrl: null,
   },
   {
     email: "ho.thi.giang.chau@dlu.alumni.vn",
@@ -312,7 +304,7 @@ export const SEED_USERS = [
     currentTitle: "Trưởng ban BLL Khoa Ngoại ngữ",
     currentCompanyName: "Khoa Ngoại ngữ - Trường Đại học Đà Lạt",
     bio: "Ủy viên Ban liên lạc cấp trường · Phụ trách Khoa Ngoại ngữ, Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=300",
+    avatarUrl: null,
   },
   {
     email: "huynh.phuong.thao@dlu.alumni.vn",
@@ -324,7 +316,7 @@ export const SEED_USERS = [
     currentTitle: "Thư ký BLL Khoa Hóa học và Môi trường",
     currentCompanyName: "Khoa Hóa học và Môi trường - Trường ĐH Đà Lạt",
     bio: "Thư ký Ban liên lạc Khoa Hóa học và Môi trường Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=300",
+    avatarUrl: null,
   },
   {
     email: "khac.van.thanh@dlu.alumni.vn",
@@ -336,7 +328,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban Chấp hành",
     currentCompanyName: "BLL Cựu sinh viên Đắk Lắk",
     bio: "Ủy viên Ban Chấp hành cấp trường · BLL Cựu sinh viên Đắk Lắk",
-    avatarUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300",
+    avatarUrl: null,
   },
   {
     email: "le.dinh.hoi@dlu.alumni.vn",
@@ -348,7 +340,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban Chấp hành",
     currentCompanyName: "BLL Cựu sinh viên Đà Nẵng",
     bio: "Ủy viên Ban Chấp hành cấp trường · BLL Cựu sinh viên Đà Nẵng",
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
+    avatarUrl: null,
   },
   {
     email: "le.tai@dlu.alumni.vn",
@@ -360,7 +352,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban Chấp hành",
     currentCompanyName: "MobiFone Lâm Đồng",
     bio: "Ủy viên Ban Chấp hành cấp trường · Cán bộ quản lý MobiFone Lâm Đồng",
-    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
+    avatarUrl: null,
   },
   {
     email: "le.thanh.phong@dlu.alumni.vn",
@@ -372,7 +364,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban Chấp hành",
     currentCompanyName: "Báo Người Lao Động",
     bio: "Ủy viên Ban Chấp hành cấp trường · Nhà báo Báo Người Lao Động",
-    avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300",
+    avatarUrl: null,
   },
   {
     email: "le.thi.bao.chau@dlu.alumni.vn",
@@ -384,7 +376,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên – Thư ký BLL Khoa CNTT",
     currentCompanyName: "Khoa Công nghệ Thông tin - Trường ĐH Đà Lạt",
     bio: "Ủy viên – Thư ký Ban liên lạc Khoa Công nghệ Thông tin Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
+    avatarUrl: null,
   },
   {
     email: "le.thi.hai.yen@dlu.alumni.vn",
@@ -396,7 +388,7 @@ export const SEED_USERS = [
     currentTitle: "Thư ký BLL Khoa Ngoại ngữ",
     currentCompanyName: "Khoa Ngoại ngữ - Trường Đại học Đà Lạt",
     bio: "Thư ký Ban liên lạc Khoa Ngoại ngữ - Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300",
+    avatarUrl: null,
   },
   {
     email: "le.thi.hoa@dlu.alumni.vn",
@@ -408,7 +400,7 @@ export const SEED_USERS = [
     currentTitle: "Thư ký BLL Khoa Nông Lâm",
     currentCompanyName: "Khoa Nông Lâm - Trường ĐH Đà Lạt",
     bio: "Thư ký Ban liên lạc Khoa Nông Lâm - Trường ĐH Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300",
+    avatarUrl: null,
   },
   {
     email: "le.truc.linh@dlu.alumni.vn",
@@ -420,7 +412,7 @@ export const SEED_USERS = [
     currentTitle: "Thư ký BLL Khoa Sinh học",
     currentCompanyName: "Khoa Sinh học - Trường Đại học Đà Lạt",
     bio: "Thư ký Ban liên lạc Khoa Sinh học - Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=300",
+    avatarUrl: null,
   },
   {
     email: "le.van.luc@dlu.alumni.vn",
@@ -431,7 +423,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban Thường trực",
     currentCompanyName: "Công Ty CP Hóa chất Xanh Group",
     bio: "Ủy viên Ban Thường trực BLL cấp trường · Giám đốc Công Ty CP Hóa chất Xanh Group",
-    avatarUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300",
+    avatarUrl: null,
   },
   {
     email: "le.van.quynh@dlu.alumni.vn",
@@ -443,7 +435,7 @@ export const SEED_USERS = [
     currentTitle: "Phó trưởng ban BLL Khoa Ngữ văn và Lịch sử",
     currentCompanyName: "Viện Nghiên cứu Lịch sử và Văn hóa Việt",
     bio: "Phó trưởng ban BLL Khoa Ngữ văn và Lịch sử · Viện Nghiên cứu Lịch sử và Văn hóa Việt",
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
+    avatarUrl: null,
   },
   {
     email: "le.van.thao@dlu.alumni.vn",
@@ -456,7 +448,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban Chấp hành",
     currentCompanyName: "Viện kiểm sát nhân dân tỉnh Lâm Đồng",
     bio: "Ủy viên Ban Chấp hành cấp trường · Phó trưởng ban BLL Khoa Luật học · Viện kiểm sát nhân dân tỉnh Lâm Đồng",
-    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
+    avatarUrl: null,
   },
   {
     email: "le.van.tung@dlu.alumni.vn",
@@ -468,7 +460,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "Trường Đại học Đà Lạt",
     bio: "Ủy viên Ban liên lạc cấp trường · Phó Trưởng khoa (phụ trách) Khoa Vật lý và Kỹ thuật hạt nhân, Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300",
+    avatarUrl: null,
   },
   {
     email: "le.vu.phuong.thao@dlu.alumni.vn",
@@ -480,7 +472,7 @@ export const SEED_USERS = [
     currentTitle: "Phó trưởng ban BLL Khoa Tài chính - Kế toán",
     currentCompanyName: "Khoa Tài chính - Kế toán - Trường Đại học Đà Lạt",
     bio: "Phó trưởng ban BLL Khoa Tài chính - Kế toán Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
+    avatarUrl: null,
   },
   {
     email: "lieu.van.hung@dlu.alumni.vn",
@@ -492,7 +484,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "BLL Cựu sinh viên Quảng Ninh",
     bio: "Ủy viên Ban liên lạc cấp trường · Trưởng BLL Cựu sinh viên Quảng Ninh",
-    avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300",
+    avatarUrl: null,
   },
   {
     email: "luong.van.truong@dlu.alumni.vn",
@@ -504,7 +496,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "HTX Thanh niên Nam Đại dương",
     bio: "Ủy viên Ban liên lạc cấp trường · Giám đốc HTX Thanh niên Nam Đại dương",
-    avatarUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300",
+    avatarUrl: null,
   },
   {
     email: "ngo.ai.quang@dlu.alumni.vn",
@@ -516,7 +508,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban Chấp hành",
     currentCompanyName: "BLL Cựu sinh viên Khánh Hòa",
     bio: "Ủy viên Ban Chấp hành cấp trường · Trưởng BLL Cựu sinh viên Khánh Hòa",
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
+    avatarUrl: null,
   },
   {
     email: "ngo.minh.duong@dlu.alumni.vn",
@@ -527,7 +519,7 @@ export const SEED_USERS = [
     currentTitle: "Phó Ban Thường trực",
     currentCompanyName: "Hội Cựu sinh viên Trường ĐH Đà Lạt",
     bio: "Phó Ban Thường trực BLL · Chủ tịch Hội Cựu sinh viên Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
+    avatarUrl: null,
   },
   {
     email: "ngo.thanh.vinh@dlu.alumni.vn",
@@ -539,7 +531,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "Trường Đại học Đà Lạt",
     bio: "Ủy viên Ban liên lạc cấp trường · Phó Trưởng khoa Ngữ văn và Lịch sử, Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300",
+    avatarUrl: null,
   },
   {
     email: "nguyen.anh.duc@dlu.alumni.vn",
@@ -551,7 +543,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "BLL Cựu sinh viên Nghệ An",
     bio: "Ủy viên Ban liên lạc cấp trường · Trưởng BLL Cựu sinh viên Nghệ An",
-    avatarUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300",
+    avatarUrl: null,
   },
   {
     email: "nguyen.dinh.nghiep@dlu.alumni.vn",
@@ -563,7 +555,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "Trường Đại học Đà Lạt",
     bio: "Ủy viên Ban liên lạc cấp trường · Phó Trưởng khoa Xã hội học và Công tác xã hội, Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300",
+    avatarUrl: null,
   },
   {
     email: "nguyen.duc.tang@dlu.alumni.vn",
@@ -575,7 +567,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "BLL Cựu sinh viên Bình Dương",
     bio: "Ủy viên Ban liên lạc cấp trường · Trưởng BLL Cựu sinh viên Bình Dương",
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
+    avatarUrl: null,
   },
   {
     email: "nguyen.huy.tung@dlu.alumni.vn",
@@ -587,7 +579,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "Ngân hàng MB chi nhánh Lâm Đồng",
     bio: "Ủy viên Ban liên lạc cấp trường · Quản lý Ngân hàng MB chi nhánh Lâm Đồng",
-    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
+    avatarUrl: null,
   },
   {
     email: "nguyen.le.hoai.minh@dlu.alumni.vn",
@@ -598,7 +590,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban Chấp hành",
     currentCompanyName: "Công ty CP CNMT Nam Đà Thành",
     bio: "Ủy viên Ban Chấp hành cấp trường · Công ty CP CNMT Nam Đà Thành",
-    avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300",
+    avatarUrl: null,
   },
   {
     email: "nguyen.nang.hai@dlu.alumni.vn",
@@ -609,7 +601,7 @@ export const SEED_USERS = [
     currentTitle: "Thư ký BLL Khoa Vật lý",
     currentCompanyName: "Trường Đại học Đà Lạt",
     bio: "Thư ký Ban liên lạc Khoa Vật lý và Kỹ thuật hạt nhân Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300",
+    avatarUrl: null,
   },
   {
     email: "nguyen.nhat.nguyen@dlu.alumni.vn",
@@ -620,7 +612,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban Chấp hành",
     currentCompanyName: "Hội Cựu sinh viên Trường ĐH Đà Lạt",
     bio: "Ủy viên Ban Chấp hành cấp trường · Phó Chủ tịch Hội Cựu sinh viên Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
+    avatarUrl: null,
   },
   {
     email: "nguyen.phung.hoang.phuc@dlu.alumni.vn",
@@ -632,7 +624,7 @@ export const SEED_USERS = [
     currentTitle: "Phó trưởng ban BLL Khoa Toán - Tin học",
     currentCompanyName: "Báo và Đài Phát thanh Truyền hình Lâm Đồng",
     bio: "Phó trưởng ban BLL Khoa Toán - Tin học · Phòng thời sự Đài PT-TH Lâm Đồng",
-    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
+    avatarUrl: null,
   },
   {
     email: "nguyen.sy.tuan@dlu.alumni.vn",
@@ -644,7 +636,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "Công ty CP Tập đoàn Đầu tư và Thương mại TTC - Đắk Lắk",
     bio: "Ủy viên Ban liên lạc cấp trường · Công ty CP Tập đoàn Đầu tư và Thương mại TTC - Đắk Lắk",
-    avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300",
+    avatarUrl: null,
   },
   {
     email: "nguyen.thanh.tam@dlu.alumni.vn",
@@ -655,7 +647,7 @@ export const SEED_USERS = [
     currentTitle: "Ủy viên Ban liên lạc",
     currentCompanyName: "Ban liên lạc Cựu sinh viên DLU",
     bio: "Ủy viên Ban liên lạc cấp trường · Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300",
+    avatarUrl: null,
   },
   {
     email: "nguyen.thanh.tung@dlu.alumni.vn",
@@ -667,7 +659,7 @@ export const SEED_USERS = [
     currentTitle: "Thư ký BLL Khoa Du lịch",
     currentCompanyName: "Khoa Du lịch - Trường ĐH Đà Lạt",
     bio: "Thư ký Ban liên lạc Khoa Du lịch - Trường Đại học Đà Lạt",
-    avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300",
+    avatarUrl: null,
   },
 
   // 3. Sinh viên đang theo học (Students)
@@ -681,8 +673,7 @@ export const SEED_USERS = [
     batchYear: 2021,
     phone: "0905678901",
     bio: "Sinh viên năm cuối ngành Kỹ thuật Phần mềm (K21), GPA 3.65/4.0, đam mê Fullstack Web và AI Agent",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200",
+    avatarUrl: null,
   },
   {
     email: "student.tuan@khoacntt.edu.vn",
@@ -694,8 +685,7 @@ export const SEED_USERS = [
     batchYear: 2022,
     phone: "0905123456",
     bio: "Sinh viên năm 3 ngành Khoa học Máy tính (K22), thành viên CLB Học thuật & Nghiên cứu Khoa học",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=200",
+    avatarUrl: null,
   },
   {
     email: "student.linh@khoacntt.edu.vn",
@@ -707,8 +697,7 @@ export const SEED_USERS = [
     batchYear: 2023,
     phone: "0905987654",
     bio: "Sinh viên năm 2 ngành Hệ thống Thông tin (K23), Bí thư Chi đoàn, tích cực hoạt động tình nguyện",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200",
+    avatarUrl: null,
   },
 
   // 4. Doanh nghiệp Công nghệ Đối tác (Employers)
@@ -719,8 +708,7 @@ export const SEED_USERS = [
     role: "employer" as const,
     phone: "0906789012",
     bio: "Lead Talent Acquisition - VNG Corporation",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=200",
+    avatarUrl: null,
   },
   {
     email: "hr@fpt.com.vn",
@@ -729,8 +717,7 @@ export const SEED_USERS = [
     role: "employer" as const,
     phone: "0907890123",
     bio: "Head of University Relations - FPT Software Global",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200",
+    avatarUrl: null,
   },
   {
     email: "hr@momo.vn",
@@ -739,8 +726,7 @@ export const SEED_USERS = [
     role: "employer" as const,
     phone: "0908123987",
     bio: "Talent Acquisition Partner - Công ty Cổ phần Dịch vụ Di động Trực tuyến (MoMo)",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=200",
+    avatarUrl: null,
   },
   {
     email: "hr@viettel.vn",
@@ -749,8 +735,7 @@ export const SEED_USERS = [
     role: "employer" as const,
     phone: "0909654321",
     bio: "Giám đốc Tuyển dụng & Đào tạo Nhân tài Công nghệ - Viettel Telecom",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200",
+    avatarUrl: null,
   },
 ];
 
@@ -761,7 +746,7 @@ export const SEED_COMPANIES = [
       "Tập đoàn công nghệ kỳ lân đầu tiên tại Việt Nam, phát triển Zalo, ZaloPay, Game Publishing toàn cầu và nền tảng AI Cloud.",
     industry: "Internet & Nền tảng số",
     website: "https://vng.com.vn",
-    logoUrl: "https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=200",
+    logoUrl: null,
     ownerEmail: "hr@vng.com.vn",
     roleInCompany: "Lead Talent Acquisition",
   },
@@ -771,8 +756,7 @@ export const SEED_COMPANIES = [
       "Công ty xuất khẩu phần mềm lớn nhất Đông Nam Á với hơn 30.000 kỹ sư phục vụ khách hàng Fortune 500 tại Nhật Bản, Mỹ và châu Âu.",
     industry: "Dịch vụ CNTT & Chuyển đổi số",
     website: "https://fptsoftware.com",
-    logoUrl:
-      "https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=200",
+    logoUrl: null,
     ownerEmail: "hr@fpt.com.vn",
     roleInCompany: "Head of University Relations",
   },
@@ -782,7 +766,7 @@ export const SEED_COMPANIES = [
       "Siêu ứng dụng tài chính số hàng đầu Việt Nam phục vụ hơn 31 triệu người dùng với hạ tầng phân tán xử lý hàng chục triệu giao dịch mỗi ngày.",
     industry: "Công nghệ Tài chính (Fintech)",
     website: "https://momo.vn",
-    logoUrl: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=200",
+    logoUrl: null,
     ownerEmail: "hr@momo.vn",
     roleInCompany: "Talent Acquisition Partner",
   },
@@ -792,8 +776,7 @@ export const SEED_COMPANIES = [
       "Tập đoàn Công nghiệp - Viễn thông Quân đội, tiên phong làm chủ hạ tầng viễn thông 5G, Trung tâm Dữ liệu và giải pháp AI phục vụ quốc gia.",
     industry: "Viễn thông & Công nghệ Cao",
     website: "https://viettel.vn",
-    logoUrl:
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200",
+    logoUrl: null,
     ownerEmail: "hr@viettel.vn",
     roleInCompany: "HR Director",
   },
@@ -886,8 +869,7 @@ export const SEED_EVENTS = [
     daysFromNow: 5,
     durationHours: 3,
     capacity: 250,
-    coverImageUrl:
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800",
+    coverImageUrl: "/placeholder-cover.svg",
     speakerEmails: [
       "alumni.le@gmail.com",
       "alumni.mai@gmail.com",
@@ -905,8 +887,7 @@ export const SEED_EVENTS = [
     daysFromNow: 12,
     durationHours: 2.5,
     capacity: 500,
-    coverImageUrl:
-      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800",
+    coverImageUrl: "/placeholder-cover.svg",
     speakerEmails: ["alumni.linh@gmail.com"],
   },
   {
@@ -920,8 +901,7 @@ export const SEED_EVENTS = [
     daysFromNow: 25,
     durationHours: 6,
     capacity: 1000,
-    coverImageUrl:
-      "https://images.unsplash.com/photo-1511578314322-379afb476865?w=800",
+    coverImageUrl: "/placeholder-cover.svg",
     speakerEmails: [],
   },
   {
@@ -935,8 +915,7 @@ export const SEED_EVENTS = [
     daysFromNow: 18,
     durationHours: 2,
     capacity: 300,
-    coverImageUrl:
-      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800",
+    coverImageUrl: "/placeholder-cover.svg",
     speakerEmails: ["alumni.quoc@gmail.com", "alumni.khang@techstartup.vn"],
   },
 ];
@@ -1641,6 +1620,14 @@ async function seed() {
         },
       ]);
     }
+  }
+
+  // Seed hero banner slides
+  try {
+    const { seedHeroBanners } = await import("./seed-banners");
+    await seedHeroBanners();
+  } catch (err) {
+    console.warn("⚠️ Không thể seed banner tự động:", err);
   }
 
   console.log("\n✨ DỮ LIỆU ĐÃ ĐƯỢC NẠP THÀNH CÔNG VỚI ĐỘ HOÀN THIỆN CAO!");

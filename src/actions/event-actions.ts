@@ -1,22 +1,23 @@
 "use server";
 
-import { eq, and } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import {
-  events,
-  eventSpeakers,
   eventRegistrations,
+  eventSpeakers,
+  events,
   profiles,
 } from "@/db/schema";
-import { requireRole, getCurrentUser } from "@/lib/permissions";
-import {
-  eventCreateSchema,
-  speakerInviteSchema,
-  EventCreateInput,
-  SpeakerInviteInput,
-} from "@/validators/event-schema";
 import { logAuditEvent } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications";
+import { getCurrentUser, requireRole } from "@/lib/permissions";
+import { eventService } from "@/server/services/event-service";
+import {
+  type EventCreateInput,
+  eventCreateSchema,
+  type SpeakerInviteInput,
+  speakerInviteSchema,
+} from "@/validators/event-schema";
 
 /**
  * Public: Get published events
@@ -154,7 +155,6 @@ export const inviteSpeaker = async (input: SpeakerInviteInput) => {
     title: `Lời mời diễn giả: "${eventItem?.title || "Sự kiện Khoa"}"`,
     body: `Khoa trân trọng kính mời bạn tham gia làm diễn giả/khách mời sự kiện. Lời nhắn: ${validated.note || "Không có ghi chú"}.`,
     linkUrl: `/student/events`,
-    sendEmail: true,
   });
 
   await logAuditEvent({
@@ -204,44 +204,23 @@ export const respondSpeakerInvitation = async (
  * Student/Alumni: Register to attend event
  */
 export const registerForEvent = async (eventId: string) => {
-  const current = await getCurrentUser();
-  if (!current?.user) {
-    throw new Error("Vui lòng đăng nhập để đăng ký tham gia sự kiện");
+  const result = await eventService.registerForEvent(eventId);
+  if (!result.success) {
+    const error = new Error(result.error);
+    (error as unknown as { code?: string }).code = result.code;
+    throw error;
   }
+  return result.data;
+};
 
-  const eventItem = await db.query.events.findFirst({
-    where: {
-      id: eventId,
-    },
-    with: { registrations: true },
-  });
-
-  if (!eventItem) {
-    throw new Error("Không tìm thấy thông tin sự kiện");
+export const cancelEventRegistration = async (eventId: string) => {
+  const result = await eventService.cancelRegistration(eventId);
+  if (!result.success) {
+    const error = new Error(result.error);
+    (error as unknown as { code?: string }).code = result.code;
+    throw error;
   }
-
-  if (eventItem.status !== "published") {
-    throw new Error("Sự kiện chưa mở đăng ký");
-  }
-
-  if (
-    eventItem.capacity &&
-    eventItem.registrations.length >= eventItem.capacity
-  ) {
-    throw new Error("Sự kiện đã đủ số lượng người tham dự");
-  }
-
-  const [reg] = await db
-    .insert(eventRegistrations)
-    .values({
-      eventId,
-      userId: current.user.id,
-      attendanceStatus: "registered",
-    })
-    .onConflictDoNothing()
-    .returning();
-
-  return reg || { registered: true };
+  return result.data;
 };
 
 /**

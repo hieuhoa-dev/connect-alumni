@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Send, CheckCircle2 } from "lucide-react";
-import { FileUpload } from "@/components/ui/file-upload";
+import { FileUploader } from "@/components/shared/file-uploader";
 
 export interface FormQuestionItem {
   id: string;
@@ -43,11 +43,13 @@ export const ScholarshipApplyForm = ({
   // For dynamic form questions
   const [answers, setAnswers] = React.useState<Record<string, any>>({});
   const [fileUrls, setFileUrls] = React.useState<Record<string, string>>({});
+  const [fileIds, setFileIds] = React.useState<Record<string, string>>({});
 
   // For default form questions when no dynamic form is configured
   const [gpa, setGpa] = React.useState("");
   const [circumstance, setCircumstance] = React.useState("");
   const [proofUrl, setProofUrl] = React.useState("");
+  const [proofFileId, setProofFileId] = React.useState<string | null>(null);
 
   const [validationError, setValidationError] = React.useState<string | null>(null);
 
@@ -254,11 +256,15 @@ export const ScholarshipApplyForm = ({
                 )}
 
                 {q.questionType === "file_upload" && (
-                  <FileUpload
-                    value={fileUrls[q.id] || ""}
-                    onChange={(url) =>
-                      setFileUrls((prev) => ({ ...prev, [q.id]: url }))
-                    }
+                  <FileUploader
+                    value={{
+                      fileId: fileIds[q.id] || undefined,
+                      url: fileUrls[q.id] || undefined,
+                    }}
+                    onChange={(val) => {
+                      setFileUrls((prev) => ({ ...prev, [q.id]: val?.url || "" }));
+                      setFileIds((prev) => ({ ...prev, [q.id]: val?.fileId || "" }));
+                    }}
                     purpose="proof_document"
                     disabled={isPending}
                   />
@@ -300,9 +306,12 @@ export const ScholarshipApplyForm = ({
             />
           </div>
 
-          <FileUpload
-            value={proofUrl}
-            onChange={setProofUrl}
+          <FileUploader
+            value={{ fileId: proofFileId || undefined, url: proofUrl || undefined }}
+            onChange={(val) => {
+              setProofUrl(val?.url || "");
+              setProofFileId(val?.fileId || null);
+            }}
             purpose="proof_document"
             label="Tài liệu minh chứng (Bảng điểm / Giấy xác nhận) *"
             helperText="Tải lên tài liệu minh chứng dạng PDF hoặc hình ảnh scan (Tối đa 10MB)"

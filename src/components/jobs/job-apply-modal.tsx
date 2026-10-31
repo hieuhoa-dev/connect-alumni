@@ -36,7 +36,7 @@ export const JobApplyModal = ({
   jobId,
   jobTitle,
   companyName = "Đối tác Trường ĐH Đà Lạt",
-  applyContact = "tuyendung@dlu-partner.vn",
+  applyContact,
 }: JobApplyModalProps) => {
   const [open, setOpen] = React.useState(false);
   const [fullName, setFullName] = React.useState("");
@@ -48,6 +48,10 @@ export const JobApplyModal = ({
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isSuccess, setIsSuccess] = React.useState(false);
+
+  if (!applyContact) {
+    return null;
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

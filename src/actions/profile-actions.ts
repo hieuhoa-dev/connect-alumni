@@ -1,18 +1,22 @@
 "use server";
 
+import { and, desc, eq, isNull } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { db } from "@/db";
+import { profileRevisions, profiles, user, workExperiences } from "@/db/schema";
 import { getCurrentUser, requireRole } from "@/lib/permissions";
 import {
+  deleteWorkExperienceService,
+  saveWorkExperienceService,
   updateProfileService,
   verifyAlumniProfileService,
-  saveWorkExperienceService,
-  deleteWorkExperienceService,
 } from "@/server/services/profile-service";
-import { db } from "@/db";
-import { profiles, workExperiences, profileRevisions, user } from "@/db/schema";
-import { eq, desc, isNull, and } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import type {
+  ProfileUpdateInput,
+  WorkExperienceInput,
+} from "@/validators/profile-schema";
 
-export const updateMyProfile = async (input: any) => {
+export const updateMyProfile = async (input: ProfileUpdateInput) => {
   const current = await getCurrentUser();
   if (!current?.user) {
     throw new Error("Chưa đăng nhập");
@@ -36,7 +40,7 @@ export const updateMyProfile = async (input: any) => {
   return result.data;
 };
 
-export const saveMyWorkExperience = async (input: any) => {
+export const saveMyWorkExperience = async (input: WorkExperienceInput) => {
   const current = await getCurrentUser();
   if (!current?.user) {
     throw new Error("Chưa đăng nhập");
@@ -161,11 +165,6 @@ export const getPendingAlumniVerifications = async () => {
     })
     .from(profiles)
     .innerJoin(user, eq(profiles.userId, user.id))
-    .where(
-      and(
-        eq(profiles.role, "alumni"),
-        isNull(profiles.alumniVerifiedAt),
-      ),
-    )
+    .where(and(eq(profiles.role, "alumni"), isNull(profiles.alumniVerifiedAt)))
     .orderBy(desc(profiles.createdAt));
 };

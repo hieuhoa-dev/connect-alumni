@@ -205,7 +205,6 @@ export const reviewExperiencePost = async (
         ? "Cảm ơn bạn đã đóng góp chia sẻ kinh nghiệm quý báu cho cộng đồng sinh viên Khoa."
         : `Lý do: ${validated.rejectedReason || "Vui lòng xem lại nội dung và chỉnh sửa phù hợp hơn."}`,
     linkUrl: `/student/experiences`,
-    sendEmail: true,
   });
 
   await logAuditEvent({

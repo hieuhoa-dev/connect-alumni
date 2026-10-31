@@ -21,6 +21,11 @@ import {
   ExternalLink,
   PanelLeft,
   X,
+  Image as ImageIcon,
+  Sliders,
+  Settings,
+  Presentation,
+  ShieldAlert,
 } from "lucide-react";
 import {
   AnimatedSidebar,
@@ -168,9 +173,34 @@ const SidebarInner = ({
               icon: Calendar,
             },
             {
+              label: "Thư viện ảnh",
+              href: "/faculty-admin/gallery",
+              icon: ImageIcon,
+            },
+            {
+              label: "Yêu cầu gỡ ảnh",
+              href: "/faculty-admin/gallery/takedown",
+              icon: ShieldAlert,
+            },
+            {
               label: "Form & Khảo sát",
               href: "/faculty-admin/forms",
               icon: ClipboardList,
+            },
+          ],
+        },
+        {
+          title: "Nội dung & Trang chủ",
+          items: [
+            {
+              label: "Banner Trang chủ",
+              href: "/faculty-admin/landing/hero",
+              icon: Presentation,
+            },
+            {
+              label: "Thiết lập hệ thống",
+              href: "/faculty-admin/settings",
+              icon: Settings,
             },
           ],
         },

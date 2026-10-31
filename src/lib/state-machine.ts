@@ -1,6 +1,14 @@
 import { InvalidStateError } from "@/lib/errors";
 
-export type EntityType = "job" | "company" | "experience" | "scholarship_application";
+export type EntityType =
+  | "job"
+  | "company"
+  | "experience"
+  | "scholarship_application"
+  | "hero_slide"
+  | "event_album"
+  | "album_photo"
+  | "photo_takedown_request";
 
 export const ALLOWED_TRANSITIONS: Record<EntityType, Record<string, string[]>> = {
   job: {
@@ -27,7 +35,33 @@ export const ALLOWED_TRANSITIONS: Record<EntityType, Record<string, string[]>> =
     approved: [], // Cannot alter without admin override
     rejected: [],
   },
+  hero_slide: {
+    draft: ["published"],
+    published: ["draft"],
+  },
+  event_album: {
+    draft: ["published", "archived"],
+    published: ["archived"],
+    archived: ["published"],
+  },
+  album_photo: {
+    published: ["removed"],
+    removed: ["published"],
+  },
+  photo_takedown_request: {
+    open: ["accepted", "rejected"],
+    accepted: [],
+    rejected: [],
+  },
 };
+
+export function canTransition(
+  entity: EntityType,
+  fromStatus: string,
+  toStatus: string,
+): boolean {
+  return ALLOWED_TRANSITIONS[entity]?.[fromStatus]?.includes(toStatus) ?? false;
+}
 
 /**
  * Validates whether transition from `fromStatus` to `toStatus` is permissible for `entity`.
@@ -42,6 +76,11 @@ export function validateStateTransition(
   // Admin may override application status reversal with audit
   if (isAdmin && entity === "scholarship_application" && (fromStatus === "approved" || fromStatus === "rejected")) {
     return;
+  }
+
+  // Restoring removed photo requires admin privileges
+  if (!isAdmin && entity === "album_photo" && fromStatus === "removed" && toStatus === "published") {
+    throw new InvalidStateError("Chỉ quản trị viên mới có quyền khôi phục ảnh đã bị gỡ.");
   }
 
   const allowedNext = ALLOWED_TRANSITIONS[entity]?.[fromStatus] ?? [];
