@@ -17,9 +17,9 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsDto = {
   websiteUrl: "https://dlu.edu.vn",
   address: "Tòa nhà A7, Số 01 Phù Đổng Thiên Vương, Phường 8, TP. Đà Lạt, Lâm Đồng",
   mapUrl: "https://maps.google.com/?q=Dai+hoc+Da+Lat",
-  facebookUrl: "https://facebook.com/DLUConnectAlumni",
-  youtubeUrl: "https://youtube.com/@DLUConnect",
-  zaloUrl: null,
+  facebookUrl: "https://facebook.com/dlu.edu.vn",
+  youtubeUrl: "https://youtube.com/@truongdaihocdalat",
+  zaloUrl: "https://zalo.me",
   aiSurveySummaryEnabled: false,
   aiWritingAssistantEnabled: false,
 };

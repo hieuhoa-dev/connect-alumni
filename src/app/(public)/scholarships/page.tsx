@@ -21,8 +21,15 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 const ScholarshipsPage = async () => {
-  const campaigns = await getScholarshipCampaigns();
+  let campaigns: any[] = [];
+  try {
+    campaigns = (await getScholarshipCampaigns()) || [];
+  } catch (err) {
+    console.warn("[ScholarshipsPage] Database unavailable during fetch, defaulting to empty list:", err);
+  }
   const displayCampaigns = campaigns;
 
   return (

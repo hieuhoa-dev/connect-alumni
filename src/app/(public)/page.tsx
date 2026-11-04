@@ -20,7 +20,7 @@ import { PartnerLogos } from "@/components/landing/partner-logos";
 import { GalleryStrip } from "@/components/landing/gallery-strip";
 import { ContactSection } from "@/components/landing/contact-section";
 
-export const revalidate = 60; // ISR cache 60s
+export const dynamic = "force-dynamic";
 
 const HomePage = async () => {
   let heroSlidesList: any[] = [];
@@ -61,8 +61,7 @@ const HomePage = async () => {
     siteSettings = results[9];
     galleryPhotos = results[10];
   } catch (err) {
-    console.error("[HomePage] Lỗi khi tải dữ liệu trang chủ từ CSDL:", err);
-    throw err;
+    console.warn("[HomePage] CSDL chưa sẵn sàng hoặc gặp lỗi tạm thời, hiển thị giao diện mặc định an toàn.");
   }
 
   const featuredCampaign = scholarships.length > 0 ? scholarships[0] : null;

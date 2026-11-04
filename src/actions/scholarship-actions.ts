@@ -40,20 +40,25 @@ import { validateStateTransition } from "@/lib/state-machine";
  * Public: Get active scholarship campaigns
  */
 export const getScholarshipCampaigns = async () => {
-  const campaigns = await db.query.scholarshipCampaigns.findMany({
-    where: {
-      status: "open",
-    },
-    with: {
-      pledges: true,
-      applications: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  try {
+    const campaigns = await db.query.scholarshipCampaigns.findMany({
+      where: {
+        status: "open",
+      },
+      with: {
+        pledges: true,
+        applications: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-  return campaigns || [];
+    return campaigns || [];
+  } catch (err) {
+    console.warn("[getScholarshipCampaigns] Database offline or query error, returning empty list:", err);
+    return [];
+  }
 };
 
 /**

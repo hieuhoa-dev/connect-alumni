@@ -20,8 +20,15 @@ import {
 } from "lucide-react";
 import { ContentImage } from "@/components/shared/content-image";
 
+export const dynamic = "force-dynamic";
+
 const EventsPage = async () => {
-  const events = await getPublishedEvents();
+  let events: any[] = [];
+  try {
+    events = (await getPublishedEvents()) || [];
+  } catch (err) {
+    console.warn("[EventsPage] Database unavailable during fetch, defaulting to empty list:", err);
+  }
   const displayEvents = events;
 
   return (

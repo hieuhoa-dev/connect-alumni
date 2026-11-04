@@ -192,7 +192,7 @@ export const SettingsClient = ({ initialSettings }: { initialSettings: SiteSetti
           </Card>
 
           {/* AI Flags Card (Default Off as required by Phase G principles) */}
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <Sparkles className="size-4 text-amber-500" />
@@ -235,7 +235,7 @@ export const SettingsClient = ({ initialSettings }: { initialSettings: SiteSetti
                 />
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
       </div>
     </form>

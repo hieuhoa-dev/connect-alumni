@@ -263,7 +263,7 @@ export const getRecentAlbumPhotos = async (limit = 8): Promise<PublicAlbumPhotoD
       ),
     }));
   } catch (err) {
-    console.error("Failed to load recent album photos:", err);
+    console.warn("[getRecentAlbumPhotos] Database offline or unavailable, returning empty list.");
     return [];
   }
 };

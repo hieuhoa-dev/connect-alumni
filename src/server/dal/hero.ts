@@ -80,7 +80,7 @@ export async function getPublicHeroSlides(): Promise<HeroSlideData[]> {
 
     return dtoList.length > 0 ? dtoList : [DEFAULT_HERO_SLIDE];
   } catch (error) {
-    console.error("[getPublicHeroSlides] Error loading slides:", error);
+    console.warn("[getPublicHeroSlides] Database offline or unavailable, using DEFAULT_HERO_SLIDE.");
     return [DEFAULT_HERO_SLIDE];
   }
 }

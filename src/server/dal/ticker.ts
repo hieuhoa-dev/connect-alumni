@@ -88,7 +88,7 @@ export const getLiveTickerItems = async (): Promise<TickerItemDto[]> => {
 
     return items;
   } catch (err) {
-    console.error("Failed to load ticker items:", err);
+    console.warn("[getLiveTickerItems] Database offline or unavailable, returning empty list.");
     return [];
   }
 };

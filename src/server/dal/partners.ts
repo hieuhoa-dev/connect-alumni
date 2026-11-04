@@ -53,7 +53,7 @@ export const getVerifiedPartners = async (): Promise<PartnerCompanyDto[]> => {
       };
     });
   } catch (err) {
-    console.error("Failed to load verified partners:", err);
+    console.warn("[getVerifiedPartners] Database offline or unavailable, returning empty list.");
     return [];
   }
 };

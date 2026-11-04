@@ -23,29 +23,34 @@ export const getPublishedExperiencePosts = async (params?: {
   limit?: number;
   offset?: number;
 }) => {
-  const limit = params?.limit || 20;
-  const offset = params?.offset || 0;
+  try {
+    const limit = params?.limit || 20;
+    const offset = params?.offset || 0;
 
-  const posts = await db.query.experiencePosts.findMany({
-    where: {
-      status: "published",
-      ...(params?.search ? { title: { ilike: `%${params.search}%` } } : {}),
-    },
-    with: {
-      author: {
-        with: {
-          profile: true,
+    const posts = await db.query.experiencePosts.findMany({
+      where: {
+        status: "published",
+        ...(params?.search ? { title: { ilike: `%${params.search}%` } } : {}),
+      },
+      with: {
+        author: {
+          with: {
+            profile: true,
+          },
         },
       },
-    },
-    orderBy: {
-      publishedAt: "desc",
-    },
-    limit,
-    offset,
-  });
+      orderBy: {
+        publishedAt: "desc",
+      },
+      limit,
+      offset,
+    });
 
-  return posts || [];
+    return posts || [];
+  } catch (err) {
+    console.warn("[getPublishedExperiencePosts] CSDL chưa kết nối hoặc lỗi, trả về danh sách rỗng:", err);
+    return [];
+  }
 };
 
 /**

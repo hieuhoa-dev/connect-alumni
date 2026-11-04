@@ -56,35 +56,40 @@ export const getActiveJobPosts = async (params?: {
     ];
   }
 
-  const posts = await db.query.jobPosts.findMany({
-    where: whereConditions,
-    with: {
-      company: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    limit,
-    offset,
-  });
+  try {
+    const posts = await db.query.jobPosts.findMany({
+      where: whereConditions,
+      with: {
+        company: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      limit,
+      offset,
+    });
 
-  if (!posts || posts.length === 0) {
+    if (!posts || posts.length === 0) {
+      return [];
+    }
+
+    // Task 1.8: Hide jobs if company is not verified
+    let verifiedPosts = posts.filter(
+      (p) => p.company && p.company.verificationStatus === "verified",
+    );
+
+    if (params?.industry) {
+      const industryLower = params.industry.toLowerCase();
+      verifiedPosts = verifiedPosts.filter((p) =>
+        p.company?.industry?.toLowerCase().includes(industryLower),
+      );
+    }
+
+    return verifiedPosts;
+  } catch (err) {
+    console.warn("[getActiveJobPosts] CSDL chưa kết nối hoặc lỗi, trả về danh sách rỗng:", err);
     return [];
   }
-
-  // Task 1.8: Hide jobs if company is not verified
-  let verifiedPosts = posts.filter(
-    (p) => p.company && p.company.verificationStatus === "verified",
-  );
-
-  if (params?.industry) {
-    const industryLower = params.industry.toLowerCase();
-    verifiedPosts = verifiedPosts.filter((p) =>
-      p.company?.industry?.toLowerCase().includes(industryLower),
-    );
-  }
-
-  return verifiedPosts;
 };
 
 /**

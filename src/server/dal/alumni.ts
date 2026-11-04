@@ -49,7 +49,8 @@ export const getAlumniDirectory = async (
   const limit = Math.min(50, Math.max(1, query.limit || 20));
   const offset = (page - 1) * limit;
 
-  // Base conditions: active, verified alumni
+  try {
+    // Base conditions: active, verified alumni
   const conditions: any[] = [
     eq(profiles.role, "alumni"),
     eq(profiles.status, "active"),
@@ -162,6 +163,15 @@ export const getAlumniDirectory = async (
     page,
     totalPages: Math.ceil(total / limit),
   };
+} catch (err) {
+  console.warn("[getAlumniDirectory] Database offline or unavailable, returning empty list.");
+  return {
+    alumni: [],
+    total: 0,
+    page: 1,
+    totalPages: 0,
+  };
+}
 };
 
 /**

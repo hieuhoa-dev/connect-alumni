@@ -1,0 +1,149 @@
+services:
+  # ==========================================
+  # CSDL PostgreSQL (Lưu trữ dữ liệu ứng dụng)
+  # ==========================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: connect_alumni_postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-connect_alumni}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-connect_alumni}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - connect_alumni_net
+
+  # ==========================================
+  # Redis (Queue BullMQ & Rate Limiter)
+  # ==========================================
+  redis:
+    image: redis:7-alpine
+    container_name: connect_alumni_redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - connect_alumni_net
+
+  # ==========================================
+  # SeaweedFS (S3-compatible Object Storage - Apache 2.0)
+  # Thay thế MinIO với bản quyền nguồn mở tự do, hỗ trợ S3 API
+  # ==========================================
+  seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    container_name: connect_alumni_seaweedfs
+    restart: unless-stopped
+    command: "server -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json -dir=/data -ip=seaweedfs"
+    ports:
+      - "${S3_PORT:-8333}:8333"       # S3 API endpoint
+      - "${FILER_UI_PORT:-8888}:8888" # Filer Web UI duyệt file
+      - "${MASTER_UI_PORT:-9333}:9333" # Master Admin UI
+      - "8080:8080"                   # Volume server port
+    volumes:
+      - seaweed_data:/data
+      - ./docker/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8333 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - connect_alumni_net
+
+  # ==========================================
+  # Next.js Web Application (Tùy chọn: Chạy full container)
+  # Khởi chạy bằng: docker compose --profile app up -d
+  # ==========================================
+  app:
+    profiles: ["app", "full"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    container_name: connect_alumni_app
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-connect_alumni}
+      REDIS_URL: redis://redis:6379
+      AWS_ENDPOINT_URL_S3: http://seaweedfs:8333
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-seaweedadmin}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-seaweedadmin}
+      AWS_REGION: us-east-1
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME:-alumni}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-69f683c3205f60d6d1ab1d51f22597e62d228de7d2b1a22ab6ccbf8ee8ddc18d}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+      ENABLE_DEMO_LOGIN: ${ENABLE_DEMO_LOGIN:-true}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      seaweedfs:
+        condition: service_healthy
+    networks:
+      - connect_alumni_net
+
+  # ==========================================
+  # Notification & Background Worker (BullMQ)
+  # Khởi chạy bằng: docker compose --profile worker up -d
+  # ==========================================
+  worker:
+    profiles: ["worker", "full"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: worker
+    container_name: connect_alumni_worker
+    restart: unless-stopped
+    command: ["npx", "tsx", "src/workers/notification.worker.ts"]
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-connect_alumni}
+      REDIS_URL: redis://redis:6379
+      AWS_ENDPOINT_URL_S3: http://seaweedfs:8333
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-seaweedadmin}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-seaweedadmin}
+      AWS_REGION: us-east-1
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME:-alumni}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      seaweedfs:
+        condition: service_healthy
+    networks:
+      - connect_alumni_net
+
+volumes:
+  postgres_data:
+    name: connect_alumni_postgres_data
+  redis_data:
+    name: connect_alumni_redis_data
+  seaweed_data:
+    name: connect_alumni_seaweed_data
+
+networks:
+  connect_alumni_net:
+    name: connect_alumni_network
+    driver: bridge

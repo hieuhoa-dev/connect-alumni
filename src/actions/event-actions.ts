@@ -23,33 +23,38 @@ import {
  * Public: Get published events
  */
 export const getPublishedEvents = async () => {
-  const data = await db.query.events.findMany({
-    where: {
-      status: "published",
-    },
-    with: {
-      creator: {
-        with: {
-          profile: true,
-        },
+  try {
+    const data = await db.query.events.findMany({
+      where: {
+        status: "published",
       },
-      speakers: {
-        with: {
-          alumni: {
-            with: {
-              profile: true,
+      with: {
+        creator: {
+          with: {
+            profile: true,
+          },
+        },
+        speakers: {
+          with: {
+            alumni: {
+              with: {
+                profile: true,
+              },
             },
           },
         },
+        registrations: true,
       },
-      registrations: true,
-    },
-    orderBy: {
-      startTime: "desc",
-    },
-  });
+      orderBy: {
+        startTime: "desc",
+      },
+    });
 
-  return data || [];
+    return data || [];
+  } catch (err) {
+    console.warn("[getPublishedEvents] Database offline or query error, returning empty list:", err);
+    return [];
+  }
 };
 
 /**

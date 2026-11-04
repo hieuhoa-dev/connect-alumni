@@ -15,40 +15,82 @@ export interface NotificationPayload {
   linkUrl?: string;
 }
 
-// BullMQ queue instance
-export const notificationQueue = new Queue(NOTIFICATION_QUEUE_NAME, {
-  connection: redis,
-  defaultJobOptions: {
-    attempts: 3,
-    backoff: {
-      type: "exponential",
-      delay: 1000,
-    },
-    removeOnComplete: true,
+// Lazy BullMQ queue instances to prevent ECONNREFUSED during Next.js build time
+let _notificationQueue: Queue | null = null;
+export const getNotificationQueue = (): Queue => {
+  if (!_notificationQueue) {
+    _notificationQueue = new Queue(NOTIFICATION_QUEUE_NAME, {
+      connection: redis,
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: {
+          type: "exponential",
+          delay: 1000,
+        },
+        removeOnComplete: true,
+      },
+    });
+    _notificationQueue.on("error", (err) => {
+      console.error("[NotificationQueue] Queue error:", err);
+    });
+  }
+  return _notificationQueue;
+};
+
+export const notificationQueue = new Proxy({} as Queue, {
+  get(_target, prop) {
+    const queue = getNotificationQueue();
+    const value = Reflect.get(queue, prop);
+    return typeof value === "function" ? value.bind(queue) : value;
   },
-});
-notificationQueue.on("error", (err) => {
-  console.error("[NotificationQueue] Queue error:", err);
 });
 
-export const jobExpiryQueue = new Queue(JOB_EXPIRE_QUEUE_NAME, {
-  connection: redis,
-  defaultJobOptions: {
-    removeOnComplete: true,
+let _jobExpiryQueue: Queue | null = null;
+export const getJobExpiryQueue = (): Queue => {
+  if (!_jobExpiryQueue) {
+    _jobExpiryQueue = new Queue(JOB_EXPIRE_QUEUE_NAME, {
+      connection: redis,
+      defaultJobOptions: {
+        removeOnComplete: true,
+      },
+    });
+    _jobExpiryQueue.on("error", (err) => {
+      console.error("[JobExpiryQueue] Queue error:", err);
+    });
+  }
+  return _jobExpiryQueue;
+};
+
+export const jobExpiryQueue = new Proxy({} as Queue, {
+  get(_target, prop) {
+    const queue = getJobExpiryQueue();
+    const value = Reflect.get(queue, prop);
+    return typeof value === "function" ? value.bind(queue) : value;
   },
-});
-jobExpiryQueue.on("error", (err) => {
-  console.error("[JobExpiryQueue] Queue error:", err);
 });
 
-export const fileCleanupQueue = new Queue(FILE_CLEANUP_QUEUE_NAME, {
-  connection: redis,
-  defaultJobOptions: {
-    removeOnComplete: true,
+let _fileCleanupQueue: Queue | null = null;
+export const getFileCleanupQueue = (): Queue => {
+  if (!_fileCleanupQueue) {
+    _fileCleanupQueue = new Queue(FILE_CLEANUP_QUEUE_NAME, {
+      connection: redis,
+      defaultJobOptions: {
+        removeOnComplete: true,
+      },
+    });
+    _fileCleanupQueue.on("error", (err) => {
+      console.error("[FileCleanupQueue] Queue error:", err);
+    });
+  }
+  return _fileCleanupQueue;
+};
+
+export const fileCleanupQueue = new Proxy({} as Queue, {
+  get(_target, prop) {
+    const queue = getFileCleanupQueue();
+    const value = Reflect.get(queue, prop);
+    return typeof value === "function" ? value.bind(queue) : value;
   },
-});
-fileCleanupQueue.on("error", (err) => {
-  console.error("[FileCleanupQueue] Queue error:", err);
 });
 
 /**

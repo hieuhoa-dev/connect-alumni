@@ -26,14 +26,14 @@ export async function getSiteSettings(): Promise<SiteSettingsDto> {
       websiteUrl: settings.websiteUrl || DEFAULT_SITE_SETTINGS.websiteUrl,
       address: settings.address || DEFAULT_SITE_SETTINGS.address,
       mapUrl: settings.mapUrl || DEFAULT_SITE_SETTINGS.mapUrl,
-      facebookUrl: settings.facebookUrl || null,
-      youtubeUrl: settings.youtubeUrl || null,
-      zaloUrl: settings.zaloUrl || null,
+      facebookUrl: settings.facebookUrl || DEFAULT_SITE_SETTINGS.facebookUrl,
+      youtubeUrl: settings.youtubeUrl || DEFAULT_SITE_SETTINGS.youtubeUrl,
+      zaloUrl: settings.zaloUrl || DEFAULT_SITE_SETTINGS.zaloUrl,
       aiSurveySummaryEnabled: settings.aiSurveySummaryEnabled ?? false,
       aiWritingAssistantEnabled: settings.aiWritingAssistantEnabled ?? false,
     };
   } catch (err) {
-    console.error("[getSiteSettings] Failed to fetch settings from DB:", err);
+    console.warn("[getSiteSettings] Database offline or unavailable, using DEFAULT_SITE_SETTINGS.");
     return DEFAULT_SITE_SETTINGS;
   }
 }

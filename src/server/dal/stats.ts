@@ -95,7 +95,7 @@ export const getNetworkStats = async (): Promise<NetworkStatItem[]> => {
 
     return items;
   } catch (err) {
-    console.error("Failed to fetch network stats:", err);
+    console.warn("[getNetworkStats] Database offline or unavailable, returning empty stats.");
     return [];
   }
 };
