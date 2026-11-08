@@ -278,7 +278,47 @@ const SidebarInner = ({
       ];
     }
 
-    // Student & Alumni
+    if (role === "alumni") {
+      return [
+        {
+          title: "Hoạt động Cựu sinh viên",
+          items: [
+            {
+              label: "Bảng điều khiển",
+              href: "/alumni/dashboard",
+              icon: LayoutDashboard,
+            },
+            {
+              label: "Mạng lưới Cựu SV",
+              href: "/alumni",
+              icon: Users,
+            },
+            {
+              label: "Quỹ Khuyến học & Tài trợ",
+              href: "/alumni/scholarships",
+              icon: GraduationCap,
+            },
+            {
+              label: "Sự kiện & Hội thảo",
+              href: "/student/events",
+              icon: Calendar,
+            },
+            {
+              label: "Viết bài chia sẻ",
+              href: "/student/experiences/new",
+              icon: BookOpen,
+            },
+            {
+              label: "Cơ hội việc làm",
+              href: "/jobs",
+              icon: Briefcase,
+            },
+          ],
+        },
+      ];
+    }
+
+    // Student
     return [
       {
         title: "Hoạt động & Cơ hội",
@@ -305,15 +345,6 @@ const SidebarInner = ({
             href: "/student/scholarships",
             icon: GraduationCap,
           },
-          ...(role === "alumni"
-            ? [
-                {
-                  label: "Viết bài chia sẻ",
-                  href: "/student/experiences/new",
-                  icon: BookOpen,
-                },
-              ]
-            : []),
         ],
       },
     ];
@@ -325,6 +356,7 @@ const SidebarInner = ({
   const isItemActive = (href: string) => {
     if (
       href === "/student/dashboard" ||
+      href === "/alumni/dashboard" ||
       href === "/employer/dashboard" ||
       href === "/faculty-admin/dashboard"
     ) {
@@ -364,7 +396,9 @@ const SidebarInner = ({
                     ? "Vận hành Khoa CNTT"
                     : role === "employer"
                       ? "Cổng Doanh nghiệp"
-                      : "Cổng Sinh viên & Cựu SV"}
+                      : role === "alumni"
+                        ? "Cổng Cựu sinh viên"
+                        : "Cổng Sinh viên"}
               </span>
             </div>
 

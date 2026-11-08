@@ -1,6 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { getScholarshipCampaigns } from "@/actions/scholarship-actions";
+import { getCurrentUser } from "@/lib/permissions";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -24,12 +25,14 @@ import {
 export const dynamic = "force-dynamic";
 
 const ScholarshipsPage = async () => {
-  let campaigns: any[] = [];
-  try {
-    campaigns = (await getScholarshipCampaigns()) || [];
-  } catch (err) {
-    console.warn("[ScholarshipsPage] Database unavailable during fetch, defaulting to empty list:", err);
-  }
+  const [campaignsRes, currentUser] = await Promise.all([
+    getScholarshipCampaigns().catch((err) => {
+      console.warn("[ScholarshipsPage] Database unavailable during fetch, defaulting to empty list:", err);
+      return [];
+    }),
+    getCurrentUser(),
+  ]);
+  const campaigns = campaignsRes || [];
   const displayCampaigns = campaigns;
 
   return (
@@ -156,16 +159,40 @@ const ScholarshipsPage = async () => {
                   >
                     Xem chi tiết quỹ
                   </Link>
-                  <Link
-                    href={`/student/scholarships/${camp.id}/apply`}
-                    className={buttonVariants({
-                      variant: "default",
-                      size: "sm",
-                      className: "w-full",
-                    })}
-                  >
-                    Nộp đơn xét học bổng
-                  </Link>
+                  {currentUser?.role === "alumni" ? (
+                    <Link
+                      href={`/alumni/scholarships/${camp.id}/pledge`}
+                      className={buttonVariants({
+                        size: "sm",
+                        className:
+                          "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium",
+                      })}
+                    >
+                      Ủng hộ học bổng
+                    </Link>
+                  ) : currentUser?.role === "employer" ? (
+                    <Link
+                      href="/employer/scholarships/pledge"
+                      className={buttonVariants({
+                        size: "sm",
+                        className:
+                          "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium",
+                      })}
+                    >
+                      Cam kết tài trợ
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/student/scholarships/${camp.id}/apply`}
+                      className={buttonVariants({
+                        variant: "default",
+                        size: "sm",
+                        className: "w-full",
+                      })}
+                    >
+                      Nộp đơn xét học bổng
+                    </Link>
+                  )}
                 </CardFooter>
               </Card>
             );

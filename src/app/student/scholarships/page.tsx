@@ -1,5 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/permissions";
 import {
   getMyScholarshipApplications,
   getScholarshipCampaigns,
@@ -25,6 +27,11 @@ import {
 } from "lucide-react";
 
 const StudentScholarshipsPage = async () => {
+  const current = await getCurrentUser();
+  if (current?.role === "alumni") {
+    redirect("/alumni/scholarships");
+  }
+
   const [myApplications, activeCampaigns] = await Promise.all([
     getMyScholarshipApplications(),
     getScholarshipCampaigns(),

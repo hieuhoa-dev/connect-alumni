@@ -1,6 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { db } from "@/db";
 import { getCampaignById } from "@/actions/scholarship-actions";
 import { getCurrentUser } from "@/lib/permissions";
@@ -28,6 +28,11 @@ const ScholarshipApplyPage = async ({ params }: ApplyPageProps) => {
 
   if (!campaign) {
     notFound();
+  }
+
+  // Guard: If alumni accesses student apply page, redirect to alumni pledge page
+  if (current?.role === "alumni") {
+    redirect(`/alumni/scholarships/${campaignId}/pledge`);
   }
 
   let questions: any[] = [];

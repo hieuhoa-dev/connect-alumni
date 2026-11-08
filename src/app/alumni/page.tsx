@@ -13,7 +13,7 @@ const AlumniDirectoryPage = async () => {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50/50 dark:bg-neutral-950 py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+    <div className="space-y-8 max-w-7xl mx-auto">
       {/* Header Banner */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1B7A3E] to-[#156030] p-6 sm:p-8 text-white shadow-md">
         <div className="relative z-10 max-w-2xl">

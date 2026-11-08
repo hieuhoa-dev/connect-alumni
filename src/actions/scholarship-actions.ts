@@ -721,6 +721,31 @@ export const getMyScholarshipApplications = async () => {
 };
 
 /**
+ * Alumni / Donor: Get my donation pledges
+ */
+export const getMyDonationPledges = async () => {
+  const current = await getCurrentUser();
+  if (!current?.user) return [];
+
+  try {
+    return await db.query.donationPledges.findMany({
+      where: {
+        donorId: current.user.id,
+      },
+      with: {
+        campaign: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  } catch (err) {
+    console.error("Error fetching my donation pledges:", err);
+    return [];
+  }
+};
+
+/**
  * Faculty/Admin: Get all campaigns with pledges and application counts
  */
 export const getAllCampaignsForFaculty = async () => {

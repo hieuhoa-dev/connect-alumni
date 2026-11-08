@@ -193,28 +193,54 @@ const ScholarshipDetailPage = async ({
               </div>
 
               <div className="pt-2 space-y-2">
-                {!isExpired && (
+                {currentUser?.role === "alumni" ? (
                   <Link
-                    href={`/student/scholarships/${campaign.id}/apply`}
+                    href={`/alumni/scholarships/${campaign.id}/pledge`}
                     className={buttonVariants({
-                      className: "w-full font-medium",
+                      className:
+                        "w-full font-medium bg-emerald-600 hover:bg-emerald-700 text-white gap-2",
                     })}
                   >
-                    <GraduationCap className="h-4 w-4 mr-2" />
-                    Nộp hồ sơ xin xét duyệt
+                    <HeartHandshake className="h-4 w-4" />
+                    Ủng hộ Quỹ học bổng
                   </Link>
-                )}
+                ) : currentUser?.role === "employer" ? (
+                  <Link
+                    href="/employer/scholarships/pledge"
+                    className={buttonVariants({
+                      className:
+                        "w-full font-medium bg-emerald-600 hover:bg-emerald-700 text-white gap-2",
+                    })}
+                  >
+                    <HeartHandshake className="h-4 w-4" />
+                    Cam kết tài trợ (Doanh nghiệp)
+                  </Link>
+                ) : (
+                  <>
+                    {!isExpired && (
+                      <Link
+                        href={`/student/scholarships/${campaign.id}/apply`}
+                        className={buttonVariants({
+                          className: "w-full font-medium",
+                        })}
+                      >
+                        <GraduationCap className="h-4 w-4 mr-2" />
+                        Nộp hồ sơ xin xét duyệt
+                      </Link>
+                    )}
 
-                <Link
-                  href="/employer/scholarships/pledge"
-                  className={buttonVariants({
-                    variant: "outline",
-                    className: "w-full text-xs",
-                  })}
-                >
-                  <HeartHandshake className="h-4 w-4 mr-2" />
-                  Đăng ký cam kết tài trợ
-                </Link>
+                    <Link
+                      href="/employer/scholarships/pledge"
+                      className={buttonVariants({
+                        variant: "outline",
+                        className: "w-full text-xs",
+                      })}
+                    >
+                      <HeartHandshake className="h-4 w-4 mr-2" />
+                      Đăng ký cam kết tài trợ
+                    </Link>
+                  </>
+                )}
               </div>
 
               <div className="rounded-lg bg-muted/40 p-2.5 text-[11px] text-muted-foreground flex items-start gap-2 border">

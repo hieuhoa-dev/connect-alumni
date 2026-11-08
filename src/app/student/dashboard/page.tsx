@@ -1,5 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/permissions";
 import { getMyEventsAndInvites } from "@/actions/event-actions";
 import { getMyScholarshipApplications } from "@/actions/scholarship-actions";
@@ -27,6 +28,10 @@ import {
 
 const StudentDashboardPage = async () => {
   const current = await getCurrentUser();
+  if (current?.role === "alumni") {
+    redirect("/alumni/dashboard");
+  }
+
   const [eventsData, scholarshipApps, availableSurveys] = await Promise.all([
     getMyEventsAndInvites(),
     getMyScholarshipApplications(),
@@ -34,7 +39,6 @@ const StudentDashboardPage = async () => {
   ]);
 
   const profile = current?.profile;
-  const isAlumni = current?.role === "alumni";
 
   return (
     <div className="space-y-8">
@@ -46,11 +50,8 @@ const StudentDashboardPage = async () => {
               <h1 className="text-2xl font-bold tracking-tight text-foreground">
                 Xin chào, {profile?.fullName || current?.user.name} 👋
               </h1>
-              <Badge
-                variant={isAlumni ? "default" : "secondary"}
-                className="text-xs"
-              >
-                {isAlumni ? "Cựu sinh viên" : "Sinh viên"}
+              <Badge variant="secondary" className="text-xs">
+                Sinh viên
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground">
@@ -68,15 +69,6 @@ const StudentDashboardPage = async () => {
               <Briefcase className="h-4 w-4 mr-1.5" />
               Tìm việc làm
             </Link>
-            {isAlumni && (
-              <Link
-                href="/student/experiences/new"
-                className={buttonVariants({ size: "sm" })}
-              >
-                <BookOpen className="h-4 w-4 mr-1.5" />
-                Đăng bài chia sẻ
-              </Link>
-            )}
           </div>
         </div>
       </div>

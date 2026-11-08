@@ -20,7 +20,11 @@ const DashboardDispatcherPage = async () => {
     redirect("/employer/dashboard");
   }
 
-  // Default: student or alumni
+  if (role === "alumni") {
+    redirect("/alumni/dashboard");
+  }
+
+  // Default: student
   redirect("/student/dashboard");
 };
 
