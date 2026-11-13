@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/db";
+import { eq } from "drizzle-orm";
 import {
   forms,
   formQuestions,
@@ -16,6 +17,11 @@ import {
   FormResponseSubmitInput,
 } from "@/validators/form-schema";
 import { logAuditEvent } from "@/lib/audit";
+import {
+  generateWebhookSecret,
+  generateAppsScriptCode,
+  createGoogleFormFromQuestions,
+} from "@/lib/google-forms";
 
 /**
  * Faculty/Admin: Create form with dynamic questions
@@ -25,6 +31,10 @@ export const createFormWithQuestions = async (input: FormCreateInput) => {
   const validated = formCreateSchema.parse(input);
 
   // 1. Insert form
+  const webhookSecret = validated.isGoogleForm
+    ? validated.webhookSecret || generateWebhookSecret()
+    : null;
+
   const [newForm] = await db
     .insert(forms)
     .values({
@@ -35,6 +45,11 @@ export const createFormWithQuestions = async (input: FormCreateInput) => {
       targetRole: validated.targetRole,
       deadline: validated.deadline || null,
       status: validated.status,
+      isGoogleForm: validated.isGoogleForm ?? false,
+      googleFormUrl: validated.googleFormUrl || null,
+      googleFormId: validated.googleFormId || null,
+      googleEditUrl: validated.googleEditUrl || null,
+      webhookSecret,
       createdBy: current.user.id,
     })
     .returning();
@@ -314,4 +329,125 @@ export const getFormsForFaculty = async () => {
       createdAt: "desc",
     },
   });
+};
+
+/**
+ * Public / Guest / Student / Alumni: Lấy danh sách khảo sát đang mở cho Góc chia sẻ
+ */
+export const getPublicSurveys = async (options?: { limit?: number }) => {
+  const limit = options?.limit || 12;
+
+  return await db.query.forms.findMany({
+    where: {
+      type: "survey",
+      status: "open",
+    },
+    with: {
+      questions: true,
+      responses: true,
+      creator: {
+        with: {
+          profile: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    limit,
+  });
+};
+
+/**
+ * Lấy mã Google Apps Script để kích hoạt webhook cho form
+ */
+export const getGoogleFormAppsScriptAction = async (formId: string) => {
+  const form = await db.query.forms.findFirst({
+    where: { id: formId },
+  });
+
+  if (!form) {
+    throw new Error("Không tìm thấy biểu mẫu");
+  }
+
+  let secret = form.webhookSecret;
+  if (!secret) {
+    secret = generateWebhookSecret();
+    await db
+      .update(forms)
+      .set({ webhookSecret: secret })
+      .where(eq(forms.id, formId));
+  }
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL || "https://connect-alumni.dlu.edu.vn";
+  const endpointUrl = `${baseUrl.replace(/\/$/, "")}/api/webhooks/google-form`;
+
+  const script = generateAppsScriptCode({
+    formId,
+    webhookSecret: secret,
+    endpointUrl,
+  });
+
+  return {
+    script,
+    endpointUrl,
+    secret,
+  };
+};
+
+/**
+ * Tạo tự động Google Form từ danh sách câu hỏi của hệ thống
+ */
+export const exportFormToGoogleFormAction = async (formId: string) => {
+  await requireRole(["faculty_staff", "admin"]);
+
+  const form = await db.query.forms.findFirst({
+    where: { id: formId },
+    with: {
+      questions: {
+        orderBy: {
+          orderIndex: "asc",
+        },
+      },
+    },
+  });
+
+  if (!form) {
+    throw new Error("Không tìm thấy biểu mẫu");
+  }
+
+  if (!form.questions || form.questions.length === 0) {
+    throw new Error("Biểu mẫu cần có ít nhất 1 câu hỏi để xuất sang Google Form");
+  }
+
+  const result = await createGoogleFormFromQuestions({
+    title: form.title,
+    description: form.description,
+    questions: form.questions.map((q) => ({
+      label: q.label,
+      questionType: q.questionType,
+      options: q.options,
+      isRequired: q.isRequired,
+      config: q.config,
+    })),
+  });
+
+  let secret = form.webhookSecret;
+  if (!secret) {
+    secret = generateWebhookSecret();
+  }
+
+  await db
+    .update(forms)
+    .set({
+      isGoogleForm: true,
+      googleFormId: result.formId,
+      googleFormUrl: result.responderUri,
+      googleEditUrl: result.editUri,
+      webhookSecret: secret,
+    })
+    .where(eq(forms.id, formId));
+
+  return result;
 };

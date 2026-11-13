@@ -620,6 +620,11 @@ export const forms = pgTable(
     targetRole: formTargetRoleEnum("target_role").default("all").notNull(),
     deadline: timestamp("deadline"),
     status: formStatusEnum("status").default("draft").notNull(),
+    isGoogleForm: boolean("is_google_form").default(false).notNull(),
+    googleFormUrl: text("google_form_url"),
+    googleFormId: text("google_form_id"),
+    googleEditUrl: text("google_edit_url"),
+    webhookSecret: text("webhook_secret"),
     createdBy: text("created_by")
       .notNull()
       .references(() => user.id),

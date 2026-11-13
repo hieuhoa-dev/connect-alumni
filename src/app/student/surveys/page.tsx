@@ -66,9 +66,19 @@ const SurveysPage = async () => {
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <Badge variant="outline" className="text-[10px] uppercase">
-                      {f.type}
-                    </Badge>
+                    <div className="flex items-center gap-1.5">
+                      <Badge variant="outline" className="text-[10px] uppercase">
+                        {f.type}
+                      </Badge>
+                      {f.isGoogleForm && (
+                        <Badge
+                          variant="secondary"
+                          className="bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800 text-[10px]"
+                        >
+                          Google Form
+                        </Badge>
+                      )}
+                    </div>
                     {hasSubmitted ? (
                       <Badge className="bg-emerald-600 text-white text-[10px] gap-1">
                         <CheckCircle2 className="h-3 w-3" />

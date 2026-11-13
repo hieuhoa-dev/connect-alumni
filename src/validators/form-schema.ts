@@ -27,28 +27,44 @@ export const formQuestionInputSchema = z.object({
     .nullable(),
 });
 
-export const formCreateSchema = z.object({
-  type: z.enum([
-    "survey",
-    "scholarship_application",
-    "event_feedback",
-    "other",
-  ]),
-  title: z.string().min(3, "Tiêu đề form ít nhất 3 ký tự"),
-  description: z.string().min(5, "Mô tả form ít nhất 5 ký tự"),
-  targetBatches: z.array(z.coerce.number().int()).optional().nullable(),
-  targetRole: z.enum(["student", "alumni", "all"]).default("all"),
-  deadline: z
-    .string()
-    .or(z.date())
-    .optional()
-    .nullable()
-    .transform((val) => (val ? new Date(val) : null)),
-  status: z.enum(["draft", "open", "closed"]).default("open"),
-  questions: z
-    .array(formQuestionInputSchema)
-    .min(1, "Form phải có ít nhất 1 câu hỏi"),
-});
+export const formCreateSchema = z
+  .object({
+    type: z.enum([
+      "survey",
+      "scholarship_application",
+      "event_feedback",
+      "other",
+    ]),
+    title: z.string().min(3, "Tiêu đề form ít nhất 3 ký tự"),
+    description: z.string().min(5, "Mô tả form ít nhất 5 ký tự"),
+    targetBatches: z.array(z.coerce.number().int()).optional().nullable(),
+    targetRole: z.enum(["student", "alumni", "all"]).default("all"),
+    deadline: z
+      .string()
+      .or(z.date())
+      .optional()
+      .nullable()
+      .transform((val) => (val ? new Date(val) : null)),
+    status: z.enum(["draft", "open", "closed"]).default("open"),
+    isGoogleForm: z.boolean().default(false),
+    googleFormUrl: z.string().optional().nullable(),
+    googleFormId: z.string().optional().nullable(),
+    googleEditUrl: z.string().optional().nullable(),
+    webhookSecret: z.string().optional().nullable(),
+    questions: z.array(formQuestionInputSchema).default([]),
+  })
+  .refine(
+    (data) => {
+      if (!data.isGoogleForm) {
+        return data.questions && data.questions.length > 0;
+      }
+      return true;
+    },
+    {
+      message: "Form nội bộ phải có ít nhất 1 câu hỏi",
+      path: ["questions"],
+    },
+  );
 
 export const formResponseSubmitSchema = z.object({
   formId: z.string().uuid("ID form không hợp lệ"),

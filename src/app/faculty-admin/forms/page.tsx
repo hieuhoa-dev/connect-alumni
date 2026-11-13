@@ -22,6 +22,7 @@ import {
   GraduationCap,
 } from "lucide-react";
 import { CopyFormLinkButton } from "./copy-form-link-button";
+import { GoogleFormWebhookButton } from "./google-form-actions";
 
 export const metadata = {
   title: "Quản lý Khảo sát & Biểu mẫu | Khoa CNTT",
@@ -190,6 +191,11 @@ const FacultyFormsPage = async () => {
                     <div className="flex items-center justify-between gap-2 mb-2">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         {getTypeBadge(form.type)}
+                        {form.isGoogleForm && (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                            Google Form
+                          </span>
+                        )}
                         <span className="text-[11px] px-2 py-0.5 rounded bg-muted text-muted-foreground">
                           {getTargetRoleLabel(form.targetRole)}
                         </span>
@@ -239,11 +245,15 @@ const FacultyFormsPage = async () => {
                 </div>
 
                 <CardFooter className="flex flex-col gap-2 pt-0 pb-4">
-                  <div className="flex items-center gap-2 w-full">
+                  <div className="flex items-center gap-2 w-full flex-wrap">
                     <Link
-                      href={`/student/surveys/${form.id}`}
+                      href={
+                        form.isGoogleForm && form.googleFormUrl
+                          ? form.googleFormUrl
+                          : `/student/surveys/${form.id}`
+                      }
                       target="_blank"
-                      className="flex-1"
+                      className="flex-1 min-w-[120px]"
                     >
                       <Button
                         variant="secondary"
@@ -251,9 +261,12 @@ const FacultyFormsPage = async () => {
                         className="w-full flex items-center justify-center gap-1.5 text-xs h-8"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
-                        Làm thử / Xem trước
+                        {form.isGoogleForm ? "Mở Google Form" : "Làm thử / Xem"}
                       </Button>
                     </Link>
+                    {form.isGoogleForm && (
+                      <GoogleFormWebhookButton formId={form.id} />
+                    )}
                     <CopyFormLinkButton formId={form.id} />
                   </div>
 

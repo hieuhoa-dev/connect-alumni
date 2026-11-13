@@ -1,9 +1,8 @@
-import * as React from "react";
+import { Calendar, HeartHandshake, Users } from "lucide-react";
 import Link from "next/link";
 import { getScholarshipCampaigns } from "@/actions/scholarship-actions";
-import { getCurrentUser } from "@/lib/permissions";
-import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,21 +12,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {
-  HeartHandshake,
-  GraduationCap,
-  Calendar,
-  Users,
-  ArrowRight,
-  ShieldCheck,
-} from "lucide-react";
+import { getCurrentUser } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
 const ScholarshipsPage = async () => {
   const [campaignsRes, currentUser] = await Promise.all([
     getScholarshipCampaigns().catch((err) => {
-      console.warn("[ScholarshipsPage] Database unavailable during fetch, defaulting to empty list:", err);
+      console.warn(
+        "[ScholarshipsPage] Database unavailable during fetch, defaulting to empty list:",
+        err,
+      );
       return [];
     }),
     getCurrentUser(),
@@ -44,20 +39,19 @@ const ScholarshipsPage = async () => {
             Quỹ Khuyến học &amp; Tiếp sức Tài năng Trẻ — Đại học Đà Lạt
           </h1>
           <p className="text-sm text-muted-foreground">
-            Cầu nối tài trợ từ Cựu sinh viên DLU và các Doanh nghiệp đối tác nhằm
-            trao học bổng, hỗ trợ tài chính cho sinh viên vượt khó hiếu học
+            Cầu nối tài trợ từ Cựu sinh viên DLU và các Doanh nghiệp đối tác
+            nhằm trao học bổng, hỗ trợ tài chính cho sinh viên vượt khó hiếu học
           </p>
         </div>
-        <Link
-          href="/employer/scholarships/pledge"
-          className={buttonVariants({
-            variant: "sun",
-            size: "sm",
-          })}
+        <Button
+          variant="sun"
+          size="sm"
+          render={<Link href="/employer/scholarships/pledge" />}
+          nativeButton={false}
         >
-          <HeartHandshake className="h-4 w-4 mr-1.5" />
+          <HeartHandshake data-icon="inline-start" />
           Đồng hành tài trợ
-        </Link>
+        </Button>
       </div>
 
       {/* Campaigns list */}
@@ -99,7 +93,12 @@ const ScholarshipsPage = async () => {
                     </span>
                   </div>
                   <CardTitle className="text-lg font-bold leading-snug">
-                    <Link href={`/scholarships/${camp.id}`}>{camp.title}</Link>
+                    <Link
+                      href={`/scholarships/${camp.id}`}
+                      className="hover:text-primary transition-colors"
+                    >
+                      {camp.title}
+                    </Link>
                   </CardTitle>
                   <CardDescription className="text-xs line-clamp-2 mt-1">
                     {camp.description}
@@ -113,7 +112,7 @@ const ScholarshipsPage = async () => {
                       <span className="text-muted-foreground">
                         Tiến độ tiếp nhận quỹ:
                       </span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                      <span className="font-bold text-pine-600 dark:text-pine-400">
                         {percent}%
                       </span>
                     </div>
@@ -125,9 +124,7 @@ const ScholarshipsPage = async () => {
                           {current.toLocaleString("vi-VN")} đ
                         </strong>
                       </span>
-                      <span>
-                        Mục tiêu: {target.toLocaleString("vi-VN")} đ
-                      </span>
+                      <span>Mục tiêu: {target.toLocaleString("vi-VN")} đ</span>
                     </div>
                   </div>
 
@@ -136,7 +133,9 @@ const ScholarshipsPage = async () => {
                       <Calendar className="h-3.5 w-3.5" />
                       <span>
                         Đóng quỹ:{" "}
-                        {new Date(camp.applicationDeadline).toLocaleDateString("vi-VN")}
+                        {new Date(camp.applicationDeadline).toLocaleDateString(
+                          "vi-VN",
+                        )}
                       </span>
                     </div>
                     <div className="flex items-center gap-1">
@@ -148,50 +147,52 @@ const ScholarshipsPage = async () => {
                   </div>
                 </CardContent>
 
-                <CardFooter className="pt-0 flex gap-2">
-                  <Link
-                    href={`/scholarships/${camp.id}`}
-                    className={buttonVariants({
-                      variant: "outline",
-                      size: "sm",
-                      className: "w-full",
-                    })}
+                <CardFooter className="px-5 py-3.5 flex gap-2.5">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    render={<Link href={`/scholarships/${camp.id}`} />}
+                    nativeButton={false}
                   >
                     Xem chi tiết quỹ
-                  </Link>
+                  </Button>
                   {currentUser?.role === "alumni" ? (
-                    <Link
-                      href={`/alumni/scholarships/${camp.id}/pledge`}
-                      className={buttonVariants({
-                        size: "sm",
-                        className:
-                          "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium",
-                      })}
+                    <Button
+                      variant="sun"
+                      size="sm"
+                      className="flex-1"
+                      render={
+                        <Link href={`/alumni/scholarships/${camp.id}/pledge`} />
+                      }
+                      nativeButton={false}
                     >
+                      <HeartHandshake data-icon="inline-start" />
                       Ủng hộ học bổng
-                    </Link>
+                    </Button>
                   ) : currentUser?.role === "employer" ? (
-                    <Link
-                      href="/employer/scholarships/pledge"
-                      className={buttonVariants({
-                        size: "sm",
-                        className:
-                          "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium",
-                      })}
+                    <Button
+                      variant="sun"
+                      size="sm"
+                      className="flex-1"
+                      render={<Link href="/employer/scholarships/pledge" />}
+                      nativeButton={false}
                     >
+                      <HeartHandshake data-icon="inline-start" />
                       Cam kết tài trợ
-                    </Link>
+                    </Button>
                   ) : (
-                    <Link
-                      href={`/student/scholarships/${camp.id}/apply`}
-                      className={buttonVariants({
-                        variant: "default",
-                        size: "sm",
-                        className: "w-full",
-                      })}
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="flex-1"
+                      render={
+                        <Link href={`/student/scholarships/${camp.id}/apply`} />
+                      }
+                      nativeButton={false}
                     >
                       Nộp đơn xét học bổng
-                    </Link>
+                    </Button>
                   )}
                 </CardFooter>
               </Card>

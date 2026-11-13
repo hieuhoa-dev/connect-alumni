@@ -29,6 +29,9 @@ import {
   Check,
   Loader2,
   ListPlus,
+  Copy,
+  ExternalLink,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "@/components/ui/toast";
 
@@ -62,6 +65,9 @@ export const FormBuilder = () => {
   const [targetBatchesInput, setTargetBatchesInput] = useState("");
   const [deadline, setDeadline] = useState("");
   const [status, setStatus] = useState<"open" | "draft">("open");
+  const [isGoogleForm, setIsGoogleForm] = useState(false);
+  const [googleFormUrl, setGoogleFormUrl] = useState("");
+  const [copiedScript, setCopiedScript] = useState(false);
 
   // Questions
   const [questions, setQuestions] = useState<QuestionItem[]>([
@@ -167,21 +173,31 @@ export const FormBuilder = () => {
       return;
     }
 
-    if (questions.length === 0) {
+    if (isGoogleForm && !googleFormUrl.trim()) {
       toast.add({
         type: "error",
-        description: "Vui lòng thêm ít nhất một câu hỏi",
+        description: "Vui lòng nhập đường dẫn (URL) của Google Form",
       });
       return;
     }
 
-    for (let i = 0; i < questions.length; i++) {
-      if (!questions[i].label.trim()) {
+    if (!isGoogleForm) {
+      if (questions.length === 0) {
         toast.add({
           type: "error",
-          description: `Câu hỏi #${i + 1} chưa có nội dung`,
+          description: "Vui lòng thêm ít nhất một câu hỏi",
         });
         return;
+      }
+
+      for (let i = 0; i < questions.length; i++) {
+        if (!questions[i].label.trim()) {
+          toast.add({
+            type: "error",
+            description: `Câu hỏi #${i + 1} chưa có nội dung`,
+          });
+          return;
+        }
       }
     }
 
@@ -194,6 +210,23 @@ export const FormBuilder = () => {
             .filter((n) => !isNaN(n))
         : null;
 
+      const validQuestions =
+        isGoogleForm && questions.length === 0
+          ? []
+          : questions
+              .filter((q) => q.label.trim())
+              .map((q, idx) => ({
+                orderIndex: idx,
+                questionType: q.questionType,
+                label: q.label.trim(),
+                isRequired: q.isRequired,
+                options:
+                  q.questionType === "single_choice" ||
+                  q.questionType === "multi_choice"
+                    ? q.options
+                    : null,
+              }));
+
       await createFormWithQuestions({
         title: title.trim(),
         description: description.trim(),
@@ -203,22 +236,16 @@ export const FormBuilder = () => {
           targetBatches && targetBatches.length > 0 ? targetBatches : null,
         deadline: deadline ? new Date(deadline) : null,
         status,
-        questions: questions.map((q, idx) => ({
-          orderIndex: idx,
-          questionType: q.questionType,
-          label: q.label.trim(),
-          isRequired: q.isRequired,
-          options:
-            q.questionType === "single_choice" ||
-            q.questionType === "multi_choice"
-              ? q.options
-              : null,
-        })),
+        isGoogleForm,
+        googleFormUrl: isGoogleForm ? googleFormUrl.trim() : null,
+        questions: validQuestions,
       });
 
       toast.add({
         type: "success",
-        description: "Tạo biểu mẫu thành công!",
+        description: isGoogleForm
+          ? "Đã lưu khảo sát Google Form thành công!"
+          : "Tạo biểu mẫu thành công!",
       });
       router.push("/faculty-admin/forms");
       router.refresh();
@@ -274,6 +301,26 @@ export const FormBuilder = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
+              <Label>Nền tảng khảo sát</Label>
+              <Select
+                value={isGoogleForm ? "google" : "native"}
+                onValueChange={(val: any) => {
+                  setIsGoogleForm(val === "google");
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="native">Biểu mẫu trên hệ thống</SelectItem>
+                  <SelectItem value="google">
+                    Google Form (Kèm Webhook)
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
               <Label>Loại biểu mẫu</Label>
               <Select
                 value={type}
@@ -315,25 +362,152 @@ export const FormBuilder = () => {
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="space-y-2">
-              <Label>Trạng thái</Label>
-              <Select
-                value={status}
-                onValueChange={(val: any) => {
-                  if (val) setStatus(val);
-                }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="open">Mở ngay (Công khai)</SelectItem>
-                  <SelectItem value="draft">Bản nháp (Lưu tạm)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
+
+          {isGoogleForm && (
+            <div className="rounded-lg border border-pine-200 dark:border-pine-800 bg-pine-50/50 dark:bg-pine-950/20 p-4 space-y-4">
+              <div className="space-y-2">
+                <Label
+                  htmlFor="googleFormUrl"
+                  className="text-pine-800 dark:text-pine-200 font-medium"
+                >
+                  Đường dẫn Google Form (URL điền khảo sát){" "}
+                  <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="googleFormUrl"
+                  placeholder="https://docs.google.com/forms/d/e/.../viewform"
+                  value={googleFormUrl}
+                  onChange={(e) => setGoogleFormUrl(e.target.value)}
+                  required={isGoogleForm}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Người dùng khi bấm &quot;Tham gia khảo sát&quot; ở Góc chia sẻ
+                  hoặc Portal sẽ được chuyển trực tiếp tới liên kết này.
+                </p>
+              </div>
+
+              <div className="border-t border-pine-200/60 dark:border-pine-800/60 pt-3">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs font-semibold text-pine-900 dark:text-pine-100 flex items-center gap-1.5">
+                    <Sparkles className="size-3.5 text-pine-600" />
+                    Cấu hình Webhook đồng bộ kết quả về Connect Alumni
+                  </span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="h-7 text-xs gap-1 border-pine-300 dark:border-pine-700"
+                    onClick={() => {
+                      const origin = typeof window !== "undefined" ? window.location.origin : "https://connect-alumni.dlu.edu.vn";
+                      const sampleCode = `/**
+ * GOOGLE APPS SCRIPT CHO GOOGLE FORM - HỆ THỐNG KHOA CNTT DLU
+ * 
+ * ⚠️ LƯU Ý KHI CHẠY THỬ Ở MÁY LOCAL (LOCALHOST):
+ * - Máy chủ Google không thể gọi trực tiếp tới "http://localhost:3000".
+ * - Khi test ở localhost, bạn mở terminal chạy: 'npx ngrok http 3000' rồi thay đường link ngrok vào APP_WEBHOOK_URL.
+ */
+var CONFIG = {
+  APP_WEBHOOK_URL: "${origin}/api/webhooks/google-form",
+  FORM_ID: "THAY_BANG_ID_FORM_SAU_KHI_LUU", // Lấy ID form trên danh sách quản lý
+  WEBHOOK_SECRET: "" // Bí mật bảo mật (nếu có)
+};
+
+function onFormSubmit(e) {
+  if (!e) {
+    Logger.log("⚠️ Bạn vừa bấm nút 'Chạy' bằng tay. Vui lòng chọn hàm 'testWebhook' ở menu trên để test thử, hoặc tự điền form rồi bấm Gửi.");
+    return;
+  }
+
+  try {
+    var respondentEmail = "";
+    var answers = [];
+
+    if (e.response) {
+      try { respondentEmail = e.response.getRespondentEmail() || ""; } catch(err) {}
+      var itemResponses = e.response.getItemResponses();
+      for (var i = 0; i < itemResponses.length; i++) {
+        answers.push({
+          question: itemResponses[i].getItem().getTitle(),
+          answer: itemResponses[i].getResponse()
+        });
+      }
+    } else if (e.namedValues) {
+      for (var key in e.namedValues) {
+        if (key === "Dấu thời gian" || key === "Timestamp") continue;
+        if (key.toLowerCase().indexOf("email") !== -1) respondentEmail = e.namedValues[key][0];
+        answers.push({ question: key, answer: e.namedValues[key][0] });
+      }
+    }
+
+    var payload = {
+      formId: CONFIG.FORM_ID,
+      respondentEmail: respondentEmail,
+      submittedAt: new Date().toISOString(),
+      answers: answers
+    };
+
+    var res = UrlFetchApp.fetch(CONFIG.APP_WEBHOOK_URL, {
+      method: "post",
+      contentType: "application/json",
+      payload: JSON.stringify(payload),
+      headers: { "x-webhook-secret": CONFIG.WEBHOOK_SECRET },
+      muteHttpExceptions: true
+    });
+
+    Logger.log("Mã HTTP: " + res.getResponseCode());
+    Logger.log("Nội dung: " + res.getContentText());
+  } catch (error) {
+    Logger.log("Lỗi: " + error.toString());
+  }
+}
+
+/**
+ * Bấm chọn hàm này rồi bấm nút 'Chạy' (Run) để kiểm tra kết nối Webhook!
+ */
+function testWebhook() {
+  Logger.log("Đang gửi thử nghiệm về: " + CONFIG.APP_WEBHOOK_URL);
+  var payload = {
+    formId: CONFIG.FORM_ID,
+    respondentEmail: "alumni.test@dlu.edu.vn",
+    submittedAt: new Date().toISOString(),
+    answers: [{ question: "Thử nghiệm", answer: "Nội dung câu trả lời" }]
+  };
+  var res = UrlFetchApp.fetch(CONFIG.APP_WEBHOOK_URL, {
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify(payload),
+    headers: { "x-webhook-secret": CONFIG.WEBHOOK_SECRET },
+    muteHttpExceptions: true
+  });
+  Logger.log("HTTP Code: " + res.getResponseCode());
+  Logger.log("Response: " + res.getContentText());
+}`;
+                      navigator.clipboard.writeText(sampleCode);
+                      setCopiedScript(true);
+                      setTimeout(() => setCopiedScript(false), 2000);
+                      toast.add({
+                        type: "success",
+                        description: "Đã sao chép mã script mẫu an toàn vào bộ nhớ tạm!",
+                      });
+                    }}
+                  >
+                    {copiedScript ? (
+                      <Check className="size-3 text-emerald-600" />
+                    ) : (
+                      <Copy className="size-3" />
+                    )}
+                    {copiedScript ? "Đã chép" : "Sao chép mã Apps Script"}
+                  </Button>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Sau khi lưu biểu mẫu, bạn có thể lấy mã Apps Script đầy đủ có
+                  kèm bí danh bảo mật (Webhook Secret) tại trang Quản lý biểu
+                  mẫu.
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
